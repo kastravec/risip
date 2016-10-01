@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/simpledemo/SimpleDemo.qml</file>
+        <file>ui/testui/PageLoader.qml</file>
+        <file>ui/testui/WelcomeScreen.qml</file>
+        <file>ui/testui/WelcomeScreenForm.ui.qml</file>
+        <file>ui/base/SplashScreen.qml</file>
+        <file>ui/base/MainWindow.qml</file>
+    </qresource>
+</RCC>

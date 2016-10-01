@@ -1,0 +1,29 @@
+BUILD
+
+Current Builds:
+- Tested on Mac 10.11 - Qt5.7 and Pjsip 2.5.5.
+- Tested on Linux - Qt5.7 and Pjsip 2.5.5.
+- Tested on iPhone 6 - Qt5.7 and Pjsip 2.5.5.
+
+
+1) Build PJSIP
+
+Use always the latest PJSIP available, download and follow the compilation and build steps provided by the PJSIP team.
+Follow the instruction carefully and here are some notes to take care in particular:
+-do not forget --prefix in the configuration - to install libs and headers in a seperate folder / per target platform for example
+-do not forget -arch for the architecture for iPhone or TARGET_ABI for android and so forth
+-do not forget static/shared, by default it is all static build for PJSIP
+-do not forget to enable config_site.h file under PJSIP/src/pjsip-lib/include
+
+
+2) Build Ringo (link with PJSIP) and use Risip wrapper for the app.
+
+Once you have build PJSIP and the libs and headers from pjsip are available, then copy them inside directory of the app. For more details on where and which directory names to be used, please refer to the .pro project file in order to understand these details.
+- do not forget Defines - just use the risip project file as sample
+- do not forget Mac/iOS Frameworks or libs, same on Android and so forth
+
+3) SIP accounts - Calls
+- URI : sip:username@server.com
+- registar: sip:server.com
+- do not forget proxies and port number - if needed
+- do not forget codecs , their priorities may break the call.
