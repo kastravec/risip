@@ -1,28 +1,54 @@
-BUILD
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-Current Builds:
-- Tested on Mac 10.11 - Qt5.7 and Pjsip 2.5.5.
-- Tested on Linux - Qt5.7 and Pjsip 2.5.5.
-- Tested on iPhone 6 - Qt5.7 and Pjsip 2.5.5.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You have received a copy of the GNU General Public License
+ along with this program. See LICENSE.GPLv3
+ A copy of the license is also here <http://www.gnu.org/licenses/>.
+
+ Copyright (C) 2016  Petref Saraci
 
 
-1) Build PJSIP
+* What is Risip? *
 
+Risip software provides a set of APIs, headers, source files and other utilities acting as interface the Pjsip library.
+
+* How do I start? *
+
+1. Download the latest Qt open source package and follow the instructions. (http://qt.io)
+
+2. Build PJSIP
 Use always the latest PJSIP available, download and follow the compilation and build steps provided by the PJSIP team.
+Pjsip build instruction: https://trac.pjsip.org/repos/wiki/Getting-Started
+Pjsip website: http://pjsip.org/
+Pjsip documentation: https://trac.pjsip.org/repos/
+
 Follow the instruction carefully and here are some notes to take care in particular:
--do not forget --prefix in the configuration - to install libs and headers in a seperate folder / per target platform for example
--do not forget -arch for the architecture for iPhone or TARGET_ABI for android and so forth
--do not forget static/shared, by default it is all static build for PJSIP
--do not forget to enable config_site.h file under PJSIP/src/pjsip-lib/include
+-do not forget --prefix when you run configure for Pjsip, in this way you can install libs and headers of Pjsip
+ in a seperate folder for each target platform.
+-do not forget -arch flag for the architecture for iPhone or TARGET_ABI for android and so forth
+-do not forget static/shared flags when configuring Pjsip, by default it is all static build for PJSIP
+-do not forget to enable config_site.h file under PJSIP/src/pjsip-lib/include (follow steps: https://trac.pjsip.org/repos/wiki/Getting-Started)
 
+3. QtCreator to load the Risip project.
 
-2) Build Ringo (link with PJSIP) and use Risip wrapper for the app.
+You may use QtCreator to compile/build risip for all desktop platforms and Android, but for iOS you may need
+to use XCode too.
 
-Once you have build PJSIP and the libs and headers from pjsip are available, then copy them inside directory of the app. For more details on where and which directory names to be used, please refer to the .pro project file in order to understand these details.
+Note:
+Once you have build PJSIP and the libs and headers from pjsip are available, then copy them inside directory of risip.
+For more details on where and which directory names to be used, please refer to the .pro project file in order to understand these details.
 - do not forget Defines - just use the risip project file as sample
 - do not forget Mac/iOS Frameworks or libs, same on Android and so forth
 
-3) SIP accounts - Calls
+4. Use some SIP server to start testing
+SIP accounts - Calls
 - URI : sip:username@server.com
 - registar: sip:server.com
 - do not forget proxies and port number - if needed

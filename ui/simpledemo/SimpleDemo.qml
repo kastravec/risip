@@ -121,6 +121,13 @@ Item {
                     text: "End"
                     onClicked: { myCall.hangup(); answerButton.highlighted = false; answerButton.enabled = false; }
                 }
+
+                Button {
+                    text: "Send test IM"
+                    onClicked: {
+                        myBuddy.sendInstantMessage("uiiiii");
+                    }
+                }
             }
         }
 
@@ -144,6 +151,8 @@ Item {
                 switch (status) {
                 case RisipAccount.SignedIn:
                     console.log("Logged in!")
+                    myAccount.presence = RisipBuddy.Online
+                    myBuddy.addToList();
                     break;
                 case RisipAccount.SignedOut:
                     console.log("Logged out!")
@@ -156,6 +165,12 @@ Item {
                     break;
                 }
             }
+
+            onIncomingMessage: {
+                console.log("incoming message: from: "
+                            + message.buddy.uri
+                            + ""+ message.messageBody) ;
+            }
         }
 
         RisipCall {
@@ -164,6 +179,15 @@ Item {
             onIncomingCall: {
                 answerButton.enabled = true;
                 answerButton.highlighted = true;
+            }
+        }
+
+        RisipBuddy {
+            id: myBuddy
+            uri: "sip:toptop@sip2sip.info"
+            account: myAccount;
+            onMessagesDeliveryPendingChanged: {
+                console.log("Pending messages: " + myBuddy.messagesDeliveryPending.size)
             }
         }
 
@@ -180,7 +204,6 @@ Item {
             localPort: 5060
             networkProtocol: RisipAccountConfiguration.UDP
         }
-
     }
 }
 //"88.198.93.189"

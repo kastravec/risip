@@ -21,6 +21,7 @@
 #define RISIPACCOUNT_H
 
 #include <QObject>
+#include <QQmlListProperty>
 
 #include <pjsua2.hpp>
 using namespace pj;
@@ -29,6 +30,7 @@ class RisipAccount;
 class RisipMessage;
 class RisipEndpoint;
 class RisipAccountConfiguration;
+class RisipBuddy;
 
 /**
  * @brief The PjsipAccount class
@@ -74,7 +76,7 @@ class RisipAccount: public QObject
     Q_OBJECT
 
 public:
-    enum AccountStatus {
+    enum Status {
         NotConfigured = 0,
         NotCreated,
         Registering,
@@ -84,11 +86,14 @@ public:
         AccountError = -1
     };
 
-    Q_ENUMS(AccountStatus)
+    Q_ENUM(Status)
     Q_PROPERTY(RisipAccountConfiguration * configuration READ configuration WRITE setConfiguration NOTIFY configurationChanged)
     Q_PROPERTY(RisipEndpoint * sipEndPoint READ sipEndPoint WRITE setSipEndPoint NOTIFY sipEndPointChanged)
+    Q_PROPERTY(int presence READ presence WRITE setPresence NOTIFY presenceChanged)
+    Q_PROPERTY(QString presenceNote READ presenceNote WRITE setPresenceNote NOTIFY presenceNoteChanged)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusTextChanged)
+    Q_PROPERTY(QQmlListProperty<RisipBuddy> buddies READ buddies NOTIFY buddiesChanged)
 
     RisipAccount(QObject *parent = 0);
     ~RisipAccount();
@@ -102,29 +107,48 @@ public:
     PjsipAccount *pjsipAccount() const;
     void setPjsipAccountInterface(PjsipAccount *acc);
 
+    int presence() const;
+    void setPresence(int prs);
+
+    QString presenceNote() const;
+    void setPresenceNote(const QString &note);
+
     int status() const;
     QString statusText() const;
+
+    QQmlListProperty<RisipBuddy> buddies();
+    int buddiesCount(QQmlListProperty<RisipBuddy>*list);
+
+    void addBuddy(RisipBuddy *buddy);
+    void removeBuddy(RisipBuddy *buddy);
+
+    Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
 
 Q_SIGNALS:
     void configurationChanged(RisipAccountConfiguration *config);
     void sipEndPointChanged(RisipEndpoint *sipendpoint);
+    void presenceChanged(int presence);
+    void presenceNoteChanged(QString note);
     void statusChanged(int status);
     void statusTextChanged(QString);
     void incomingCall(int callId);
     void incomingMessage(RisipMessage *message);
+    void buddiesChanged(QQmlListProperty<RisipBuddy> buddies);
 
 public Q_SLOTS:
     void login();
     void logout();
-
+    void refreshBuddyList();
 
 private:
-    void setAccountStatus(int status);
+    void setStatus(int status);
 
     PjsipAccount *m_pjsipAccount;
     RisipAccountConfiguration *m_configuration;
     RisipEndpoint *m_sipEndpoint;
+    PresenceStatus m_presence;
     int m_status;
+    QHash<QString, RisipBuddy *> m_buddies;
 };
 
 #endif // RISIPACCOUNT_H

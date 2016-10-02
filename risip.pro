@@ -5,7 +5,7 @@ QT -= gui
 QT = core network qml quick quickcontrols2
 
 CONFIG -= app_bundle
-CONFIG += exceptions c++11
+CONFIG += exceptions c++11 static
 
 ### DEFINES ###
 DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
@@ -18,9 +18,9 @@ INCLUDEPATH += $$PWD/src \
 
 # this include path depends on the directory of your pjsip headers/libs
 # it could be different directory names for different platform where you put the pjsip headers
-
-INCLUDEPATH += $$PWD/pjsip/lib-desktop/include
-#INCLUDEPATH += $$PWD/pjsip/iphone-lib/include
+# e.g. Linux desktop -> pjsip/linux-desktop , Mac desktop -> pjsip/mac-desktop, Android-arm64 -> pjsip/android-arm64
+INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
+#INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
 
 
 ### SOURCE & HEADER FILES ###
@@ -54,7 +54,7 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 
 ########## LIBS ##########
 
-unix {
+linux {
 LIBS += -L$$PWD/pjsip/linux-desktop/lib \
     -lpjsua2 \
     -lpjsua \
@@ -77,7 +77,7 @@ LIBS += -L$$PWD/pjsip/linux-desktop/lib \
 }
 
 ios {
-LIBS += -L$$PWD/pjsip/iphone-lib/lib \
+LIBS += -L$$PWD/pjsip/ios-64/lib \
     -lpjsua2-arm64-apple-darwin_ios \
     -lpjsua-arm64-apple-darwin_ios \
     -lpjsip-ua-arm64-apple-darwin_ios \
@@ -99,52 +99,51 @@ LIBS += -L$$PWD/pjsip/iphone-lib/lib \
 }
 
 macx {
-LIBS += -L$$PWD/pjsip/lib-desktop/lib \
-    -lpjsua2 \
-    -lpjsua \
-    -lpjsip-ua \
-    -lpjsip-simple \
-    -lpjsip \
-#    -lpjsdp \
-    -lpjmedia \
-    -lpjmedia-audiodev \
-    -lpjmedia \
-    -lpjmedia-codec \
-    -lpj \
-    -lpjnath \
-    -lilbccodec \
-    -lgsmcodec \
-    -lspeex \
-    -lresample \
-    -lsrtp \
-    -lpjlib-util \
-    -lg7221codec \
-#    -lpjsua2-x86_64-apple-darwin15.6.0 \
-#    -lpjsua-x86_64-apple-darwin15.6.0 \
-#    -lpjsip-simple-x86_64-apple-darwin15.6.0 \
-##    -lpjsdp-x86_64-apple-darwin15.6.0 \
-#    -lpjmedia-x86_64-apple-darwin15.6.0 \
-#    -lpjsip-x86_64-apple-darwin15.6.0 \
-#    -lpjmedia-audiodev-x86_64-apple-darwin15.6.0 \
-#    -lpjsip-ua-x86_64-apple-darwin15.6.0 \
-#    -lpjnath-x86_64-apple-darwin15.6.0 \
-#    -lpjmedia-x86_64-apple-darwin15.6.0 \
-#    -lpj-x86_64-apple-darwin15.6.0 \
-#    -lpjmedia-x86_64-apple-darwin15.6.0 \
-#    -lpjmedia-codec-x86_64-apple-darwin15.6.0 \
-#    -lpjmedia-videodev-x86_64-apple-darwin15.6.0 \
-#    -lilbccodec-x86_64-apple-darwin15.6.0 \
-#    -lgsmcodec-x86_64-apple-darwin15.6.0 \
-#    -lspeex-x86_64-apple-darwin15.6.0 \
-#    -lresample-x86_64-apple-darwin15.6.0 \
-#    -lsrtp-x86_64-apple-darwin15.6.0 \
-#    -lpjlib-util-x86_64-apple-darwin15.6.0 \
-#    -lg7221codec-x86_64-apple-darwin15.6.0 \
+LIBS += -L$$PWD/pjsip/mac-desktop/lib \
+#    -lpjsua2 \
+#    -lpjsua \
+#    -lpjsip-ua \
+#    -lpjsip-simple \
+#    -lpjsip \
+##    -lpjsdp \
+#    -lpjmedia \
+#    -lpjmedia-audiodev \
+#    -lpjmedia \
+#    -lpjmedia-codec \
+#    -lpj \
+#    -lpjnath \
+#    -lilbccodec \
+#    -lgsmcodec \
+#    -lspeex \
+#    -lresample \
+#    -lsrtp \
+#    -lpjlib-util \
+#    -lg7221codec \
+    -lpjsua2-x86_64-apple-darwin15.6.0 \
+    -lpjsua-x86_64-apple-darwin15.6.0 \
+    -lpjsip-simple-x86_64-apple-darwin15.6.0 \
+#    -lpjsdp-x86_64-apple-darwin15.6.0 \
+    -lpjmedia-x86_64-apple-darwin15.6.0 \
+    -lpjsip-x86_64-apple-darwin15.6.0 \
+    -lpjmedia-audiodev-x86_64-apple-darwin15.6.0 \
+    -lpjsip-ua-x86_64-apple-darwin15.6.0 \
+    -lpjnath-x86_64-apple-darwin15.6.0 \
+    -lpjmedia-x86_64-apple-darwin15.6.0 \
+    -lpj-x86_64-apple-darwin15.6.0 \
+    -lpjmedia-x86_64-apple-darwin15.6.0 \
+    -lpjmedia-codec-x86_64-apple-darwin15.6.0 \
+    -lpjmedia-videodev-x86_64-apple-darwin15.6.0 \
+    -lilbccodec-x86_64-apple-darwin15.6.0 \
+    -lgsmcodec-x86_64-apple-darwin15.6.0 \
+    -lspeex-x86_64-apple-darwin15.6.0 \
+    -lresample-x86_64-apple-darwin15.6.0 \
+    -lsrtp-x86_64-apple-darwin15.6.0 \
+    -lpjlib-util-x86_64-apple-darwin15.6.0 \
+    -lg7221codec-x86_64-apple-darwin15.6.0 \
     -framework CoreAudio \
     -framework AudioToolbox \
     -framework AudioUnit
 }
-
 
 #win32 {
 #LIBS += -L$$PWD/pjsip/iphone-lib \

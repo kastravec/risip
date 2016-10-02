@@ -218,9 +218,10 @@ RisipMedia *RisipCall::media() const
 void RisipCall::setMedia(RisipMedia *med)
 {
     if(m_risipMedia != med) {
-        m_risipMedia->deleteLater();
-        m_risipMedia = med;
+        if(m_risipMedia)
+            m_risipMedia->deleteLater();
 
+        m_risipMedia = med;
         if(m_risipMedia) {
             m_risipMedia->setActiveCall(this);
         }

@@ -152,6 +152,12 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
     return true;
 }
 
+/**
+ * @brief RisipEndpoint::destroyActiveTransport
+ * @return true/false if transport is destoryed or not.
+ *
+ * internal function
+ */
 bool RisipEndpoint::destroyActiveTransport()
 {
     //is there an active transport?

@@ -22,6 +22,9 @@
 RisipMessage::RisipMessage(QObject *parent)
     :QObject(parent)
 {
+    m_status = Null;
+    m_messageId = -1;
+    m_direction = Unknown;
 }
 
 RisipMessage::~RisipMessage()
@@ -30,60 +33,96 @@ RisipMessage::~RisipMessage()
 
 QString RisipMessage::messageBody() const
 {
-    return m_messageBody;
+    return QString::fromStdString(m_instantMessageParam.content);
 }
 
-QString RisipMessage::contactUri() const
+void RisipMessage::setMessageBody(QString &messageBody)
 {
-    return m_contactUri;
-}
-
-QString RisipMessage::senderUri() const
-{
-    return m_senderUri;
+    //TODO comparing two std:strings or qstring ??
+    if(m_instantMessageParam.content != messageBody.toStdString()) {
+        m_instantMessageParam.content = messageBody.toStdString();
+        emit messageBodyChanged(messageBody);
+    }
 }
 
 QString RisipMessage::contentType() const
 {
-    return m_contentType;
+    return QString::fromStdString(m_instantMessageParam.contentType);
 }
 
-void RisipMessage::createMessage(const QString &messBody, const QString &contactUri, const QString senderUri, const QString &contentType)
+void RisipMessage::setContentType(QString &type)
 {
-    setMessageBody(messBody);
-    setContactUri(contactUri);
-    setSenderUri(senderUri);
-    setContentType(contentType);
-}
-
-void RisipMessage::setMessageBody(const QString &messageBody)
-{
-    if(m_messageBody != messageBody) {
-        m_messageBody = messageBody;
-        emit messageBodyChanged(m_messageBody);
+    //TODO std::string comparison ??
+    if(m_instantMessageParam.contentType != type.toStdString()) {
+        m_instantMessageParam.contentType = type.toStdString();
+        emit contentTypeChanged(type);
     }
 }
 
-void RisipMessage::setContactUri(const QString &contact)
+RisipBuddy *RisipMessage::buddy() const
 {
-    if(m_contactUri != contact) {
-        m_contactUri = contact;
-        emit contactUriChanged(m_contactUri);
+    return m_risipBuddy;
+}
+
+void RisipMessage::setBuddy(RisipBuddy *buddy)
+{
+    if(m_risipBuddy != buddy) {
+        m_risipBuddy = buddy;
+        emit buddyChanged(m_risipBuddy);
+
     }
 }
 
-void RisipMessage::setSenderUri(const QString &sender)
+int RisipMessage::status() const
 {
-    if(m_senderUri != sender) {
-        m_senderUri = sender;
-        emit senderUriChanged(m_senderUri);
+    return m_status;
+}
+
+void RisipMessage::setStatus(int st)
+{
+    if(m_status != st) {
+        m_status = st;
+        emit statusChanged(m_status);
     }
 }
 
-void RisipMessage::setContentType(const QString &type)
+int RisipMessage::direction() const
 {
-    if(m_contentType != type) {
-        m_contentType = type;
-        emit contentTypeChanged(m_contentType);
+    return m_direction;
+}
+
+void RisipMessage::setDirection(int dir)
+{
+    if(m_direction != dir) {
+        m_direction = dir;
+        emit directionChanged(m_direction);
     }
+}
+
+int RisipMessage::messageId() const
+{
+    return m_messageId;
+}
+
+void RisipMessage::setMessageId(int msg_id)
+{
+    if(m_messageId != msg_id) {
+        m_messageId = msg_id;
+        emit messageIdChanged(m_messageId);
+    }
+}
+
+void RisipMessage::setIncomingMessageParam(OnInstantMessageParam prm)
+{
+}
+
+void RisipMessage::setInstantMessageStatusParam(OnInstantMessageStatusParam)
+{
+
+}
+
+SendInstantMessageParam RisipMessage::messageParamForSend()
+{
+    m_instantMessageParam.userData = this;
+    return m_instantMessageParam;
 }

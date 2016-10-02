@@ -21,44 +21,81 @@
 #define RISIPMESSAGE_H
 
 #include <QObject>
+#include <pjsua2.hpp>
+using namespace pj;
+
+class RisipBuddy;
+class RisipAccount;
 
 class RisipMessage : public QObject
 {
     Q_OBJECT
 
 public:
-    Q_PROPERTY(QString messageBody READ messageBody NOTIFY messageBodyChanged)
-    Q_PROPERTY(QString contactUri READ contactUri NOTIFY contactUriChanged)
-    Q_PROPERTY(QString senderUri READ senderUri NOTIFY senderUriChanged)
-    Q_PROPERTY(QString contentType READ contentType NOTIFY contentTypeChanged)
+    enum Status {
+        Sent = 1,
+        Pending,
+        Failed,
+        Null = 1
+    };
+
+    enum Direction {
+        Incoming = 1,
+        Outgoing,
+        Unknown = 1
+    };
+
+    Q_ENUM(Status)
+    Q_ENUM(Direction)
+    Q_PROPERTY(QString messageBody READ messageBody WRITE setMessageBody NOTIFY messageBodyChanged)
+    Q_PROPERTY(QString contentType READ contentType WRITE setContentType NOTIFY contentTypeChanged)
+    Q_PROPERTY(RisipBuddy * buddy READ buddy NOTIFY buddyChanged)
+    Q_PROPERTY(int status READ status NOTIFY statusChanged)
+    Q_PROPERTY(int direction READ direction WRITE setDirection NOTIFY directionChanged)
+    Q_PROPERTY(int messageId READ messageId NOTIFY messageIdChanged)
 
     RisipMessage(QObject *parent = 0);
     ~RisipMessage();
 
     QString messageBody() const;
-    QString contactUri() const;
-    QString senderUri() const;
-    QString contentType() const;
+    void setMessageBody(QString &messageBody);
 
-    void createMessage(const QString &messBody, const QString &contactUri,
-                       const QString senderUri, const QString &contentType);
+    QString contentType() const;
+    void setContentType(QString &type);
+
+    RisipBuddy *buddy() const;
+    void setBuddy(RisipBuddy *buddy);
+
+    int status() const;
+    void setStatus(int st);
+
+    int direction() const;
+    void setDirection(int dir);
+
+    int messageId() const;
+    void setMessageId(int msg_id);
+
+    void setIncomingMessageParam(OnInstantMessageParam prm);
+    void setInstantMessageStatusParam(OnInstantMessageStatusParam);
+    SendInstantMessageParam messageParamForSend();
 
 Q_SIGNALS:
     void messageBodyChanged(QString &message);
-    void contactUriChanged(QString &contact);
-    void senderUriChanged(QString &sender);
     void contentTypeChanged(QString &contentType);
+    void buddyChanged(RisipBuddy *buddy);
+    void statusChanged(int status);
+    void directionChanged(int direction);
+    void messageIdChanged(int id);
 
 private:
-    void setMessageBody(const QString &messageBody);
-    void setContactUri(const QString &contact);
-    void setSenderUri(const QString &sender);
-    void setContentType(const QString &type);
+    RisipBuddy *m_risipBuddy;
+    int m_status;
+    int m_direction;
+    int m_messageId;
 
-    QString m_messageBody;
-    QString m_contactUri;
-    QString m_senderUri;
-    QString m_contentType;
+    SendInstantMessageParam m_instantMessageParam;
+    OnInstantMessageParam m_incomingMessageParam;
+    OnInstantMessageStatusParam m_instantMessageStatusParam;
 };
 
 #endif // RISIPMESSAGE_H

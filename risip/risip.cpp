@@ -28,6 +28,7 @@
 #include "risipcall.h"
 #include "risipaccountconfiguration.h"
 #include "risipmedia.h"
+#include "risipmessage.h"
 
 Risip::Risip(QObject *parent)
     :QObject (parent)
@@ -38,6 +39,7 @@ Risip::Risip(QObject *parent)
     qmlRegisterType<RisipCall>(RISIP_QML_IMPORT_URI, 1, 0, "RisipCall");
     qmlRegisterType<RisipAccountConfiguration>(RISIP_QML_IMPORT_URI, 1, 0, "RisipAccountConfiguration");
     qmlRegisterType<RisipMedia>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMedia");
+    qmlRegisterType<RisipMessage>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMessage");
 }
 
 Risip::~Risip()

@@ -22,6 +22,7 @@
 #include "risipmessage.h"
 #include "risipendpoint.h"
 #include "risipaccountconfiguration.h"
+#include "risipbuddy.h"
 
 #include <QDebug>
 
@@ -41,18 +42,18 @@ void PjsipAccount::onRegState(OnRegStateParam &prm)
     switch (accountInfo.regStatus) {
     case PJSIP_SC_OK:
         if(accountInfo.regIsActive)
-            m_risipAccount->setAccountStatus(RisipAccount::SignedIn);
+            m_risipAccount->setStatus(RisipAccount::SignedIn);
         else
-            m_risipAccount->setAccountStatus(RisipAccount::SignedOut);
+            m_risipAccount->setStatus(RisipAccount::SignedOut);
         break;
     case PJSIP_SC_TRYING:
         if(accountInfo.regIsActive)
-            m_risipAccount->setAccountStatus(RisipAccount::UnRegistering);
+            m_risipAccount->setStatus(RisipAccount::UnRegistering);
         else
-            m_risipAccount->setAccountStatus(RisipAccount::Registering);
+            m_risipAccount->setStatus(RisipAccount::Registering);
         break;
     default:
-        m_risipAccount->setAccountStatus(RisipAccount::AccountError);
+        m_risipAccount->setStatus(RisipAccount::AccountError);
         break;
     }
 }
@@ -60,9 +61,9 @@ void PjsipAccount::onRegState(OnRegStateParam &prm)
 void PjsipAccount::onRegStarted(OnRegStartedParam &prm)
 {
     if(prm.renew)
-        m_risipAccount->setAccountStatus(RisipAccount::Registering);
+        m_risipAccount->setStatus(RisipAccount::Registering);
     else
-        m_risipAccount->setAccountStatus(RisipAccount::UnRegistering);
+        m_risipAccount->setStatus(RisipAccount::UnRegistering);
 }
 
 /**
@@ -83,21 +84,31 @@ void PjsipAccount::onIncomingSubscribe(OnIncomingSubscribeParam &prm)
 
 void PjsipAccount::onInstantMessage(OnInstantMessageParam &prm)
 {
+    //creating the account if needed or simply reuse it
+    RisipBuddy *buddy = m_risipAccount->findBuddy(QString::fromStdString(prm.fromUri));
+    if(!buddy) {
+        buddy = new RisipBuddy;
+        buddy->setAccount(m_risipAccount);
+        buddy->setUri(QString::fromStdString(prm.fromUri));
+        m_risipAccount->addBuddy(buddy); //add new buddy to pjsip always
+    }
+
+    //constructing a risip message to be passed around
     RisipMessage *message = new RisipMessage;
-
-    qDebug()<< QString::fromStdString(prm.rdata.wholeMsg);
-
-    message->createMessage(QString::fromStdString(prm.msgBody),
-                           QString::fromStdString(prm.contactUri),
-                           QString::fromStdString(prm.fromUri),
-                           QString::fromStdString(prm.contentType));
-
+    message->setDirection(RisipMessage::Incoming);
+    QString msgBody = QString::fromStdString(prm.msgBody);
+    QString contenttype = QString::fromStdString(prm.contentType);
+    message->setMessageBody(msgBody);
+    message->setContentType(contenttype);
+    message->setBuddy(buddy);
     m_risipAccount->incomingMessage(message);
 }
 
 void PjsipAccount::onInstantMessageStatus(OnInstantMessageStatusParam &prm)
 {
-    Q_UNUSED(prm)
+    RisipBuddy *buddy = m_risipAccount->findBuddy(QString::fromStdString(prm.toUri));
+    if(buddy)
+        buddy->updateMessageStatus( (RisipMessage*)prm.userData, prm.code);
 }
 
 void PjsipAccount::onTypingIndication(OnTypingIndicationParam &prm)
@@ -114,7 +125,6 @@ void PjsipAccount::setRisipInterface(RisipAccount *acc)
 {
     m_risipAccount = acc;
 }
-
 
 /**
  * @brief RisipAccount::RisipAccount
@@ -150,7 +160,7 @@ void RisipAccount::setConfiguration(RisipAccountConfiguration *config)
     if(m_configuration != config) {
         m_configuration = config;
         if(m_configuration != NULL) {
-            setAccountStatus(NotCreated);
+            setStatus(NotCreated);
             config->setParent(this);
         }
         emit configurationChanged(m_configuration);
@@ -196,6 +206,41 @@ QString RisipAccount::statusText() const
     return QString();
 }
 
+QQmlListProperty<RisipBuddy> RisipAccount::buddies()
+{
+    QList<RisipBuddy *> allBuddies = m_buddies.values();
+    return QQmlListProperty<RisipBuddy>(this, allBuddies);
+}
+
+void RisipAccount::addBuddy(RisipBuddy *buddy)
+{
+    if(buddy) {
+        if(!m_buddies.contains(buddy->uri())) {
+            m_buddies[buddy->uri()] = buddy;
+            emit buddiesChanged(buddies());
+        }
+    }
+}
+
+void RisipAccount::removeBuddy(RisipBuddy *buddy)
+{
+    if(buddy) {
+        if(m_buddies.contains(buddy->uri())) {
+            m_buddies.remove(buddy->uri());
+            buddy->deleteLater();
+            emit buddiesChanged(buddies());
+        }
+    }
+}
+
+RisipBuddy *RisipAccount::findBuddy(const QString &uri)
+{
+    if(m_buddies.contains(uri))
+        return m_buddies[uri];
+
+    return 0;
+}
+
 PjsipAccount *RisipAccount::pjsipAccount() const
 {
     return m_pjsipAccount;
@@ -204,6 +249,88 @@ PjsipAccount *RisipAccount::pjsipAccount() const
 void RisipAccount::setPjsipAccountInterface(PjsipAccount *acc)
 {
     m_pjsipAccount = acc;
+}
+
+int RisipAccount::presence() const
+{
+    if(m_pjsipAccount != NULL
+            && (status() == SignedIn || status() == SignedOut)) {
+
+        switch (m_presence.activity) {
+        case PJRPID_ACTIVITY_AWAY:
+            return RisipBuddy::Away;
+        case PJRPID_ACTIVITY_BUSY:
+            return RisipBuddy::Busy;
+        }
+
+        if(m_pjsipAccount->getInfo().onlineStatus)
+            return RisipBuddy::Online;
+        else
+            return RisipBuddy::Offline;
+    }
+
+    return RisipBuddy::Unknown;
+}
+
+void RisipAccount::setPresence(int prs)
+{
+    if(m_pjsipAccount == NULL)
+        return;
+
+    switch (prs) {
+    case RisipBuddy::Online:
+        if(m_presence.status != PJSUA_BUDDY_STATUS_ONLINE) {
+            m_presence.status = PJSUA_BUDDY_STATUS_ONLINE;
+            emit presenceChanged(presence());
+        }
+        break;
+    case RisipBuddy::Offline:
+        if(m_presence.status != PJSUA_BUDDY_STATUS_OFFLINE) {
+            m_presence.status = PJSUA_BUDDY_STATUS_OFFLINE;
+            emit presenceChanged(presence());
+        }
+        break;
+    case RisipBuddy::Away:
+        if(m_presence.activity != PJRPID_ACTIVITY_AWAY) {
+            m_presence.activity = PJRPID_ACTIVITY_AWAY;
+            emit presenceChanged(presence());
+        }
+        break;
+    case RisipBuddy::Busy:
+        if(m_presence.activity != PJRPID_ACTIVITY_BUSY) {
+            m_presence.activity = PJRPID_ACTIVITY_BUSY;
+            emit presenceChanged(presence());
+        }
+        break;
+    }
+
+    try {
+        m_pjsipAccount->setOnlineStatus(m_presence);
+    } catch (Error &err) {
+        qDebug()<<"Error setting the presence for the account!" << QString::fromStdString( err.info(true) );
+    }
+}
+
+QString RisipAccount::presenceNote() const
+{
+    if(m_pjsipAccount != NULL)
+        return QString::fromStdString(m_presence.note);
+
+    return QString();
+}
+
+void RisipAccount::setPresenceNote(const QString &note)
+{
+    if(QString::fromStdString(m_presence.note) != note) {
+        m_presence.note = note.toStdString();
+        emit presenceNoteChanged(note);
+
+        try {
+            m_pjsipAccount->setOnlineStatus(m_presence);
+        } catch (Error &err) {
+            qDebug()<<"Error setting presence notes for the account!" << QString::fromStdString( err.info(true) );
+        }
+    }
 }
 
 /**
@@ -230,15 +357,16 @@ void RisipAccount::login()
        m_configuration->setTransportId(m_sipEndpoint->activeTransportId());
 
        // Create the account
-        try {
-            m_pjsipAccount = new PjsipAccount;
-            m_pjsipAccount->setRisipInterface(this);
+       m_pjsipAccount = new PjsipAccount;
+       m_pjsipAccount->setRisipInterface(this);
+       try {
             m_pjsipAccount->create(m_configuration->pjsipAccountConfig());
-            setAccountStatus(Registering);
         } catch(Error& err) {
-            setAccountStatus(AccountError);
+            setStatus(AccountError);
             qDebug() << "Account creation error: " << err.info().c_str() << endl;
         }
+       //updating status
+       setStatus(Registering);
     }
 }
 
@@ -248,27 +376,28 @@ void RisipAccount::logout()
         try {
             m_pjsipAccount->setRegistration(false);
         } catch(Error& err) {
-            setAccountStatus(AccountError);
+            setStatus(AccountError);
             qDebug() << "Unregister error: " << err.info().c_str() << endl;
         }
     }
 }
 
 /**
- * @brief RisipAccount::setAccountStatus
+ * @brief RisipAccount::setStatus
  * @param status
  *
  * If the status is NotCreated, SignedOut and AccountError then this function
- * deletes the internal pjsipAccount object and active network transport.
+ * deletes the internal pjsipAccount object and the active network transport object.
+ *
+ * If the status is SignedIn then the buddy list is updated.
  */
-void RisipAccount::setAccountStatus(int status)
+void RisipAccount::setStatus(int status)
 {
     if(m_status != status) {
         m_status = status;
-        emit statusChanged(m_status);
-        emit statusTextChanged(statusText());
 
         //delete internal pjsipaccount object when not needed.
+        //update buddy list when account is ready
         switch (m_status) {
         case SignedOut:
         case NotCreated:
@@ -289,7 +418,35 @@ void RisipAccount::setAccountStatus(int status)
         default:
             break;
         }
+
+        emit statusChanged(m_status);
+        emit statusTextChanged(statusText());
     }
+}
+
+void RisipAccount::refreshBuddyList()
+{
+    if(m_pjsipAccount == NULL)
+        return;
+
+    for(int i=0; i<m_buddies.keys().count(); ++i)
+        m_buddies.take(m_buddies.keys()[i])->deleteLater();
+
+    BuddyVector buddiesVector;
+    try {
+        buddiesVector = m_pjsipAccount->enumBuddies();
+    } catch (Error &err) {
+        qDebug()<<"Buddies cannot be retrieved " << QString::fromStdString(err.info(true));
+    }
+
+    RisipBuddy *risipBuddy;
+    for(int i=0; i<buddiesVector.size(); ++i) {
+        risipBuddy = new RisipBuddy;
+        risipBuddy->setPjsipBuddy( static_cast<PjsipBuddy*>(buddiesVector[i]) );
+        m_buddies[risipBuddy->uri()] = risipBuddy;
+    }
+
+    emit buddiesChanged(buddies());
 }
 
 
