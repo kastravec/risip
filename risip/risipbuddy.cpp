@@ -48,13 +48,10 @@ RisipBuddy::RisipBuddy(QObject *parent)
 {
     //always subscribe to the buddy presence
     m_buddyConfig.subscribe = true;
-
 }
 
 RisipBuddy::~RisipBuddy()
 {
-    //TODO deleting all pending messages ? or move them to another list?
-    releaseFailedPendingMessages();
 }
 
 RisipAccount *RisipBuddy::account() const
@@ -84,16 +81,6 @@ void RisipBuddy::setUri(QString contactUri)
     }
 }
 
-QQmlListProperty<RisipMessage> RisipBuddy::messagesDeliveryPending()
-{
-    return QQmlListProperty<RisipMessage> (this, m_messagesDeliveryPending);
-}
-
-QQmlListProperty<RisipMessage> RisipBuddy::messagesDeliveryFailed()
-{
-    return QQmlListProperty<RisipMessage> (this, m_messagesDeliveryFailed);
-}
-
 PjsipBuddy *RisipBuddy::pjsipBuddy() const
 {
     return m_pjsipBuddy;
@@ -110,47 +97,6 @@ void RisipBuddy::setPjsipBuddy(PjsipBuddy *buddy)
     m_pjsipBuddy = buddy;
     m_pjsipBuddy->setRisipBuddyInterface(this);
     m_buddyConfig.uri = buddy->getInfo().uri;
-
-    //delete any existing pending and failed messages
-    releaseFailedPendingMessages();
-}
-
-/**
- * @brief RisipBuddy::updateMessageStatus
- * @param message risip message object that has a status update with statusCode
- * @param statusCode the new status of the message
- *
- * Internal function. Do not use.
- */
-void RisipBuddy::updateMessageStatus(RisipMessage *message, int statusCode)
-{
-    if(m_messagesDeliveryPending.contains(message)) {
-        switch (statusCode) {
-        case PJSIP_SC_OK:
-        case PJSIP_SC_ACCEPTED:
-            message->setStatus(RisipMessage::Sent);
-            qDebug()<<"Message delivered: " <<message->messageBody();
-            m_messagesDeliveryPending.removeAll(message);
-            emit messagesDeliveryPendingChanged();
-            return;
-        }
-
-        message->setStatus(RisipMessage::Failed);
-        m_messagesDeliveryPending.removeAll(message);
-        m_messagesDeliveryFailed.append(message);
-
-        emit messagesDeliveryFailedChanged();
-        emit messagesDeliveryPendingChanged();
-    }
-}
-
-void RisipBuddy::releaseFailedPendingMessages()
-{
-    while (!m_messagesDeliveryFailed.isEmpty())
-        m_messagesDeliveryFailed.takeFirst()->deleteLater();
-
-    while (!m_messagesDeliveryPending.isEmpty())
-        m_messagesDeliveryPending.takeFirst()->deleteLater();
 }
 
 void RisipBuddy::addToList()
@@ -178,8 +124,6 @@ void RisipBuddy::addToList()
     if(m_account) {
         m_account->addBuddy(this);
     }
-
-    releaseFailedPendingMessages();
 }
 
 /**
@@ -194,51 +138,56 @@ void RisipBuddy::release()
 
     if(m_pjsipBuddy != NULL)
         delete m_pjsipBuddy;
-
-    releaseFailedPendingMessages();
 }
 
 RisipMessage *RisipBuddy::sendInstantMessage(QString message)
 {
-    if(m_account == NULL
-            || m_pjsipBuddy == NULL)
+    if(m_pjsipBuddy == NULL
+            || m_account == NULL)
         return new RisipMessage();
 
-    RisipMessage *risipMessage = new RisipMessage;
-    risipMessage->setBuddy(this);
-    risipMessage->setMessageBody(message);
-    risipMessage->setStatus(RisipMessage::Pending);
-    risipMessage->setDirection(RisipMessage::Outgoing);
+    if(m_account->status() == RisipAccount::SignedIn) {
+        RisipMessage *risipMessage = new RisipMessage;
+        risipMessage->setBuddy(this);
+        risipMessage->setMessageBody(message);
+        risipMessage->setStatus(RisipMessage::Pending);
+        risipMessage->setDirection(RisipMessage::Outgoing);
 
-    qDebug()<<"Sending message: " <<message;
+        qDebug()<<"Sending message: " <<message;
 
-    try {
-        m_pjsipBuddy->sendInstantMessage(risipMessage->messageParamForSend());
-    } catch (Error &err) {
-        qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
+        try {
+            m_pjsipBuddy->sendInstantMessage(risipMessage->messageParamForSend());
+        } catch (Error &err) {
+            qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
+        }
+
+        return risipMessage;
     }
 
-    m_messagesDeliveryPending.append(risipMessage);
-    emit messagesDeliveryPendingChanged();
-
-    return risipMessage;
+    return new RisipMessage();
 }
 
 void RisipBuddy::sendInstantMessage(RisipMessage *message)
 {
-    message->setBuddy(this);
-    try {
-        m_pjsipBuddy->sendInstantMessage(message->messageParamForSend());
-    } catch (Error &err) {
-        qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
-    }
+    if(m_pjsipBuddy == NULL
+            || m_account == NULL)
+        return;
 
-    m_messagesDeliveryPending.append(message);
+    if(m_account->status() == RisipAccount::SignedIn) {
+        message->setBuddy(this);
+        message->setStatus(RisipMessage::Pending);
+        try {
+            m_pjsipBuddy->sendInstantMessage(message->messageParamForSend());
+        } catch (Error &err) {
+            qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
+        }
+    }
 }
 
 int RisipBuddy::presence() const
 {
-    if(m_pjsipBuddy == NULL)
+    if(m_pjsipBuddy == NULL
+            || m_account == NULL)
         return Null;
 
     switch (m_pjsipBuddy->getInfo().presStatus.status) {

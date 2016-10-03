@@ -28,6 +28,15 @@ import Risip 1.0
 Item {
     id: root
 
+    property RisipMessage msg
+
+    Connections {
+        target: msg
+        onStatusChanged: {
+            console.log("message status after: " + msg.status);
+        }
+    }
+
     SplashScreen {
         id: splashScreen
         onTimeout: mainWindow.visible = true
@@ -125,13 +134,14 @@ Item {
                 Button {
                     text: "Send test IM"
                     onClicked: {
-                        myBuddy.sendInstantMessage("uiiiii");
+                        msg = myBuddy.sendInstantMessage("uiiiii");
+                        console.log("message status before : " + msg.status);
                     }
                 }
             }
         }
 
-        // ====== Application Logic ======
+        // ====== Application Logic  using the Risip APIs ======
 
         //endpoint represents the SIP/Voip client / in practice a pjsip library instance
         RisipEndpoint {
@@ -186,9 +196,6 @@ Item {
             id: myBuddy
             uri: "sip:toptop@sip2sip.info"
             account: myAccount;
-            onMessagesDeliveryPendingChanged: {
-                console.log("Pending messages: " + myBuddy.messagesDeliveryPending.size)
-            }
         }
 
         //account details/settings, in order to login.
@@ -200,8 +207,8 @@ Item {
             password: passwordInput.text
             serverAddress: "sip2sip.info" //free sip server
             proxyServer: "proxy.sipthor.net" //always use proxy to be sure for connectivity
-            randomLocalPort: false
-            localPort: 5060
+            randomLocalPort: true //false
+//            localPort: 5060
             networkProtocol: RisipAccountConfiguration.UDP
         }
     }

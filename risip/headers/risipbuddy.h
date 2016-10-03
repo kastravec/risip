@@ -37,7 +37,6 @@ public:
     ~PjsipBuddy();
 
     void onBuddyState();
-
     void setRisipBuddyInterface(RisipBuddy *risipBuddy);
 
 private:
@@ -61,8 +60,6 @@ public:
     Q_PROPERTY(int presence READ presence NOTIFY presenceChanged)
     Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
-    Q_PROPERTY(QQmlListProperty<RisipMessage> messagesDeliveryPending READ messagesDeliveryPending NOTIFY messagesDeliveryPendingChanged)
-    Q_PROPERTY(QQmlListProperty<RisipMessage> messagesDeliveryFailed READ messagesDeliveryFailed NOTIFY messagesDeliveryFailedChanged)
 
     RisipBuddy(QObject *parent = 0);
     ~RisipBuddy();
@@ -75,14 +72,8 @@ public:
     QString uri() const;
     void setUri(QString contactUri);
 
-    QQmlListProperty<RisipMessage> messagesDeliveryPending();
-    QQmlListProperty<RisipMessage> messagesDeliveryFailed();
-
     PjsipBuddy *pjsipBuddy() const;
     void setPjsipBuddy(PjsipBuddy *buddy);
-
-    void updateMessageStatus(RisipMessage *message, int statusCode);
-    void releaseFailedPendingMessages();
 
 public Q_SLOTS:
     void addToList();
@@ -94,15 +85,11 @@ Q_SIGNALS:
     void presenceChanged(int presence);
     void accountChanged(RisipAccount *account);
     void uriChanged(QString &uri);
-    void messagesDeliveryPendingChanged();
-    void messagesDeliveryFailedChanged();
 
 private:
     PjsipBuddy *m_pjsipBuddy;
     RisipAccount *m_account;
     BuddyConfig m_buddyConfig;
-    QList<RisipMessage *> m_messagesDeliveryPending;
-    QList<RisipMessage *> m_messagesDeliveryFailed;
 };
 
 #endif // RISIPBUDDY_H

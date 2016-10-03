@@ -95,20 +95,29 @@ void PjsipAccount::onInstantMessage(OnInstantMessageParam &prm)
 
     //constructing a risip message to be passed around
     RisipMessage *message = new RisipMessage;
+    message->setBuddy(buddy);
     message->setDirection(RisipMessage::Incoming);
     QString msgBody = QString::fromStdString(prm.msgBody);
     QString contenttype = QString::fromStdString(prm.contentType);
     message->setMessageBody(msgBody);
     message->setContentType(contenttype);
-    message->setBuddy(buddy);
+
     m_risipAccount->incomingMessage(message);
 }
 
 void PjsipAccount::onInstantMessageStatus(OnInstantMessageStatusParam &prm)
 {
-    RisipBuddy *buddy = m_risipAccount->findBuddy(QString::fromStdString(prm.toUri));
-    if(buddy)
-        buddy->updateMessageStatus( (RisipMessage*)prm.userData, prm.code);
+    RisipMessage *message = static_cast<RisipMessage *>(prm.userData);
+    switch (prm.code) {
+    case PJSIP_SC_OK:
+    case PJSIP_SC_ACCEPTED:
+        message->setStatus(RisipMessage::Sent);
+        qDebug()<<"Message delivered: " <<message->messageBody();
+        break;
+    default:
+        message->setStatus(RisipMessage::Failed);
+        break;
+    }
 }
 
 void PjsipAccount::onTypingIndication(OnTypingIndicationParam &prm)
@@ -116,6 +125,7 @@ void PjsipAccount::onTypingIndication(OnTypingIndicationParam &prm)
     Q_UNUSED(prm)
 }
 
+//buddy subscribe / notify callbacks
 void PjsipAccount::onMwiInfo(OnMwiInfoParam &prm)
 {
     Q_UNUSED(prm)
@@ -389,7 +399,6 @@ void RisipAccount::logout()
  * If the status is NotCreated, SignedOut and AccountError then this function
  * deletes the internal pjsipAccount object and the active network transport object.
  *
- * If the status is SignedIn then the buddy list is updated.
  */
 void RisipAccount::setStatus(int status)
 {
