@@ -13,18 +13,20 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
-**
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 ************************************************************************************/
 
 #ifndef RISIPCALL_H
 #define RISIPCALL_H
+
+#include <QDateTime>
 
 #include "risipaccount.h"
 using namespace pj;
 
 class RisipMedia;
 class RisipCall;
+class RisipBuddy;
 
 class PjsipCall: public Call
 {
@@ -72,23 +74,35 @@ public:
         Undefined = -1
     };
 
+    enum CallDirection {
+        Incoming = 1,
+        Outgoing,
+        Missed,
+        Unknown = -1
+    };
+
     enum Status {
-        Calling = 1,
-        Connecting,
-        Confirmed,
-        Disconnected,
-        Early,
-        Incoming,
+        OutgoingCallStarted = 1,
+        IncomingCallStarted,
+        ConnectingToCall,
+        CallConfirmed,
+        CallDisconnected,
+        CallEarly,
         Null
     };
 
     Q_ENUM(CallType)
+    Q_ENUM(CallDirection)
     Q_ENUM(Status)
-    Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
-    Q_PROPERTY(RisipMedia * media READ media NOTIFY mediaChanged)
     Q_PROPERTY(int callType READ callType WRITE setCallType NOTIFY callTypeChanged)
-    Q_PROPERTY(int callId READ callId WRITE setCallId NOTIFY callIdChanged)
+    Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
+    Q_PROPERTY(RisipBuddy * buddy READ buddy WRITE setBuddy NOTIFY buddyChanged)
+    Q_PROPERTY(RisipMedia * media READ media NOTIFY mediaChanged)
+    Q_PROPERTY(int callId READ callId NOTIFY callIdChanged)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QDateTime timestamp READ timestamp NOTIFY timestampChanged)
+    Q_PROPERTY(int callDirection READ callDirection NOTIFY callDirectionChanged)
+    Q_PROPERTY(int callDuration READ callDuration NOTIFY callDurationChanged)
 
     RisipCall(QObject *parent = 0);
     ~RisipCall();
@@ -96,15 +110,23 @@ public:
     RisipAccount *account() const;
     void setAccount(RisipAccount *acc);
 
-    RisipMedia *media() const;
+    RisipBuddy *buddy() const;
+    void setBuddy(RisipBuddy *buddy);
 
     int callType() const;
     void setCallType(int type);
 
+    RisipMedia *media() const;
     int callId() const;
-    void setCallId(int id);
-
     int status() const;
+
+    QDateTime timestamp() const;
+    void createTimestamp();
+
+    int callDirection() const;
+    void setCallDirection(int direction);
+
+    int callDuration() const;
 
     void setPjsipCall(PjsipCall *call);
     PjsipCall *pjsipCall() const;
@@ -112,30 +134,30 @@ public:
 public Q_SLOTS:
     void answer();
     void hangup();
-    void makeCall(const QString &contact);
-
-private Q_SLOTS:
-    void incomingCall(int callId);
+    void call();
 
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);
+    void buddyChanged(RisipBuddy *buddy);
     void mediaChanged(RisipMedia *media);
     void callIdChanged(int callId);
     void callTypeChanged(int type);
     void statusChanged(int status);
-    void incomingCall();
+    void timestampChanged(QDateTime timestamp);
+    void callDirectionChanged(int direction);
+    void callDurationChanged(int duration);
 
 private:
-    void setStatus(int status);
     void initializeMediaHandler();
     void setMedia(RisipMedia *med);
 
     RisipAccount *m_account;
+    RisipBuddy *m_buddy;
     RisipMedia *m_risipMedia;
     PjsipCall *m_pjsipCall;
     int m_callType;
-    int m_status;
-    int m_callId;
+    QDateTime m_timestamp;
+    int m_callDirection;
 };
 
 #endif // RISIPCALL_H

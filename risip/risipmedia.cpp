@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -25,8 +25,14 @@
 
 RisipMedia::RisipMedia(QObject *parent)
     :QObject(parent)
+    ,m_pjsipMediaManager(NULL)
+    ,m_callMedia(NULL)
+    ,m_localMedia(NULL)
+    ,m_playbackDeviceMedia(NULL)
+    ,m_activeCall(NULL)
+    ,m_sipEndpoint(NULL)
+    ,m_keepMediaSettings(true)
 {
-    m_keepMediaSettings = true;
 }
 
 RisipMedia::~RisipMedia()
@@ -99,7 +105,10 @@ void RisipMedia::setActiveCall(RisipCall *call)
 
 int RisipMedia::speakerVolume() const
 {
-    return m_pjsipMediaManager->getOutputVolume();
+    if(m_pjsipMediaManager)
+        return m_pjsipMediaManager->getOutputVolume();
+
+    return -1;
 }
 
 /**
@@ -108,15 +117,18 @@ int RisipMedia::speakerVolume() const
  */
 void RisipMedia::setSpeakerVolume(int volume)
 {
-    if(m_pjsipMediaManager->getOutputVolume() != volume) {
-        m_pjsipMediaManager->setOutputVolume(volume, m_keepMediaSettings);
-        emit speakerVolumeChanged(volume);
+    if(m_pjsipMediaManager) {
+        if(m_pjsipMediaManager->getOutputVolume() != volume) {
+            m_pjsipMediaManager->setOutputVolume(volume, m_keepMediaSettings);
+            emit speakerVolumeChanged(volume);
+        }
     }
 }
 
 int RisipMedia::micVolume() const
 {
-    return m_pjsipMediaManager->getInputVolume();
+    if(m_pjsipMediaManager)
+        return m_pjsipMediaManager->getInputVolume();
 }
 
 /**
@@ -125,9 +137,11 @@ int RisipMedia::micVolume() const
  */
 void RisipMedia::setMicVolume(int volume)
 {
-    if(m_pjsipMediaManager->getInputVolume() != volume) {
-        m_pjsipMediaManager->setInputVolume(volume, m_keepMediaSettings);
-        emit micVolumeChanged(volume);
+    if(m_pjsipMediaManager) {
+        if(m_pjsipMediaManager->getInputVolume() != volume) {
+            m_pjsipMediaManager->setInputVolume(volume, m_keepMediaSettings);
+            emit micVolumeChanged(volume);
+        }
     }
 }
 

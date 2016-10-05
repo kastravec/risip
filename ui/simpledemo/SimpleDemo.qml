@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -28,24 +28,19 @@ import Risip 1.0
 Item {
     id: root
 
-    property RisipMessage msg
-
-    Connections {
-        target: msg
-        onStatusChanged: {
-            console.log("message status after: " + msg.status);
-        }
-    }
+    property RisipCall incomingCall
+    property RisipCall outgoingCall
 
     SplashScreen {
         id: splashScreen
         onTimeout: mainWindow.visible = true
     }
 
+    // ===== UI PART ====
+
     MainWindow {
         id: mainWindow
 
-        // ===== UI PART ====
         ColumnLayout {
             anchors.centerIn: mainWindow.contentItem
 
@@ -53,7 +48,7 @@ Item {
 
             TextField {
                 id: userNameInput
-                placeholderText: "Username"
+                placeholderText: "Username";
                 text: "topatop"
             }
 
@@ -76,9 +71,7 @@ Item {
             }
 
             Button {
-                id: registerButton
                 text: qsTr("Register")
-
                 onClicked: {
                     if(myEndpoint.status === RisipEndpoint.Started)
                         myAccount.login();
@@ -86,9 +79,7 @@ Item {
             }
 
             Button {
-                id: unregisterButton
                 text: qsTr("Unregister")
-
                 onClicked: { myAccount.logout(); }
             }
 
@@ -104,13 +95,13 @@ Item {
 
             RowLayout {
                 TextField {
-                    id: calleeURI
+                    id: conctactUriInput
                     placeholderText: "sip account to call"
                 }
 
                 Button {
                     text: "Call"
-                    onClicked: { myCall.makeCall(calleeURI.text); }
+                    onClicked: { root.outgoingCall = myBuddy.call(); }
                 }
 
                 Button {
@@ -119,8 +110,8 @@ Item {
                     enabled: false
 
                     onClicked: {
-                        console.log("Call status: " + myCall.status)
-                        myCall.answer();
+                        console.log("Call status: " + incomingCall.status)
+                        incomingCall.answer();
                         answerButton.highlighted = false;
                         answerButton.enabled = false;
                     }
@@ -128,7 +119,9 @@ Item {
 
                 Button {
                     text: "End"
-                    onClicked: { myCall.hangup(); answerButton.highlighted = false; answerButton.enabled = false; }
+                    onClicked: {
+                        outgoingCall.hangup(); incomingCall.hangup();
+                        answerButton.highlighted = false; answerButton.enabled = false; }
                 }
 
                 Button {
@@ -139,78 +132,83 @@ Item {
                     }
                 }
             }
-        }
 
-        // ====== Application Logic  using the Risip APIs ======
+            Label { text: "Call History: " }
 
-        //endpoint represents the SIP/Voip client / in practice a pjsip library instance
-        RisipEndpoint {
-            id: myEndpoint
-            Component.onCompleted: { myEndpoint.startEngine(); }
-        }
-
-        //risipaccount is a SIP account/user that is logged in and can chat, make/receive calls
-        RisipAccount {
-            id: myAccount
-
-            //associating the account with the pjsip endpoint/library instance
-            sipEndPoint: myEndpoint
-
-            //status is a property of the account that represent the state of it
-            onStatusChanged: {
-                switch (status) {
-                case RisipAccount.SignedIn:
-                    console.log("Logged in!")
-                    myAccount.presence = RisipBuddy.Online
-                    myBuddy.addToList();
-                    break;
-                case RisipAccount.SignedOut:
-                    console.log("Logged out!")
-                    break;
-                case RisipAccount.NotConfigured:
-                    console.log("Account details/setting missing? !")
-                    break;
-                case RisipAccount.AccountError:
-                    console.log("Some error..better restart!")
-                    break;
-                }
+            CallHistoryListView {
+                id: callHistoryList
+                model: myAccount.callHistoryModel
             }
-
-            onIncomingMessage: {
-                console.log("incoming message: from: "
-                            + message.buddy.uri
-                            + ""+ message.messageBody) ;
-            }
-        }
-
-        RisipCall {
-            id: myCall
-            account: myAccount
-            onIncomingCall: {
-                answerButton.enabled = true;
-                answerButton.highlighted = true;
-            }
-        }
-
-        RisipBuddy {
-            id: myBuddy
-            uri: "sip:toptop@sip2sip.info"
-            account: myAccount;
-        }
-
-        //account details/settings, in order to login.
-        RisipAccountConfiguration {
-            id: myAccountConfiguration
-            account: myAccount
-            scheme: "digest"
-            userName: userNameInput.text
-            password: passwordInput.text
-            serverAddress: "sip2sip.info" //free sip server
-            proxyServer: "proxy.sipthor.net" //always use proxy to be sure for connectivity
-            randomLocalPort: true //false
-//            localPort: 5060
-            networkProtocol: RisipAccountConfiguration.UDP
         }
     }
+    // ====== Application Logic  using the Risip APIs ======
+
+    //endpoint represents the SIP/Voip client / in practice a pjsip library instance
+    RisipEndpoint {
+        id: myEndpoint
+        Component.onCompleted: { myEndpoint.startEngine(); }
+    }
+
+    //risipaccount is a SIP account/user that is logged in and can chat, make/receive calls
+    RisipAccount {
+        id: myAccount
+
+        //associating the account with the pjsip endpoint/library instance
+        sipEndPoint: myEndpoint
+
+        //status is a property of the account that represent the state of it
+        onStatusChanged: {
+            switch (status) {
+            case RisipAccount.SignedIn:
+                console.log("Logged in!")
+                myAccount.presence = RisipBuddy.Online
+                myBuddy.addToList();
+                break;
+            case RisipAccount.SignedOut:
+                console.log("Logged out!")
+                break;
+            case RisipAccount.NotConfigured:
+                console.log("Account details/setting missing? !")
+                break;
+            case RisipAccount.AccountError:
+                console.log("Some error..better restart!")
+                break;
+            }
+        }
+
+        onIncomingCall: {
+            answerButton.enabled = true;
+            answerButton.highlighted = true;
+            root.incomingCall = call;
+        }
+
+        onIncomingMessage: {
+            console.log("incoming message: from: "
+                        + message.buddy.uri
+                        + ""+ message.messageBody) ;
+        }
+    }
+
+    //a simple sip contact (within same sip sip2sip.info server)
+    RisipBuddy {
+        id: myBuddy
+        uri: "<sip:toptop@sip2sip.info>"
+        account: myAccount;
+    }
+
+    //account details/settings, in order to login.
+    RisipAccountConfiguration {
+        id: myAccountConfiguration
+        account: myAccount
+        scheme: "digest"
+        userName: userNameInput.text
+        password: passwordInput.text
+        serverAddress: serverAddressInput.text.trim(); //"sip2sip.info" free sip server
+        proxyServer: proxyInput.text.trim(); //"proxy.sipthor.net" //always use proxy to be sure for connectivity
+        randomLocalPort: true //false
+        //            localPort: 5060
+        networkProtocol: RisipAccountConfiguration.UDP
+    }
 }
+
 //"88.198.93.189"

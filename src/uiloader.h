@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -28,7 +28,7 @@ class UiLoaderInfo : public QObject
 {
     Q_OBJECT
 public:
-    UiLoaderInfo();
+    UiLoaderInfo(QObject *parent = 0);
     ~UiLoaderInfo();
 };
 
@@ -48,6 +48,7 @@ public:
         Android_Tablet,
         Android_Watch,
         Windows,
+        WindowRT,
         Windows_Phone,
         Windows_Tablet,
         Windows_Desktop,

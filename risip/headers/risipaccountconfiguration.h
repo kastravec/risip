@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -108,7 +108,10 @@ public:
     void setCodecPriority(Codecs codecId, int priority);
 
     AccountConfig pjsipAccountConfig();
+    void setPjsipAccountConfig(AccountConfig pjsipConfig);
+
     TransportConfig pjsipTransportConfig();
+    void setPjsipTransportConfig(TransportConfig pjsipConfig);
 
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);

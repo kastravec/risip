@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -162,7 +162,7 @@ void RisipAccountConfiguration::setNetworkProtocol(int protocol)
 
 int RisipAccountConfiguration::localPort() const
 {
-    return m_transportConfiguration.port;
+    return (int)m_transportConfiguration.port;
 }
 
 /**
@@ -256,8 +256,12 @@ AccountConfig RisipAccountConfiguration::pjsipAccountConfig()
 
     m_accountConfig.callConfig.timerMinSESec = 1200;
     m_accountConfig.callConfig.timerSessExpiresSec = 22000;
-
     return m_accountConfig;
+}
+
+void RisipAccountConfiguration::setPjsipAccountConfig(AccountConfig pjsipConfig)
+{
+    m_accountConfig = pjsipConfig;
 }
 
 TransportConfig RisipAccountConfiguration::pjsipTransportConfig()
@@ -268,4 +272,9 @@ TransportConfig RisipAccountConfiguration::pjsipTransportConfig()
         m_transportConfiguration.port = 0;
 
     return m_transportConfiguration;
+}
+
+void RisipAccountConfiguration::setPjsipTransportConfig(TransportConfig pjsipConfig)
+{
+    m_transportConfiguration = pjsipConfig;
 }

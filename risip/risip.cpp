@@ -15,7 +15,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -29,10 +29,12 @@
 #include "risipaccountconfiguration.h"
 #include "risipmedia.h"
 #include "risipmessage.h"
+#include "risipcallhistorymodel.h"
 
 Risip::Risip(QObject *parent)
     :QObject (parent)
 {
+//    qmlRegisterType<RisipEndpoint>(RISIP_QML_IMPORT_URI, 1, 0, "Risip");
     qmlRegisterType<RisipEndpoint>(RISIP_QML_IMPORT_URI, 1, 0, "RisipEndpoint");
     qmlRegisterType<RisipAccount>(RISIP_QML_IMPORT_URI, 1, 0, "RisipAccount");
     qmlRegisterType<RisipBuddy>(RISIP_QML_IMPORT_URI, 1, 0, "RisipBuddy");
@@ -40,7 +42,48 @@ Risip::Risip(QObject *parent)
     qmlRegisterType<RisipAccountConfiguration>(RISIP_QML_IMPORT_URI, 1, 0, "RisipAccountConfiguration");
     qmlRegisterType<RisipMedia>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMedia");
     qmlRegisterType<RisipMessage>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMessage");
+    qmlRegisterType<RisipCallHistoryModel>(RISIP_QML_IMPORT_URI, 1, 0, "RisipCallHistoryModel");
+
 }
 
 Risip::~Risip()
-{}
+{
+    while (!m_accounts.isEmpty())
+        m_accounts[m_accounts.keys().takeFirst()]->deleteLater();
+
+    m_sipEndpoint->deleteLater();
+}
+
+QQmlListProperty<RisipAccount> Risip::accounts()
+{
+    QList<RisipAccount *> allAccounts = m_accounts.values();
+    return QQmlListProperty<RisipAccount>(this, allAccounts);
+}
+
+RisipEndpoint *Risip::sipEndpoint() const
+{
+    return m_sipEndpoint;
+}
+
+RisipAccount *Risip::getAccount(QString &accountUri)
+{
+    return new RisipAccount();
+}
+
+RisipAccount *Risip::getAccount(RisipAccountConfiguration *configuration)
+{
+    if(m_accounts.contains(configuration->uri()))
+            return m_accounts[configuration->uri()];
+
+    return new RisipAccount();
+}
+
+bool Risip::removeAccount(QString &accountUri)
+{
+    return true;
+}
+
+bool Risip::removeAccount(RisipAccountConfiguration *configuration)
+{
+    return true;
+}

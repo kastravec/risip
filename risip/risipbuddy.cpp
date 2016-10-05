@@ -13,13 +13,15 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
 #include "risipbuddy.h"
 #include "risipaccount.h"
 #include "risipmessage.h"
+#include "risipcall.h"
+#include "risipcallhistorymodel.h"
 
 #include <QDebug>
 
@@ -45,6 +47,8 @@ void PjsipBuddy::setRisipBuddyInterface(RisipBuddy *risipBuddy)
 
 RisipBuddy::RisipBuddy(QObject *parent)
     :QObject(parent)
+    ,m_pjsipBuddy(NULL)
+    ,m_account(NULL)
 {
     //always subscribe to the buddy presence
     m_buddyConfig.subscribe = true;
@@ -97,6 +101,21 @@ void RisipBuddy::setPjsipBuddy(PjsipBuddy *buddy)
     m_pjsipBuddy = buddy;
     m_pjsipBuddy->setRisipBuddyInterface(this);
     m_buddyConfig.uri = buddy->getInfo().uri;
+}
+
+RisipCall *RisipBuddy::call()
+{
+    RisipCall *myCall = new RisipCall;
+    if(m_account && !uri().isEmpty()) {
+        myCall->setAccount(m_account);
+        myCall->setBuddy(this);
+        myCall->setCallDirection(RisipCall::Outgoing);
+        myCall->createTimestamp();
+        m_account->callHistoryModel()->addCallRecord(myCall);
+        myCall->call();
+    }
+
+    return myCall;
 }
 
 void RisipBuddy::addToList()
@@ -152,8 +171,6 @@ RisipMessage *RisipBuddy::sendInstantMessage(QString message)
         risipMessage->setMessageBody(message);
         risipMessage->setStatus(RisipMessage::Pending);
         risipMessage->setDirection(RisipMessage::Outgoing);
-
-        qDebug()<<"Sending message: " <<message;
 
         try {
             m_pjsipBuddy->sendInstantMessage(risipMessage->messageParamForSend());

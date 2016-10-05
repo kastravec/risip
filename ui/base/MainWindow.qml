@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -22,7 +22,8 @@ import QtQuick.Controls 2.0
 import QtQuick.Window 2.1
 
 ApplicationWindow {
-    id: mainWindow
+    id: root
+
     visible: false
     visibility: Window.AutomaticVisibility
 

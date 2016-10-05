@@ -13,16 +13,16 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
 #include "uiloader.h"
 #include <QQmlApplicationEngine>
 
-UiLoaderInfo::UiLoaderInfo()
+UiLoaderInfo::UiLoaderInfo(QObject *parent)
+    :QObject (parent)
 {
-
 }
 
 UiLoaderInfo::~UiLoaderInfo()
@@ -61,6 +61,22 @@ void UiLoader::start()
         m_qmlEngine = new QQmlApplicationEngine(this);
 
     switch (m_platformUi) {
+    case iOS:
+    case iOS_iPad:
+    case iOS_iPhone:
+    case iOS_iWatch:
+    case Android:
+    case Android_Phone:
+    case Android_Tablet:
+    case Android_Watch:
+    case Windows:
+    case Windows_Phone:
+    case Windows_Tablet:
+    case Linux_Embedded:
+        break;
+    case OSX:
+    case Linux_Desktop:
+    case Windows_Desktop:
     case SimpleDemo:
         m_qmlEngine->load(QUrl(QLatin1String("qrc:/ui/simpledemo/SimpleDemo.qml")));
         break;
@@ -94,5 +110,9 @@ void UiLoader::updatePlatformUi()
     m_platformUi = Linux_Desktop;
 #endif
 
+#if defined (Q_OS_WINRT)
+    m_platformUi = WindowRT;
+#endif
 
+    emit platformUiChanged(m_platformUi);
 }

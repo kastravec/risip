@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -21,14 +21,38 @@
 #define RISIP_H
 
 #include <QObject>
+#include <QQmlListProperty>
+
+class RisipAccount;
+class RisipEndpoint;
+class RisipAccountConfiguration;
 
 class Risip: public QObject
 {
     Q_OBJECT
 
 public:
+
+    Q_PROPERTY(QQmlListProperty<RisipAccount> accounts READ accounts NOTIFY accountsChanged)
+    Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint CONSTANT)
+
     Risip(QObject *parent = 0);
     ~Risip();
+
+    QQmlListProperty<RisipAccount> accounts();
+    RisipEndpoint *sipEndpoint() const;
+
+    Q_INVOKABLE RisipAccount *getAccount(QString &accountUri);
+    Q_INVOKABLE RisipAccount *getAccount(RisipAccountConfiguration *configuration);
+    Q_INVOKABLE bool removeAccount(QString &accountUri);
+    Q_INVOKABLE bool removeAccount(RisipAccountConfiguration *configuration);
+
+Q_SIGNALS:
+    void accountsChanged(QQmlListProperty<RisipAccount> accounts);
+
+private:
+    QHash<QString, RisipAccount *> m_accounts;
+    RisipEndpoint *m_sipEndpoint;
 };
 
 #endif // RISIP_H

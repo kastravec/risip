@@ -4,7 +4,7 @@ TEMPLATE = app
 QT -= gui
 QT = core network qml quick quickcontrols2
 
-CONFIG -= app_bundle
+#CONFIG -= app_bundle
 CONFIG += exceptions c++11 static
 
 ### DEFINES ###
@@ -33,7 +33,8 @@ SOURCES += src/main.cpp \
     risip/risipendpoint.cpp \
     risip/risipmessage.cpp \
     risip/risipaccountconfiguration.cpp \
-    src/uiloader.cpp
+    src/uiloader.cpp \
+    risip/risipcallhistorymodel.cpp
 
 HEADERS += risip/headers/risip.h \
     risip/headers/risipaccount.h \
@@ -45,7 +46,8 @@ HEADERS += risip/headers/risip.h \
     risip/headers/risipinterface.h \
     risip/headers/risipmessage.h \
     risip/headers/risipaccountconfiguration.h \
-    src/uiloader.h
+    src/uiloader.h \
+    risip/headers/risipcallhistorymodel.h
 
 
 macx {

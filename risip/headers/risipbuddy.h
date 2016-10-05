@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -29,6 +29,7 @@ using namespace pj;
 class RisipBuddy;
 class RisipAccount;
 class RisipMessage;
+class RisipCall;
 
 class PjsipBuddy: public Buddy
 {
@@ -74,6 +75,8 @@ public:
 
     PjsipBuddy *pjsipBuddy() const;
     void setPjsipBuddy(PjsipBuddy *buddy);
+
+    Q_INVOKABLE RisipCall *call();
 
 public Q_SLOTS:
     void addToList();

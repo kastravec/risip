@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -31,6 +31,8 @@ class RisipMessage;
 class RisipEndpoint;
 class RisipAccountConfiguration;
 class RisipBuddy;
+class RisipCall;
+class RisipCallHistoryModel;
 
 /**
  * @brief The PjsipAccount class
@@ -94,6 +96,7 @@ public:
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusTextChanged)
     Q_PROPERTY(QQmlListProperty<RisipBuddy> buddies READ buddies NOTIFY buddiesChanged)
+    Q_PROPERTY(RisipCallHistoryModel * callHistoryModel READ callHistoryModel WRITE setCallHistoryModel NOTIFY callHistoryModelChanged)
 
     RisipAccount(QObject *parent = 0);
     ~RisipAccount();
@@ -122,6 +125,9 @@ public:
     void addBuddy(RisipBuddy *buddy);
     void removeBuddy(RisipBuddy *buddy);
 
+    RisipCallHistoryModel *callHistoryModel();
+    void setCallHistoryModel(RisipCallHistoryModel *callHistory);
+
     Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
 
 Q_SIGNALS:
@@ -131,9 +137,10 @@ Q_SIGNALS:
     void presenceNoteChanged(QString note);
     void statusChanged(int status);
     void statusTextChanged(QString);
-    void incomingCall(int callId);
+    void incomingCall(RisipCall *call);
     void incomingMessage(RisipMessage *message);
     void buddiesChanged(QQmlListProperty<RisipBuddy> buddies);
+    void callHistoryModelChanged(RisipCallHistoryModel *calHistoryModel);
 
 public Q_SLOTS:
     void login();
@@ -149,6 +156,7 @@ private:
     PresenceStatus m_presence;
     int m_status;
     QHash<QString, RisipBuddy *> m_buddies;
+    RisipCallHistoryModel *m_callHistoryModel;
 };
 
 #endif // RISIPACCOUNT_H

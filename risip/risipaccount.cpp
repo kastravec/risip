@@ -13,7 +13,7 @@
 **
 **    You have received a copy of the GNU General Public License
 **    along with this program. See LICENSE.GPLv3
-**    A copy of the license is also here <http://www.gnu.org/licenses/>.
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
 
@@ -23,6 +23,8 @@
 #include "risipendpoint.h"
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
+#include "risipcall.h"
+#include "risipcallhistorymodel.h"
 
 #include <QDebug>
 
@@ -74,7 +76,15 @@ void PjsipAccount::onRegStarted(OnRegStartedParam &prm)
  */
 void PjsipAccount::onIncomingCall(OnIncomingCallParam &prm)
 {
-    m_risipAccount->incomingCall(prm.callId);
+    if(!m_risipAccount)
+        return;
+
+    RisipCall  *call = new RisipCall;
+    call->setAccount(m_risipAccount);
+    call->setPjsipCall(new PjsipCall(*m_risipAccount->pjsipAccount(), prm.callId));
+    call->createTimestamp();
+    call->setCallDirection(RisipCall::Incoming);
+    m_risipAccount->incomingCall(call);
 }
 
 void PjsipAccount::onIncomingSubscribe(OnIncomingSubscribeParam &prm)
@@ -145,9 +155,11 @@ void PjsipAccount::setRisipInterface(RisipAccount *acc)
 RisipAccount::RisipAccount(QObject *parent)
     :QObject(parent)
     ,m_pjsipAccount(NULL)
-    ,m_configuration(new RisipAccountConfiguration)
+    ,m_configuration(new RisipAccountConfiguration(this))
     ,m_sipEndpoint(NULL)
     ,m_status(NotConfigured)
+    ,m_buddies()
+    ,m_callHistoryModel(new RisipCallHistoryModel(this))
 {
 }
 
@@ -222,6 +234,12 @@ QQmlListProperty<RisipBuddy> RisipAccount::buddies()
     return QQmlListProperty<RisipBuddy>(this, allBuddies);
 }
 
+/**
+ * @brief RisipAccount::addBuddy
+ * @param buddy
+ *
+ * Internal API.
+ */
 void RisipAccount::addBuddy(RisipBuddy *buddy)
 {
     if(buddy) {
@@ -232,6 +250,12 @@ void RisipAccount::addBuddy(RisipBuddy *buddy)
     }
 }
 
+/**
+ * @brief RisipAccount::removeBuddy
+ * @param buddy
+ *
+ * Internal API.
+ */
 void RisipAccount::removeBuddy(RisipBuddy *buddy)
 {
     if(buddy) {
@@ -240,6 +264,22 @@ void RisipAccount::removeBuddy(RisipBuddy *buddy)
             buddy->deleteLater();
             emit buddiesChanged(buddies());
         }
+    }
+}
+
+RisipCallHistoryModel *RisipAccount::callHistoryModel()
+{
+    return m_callHistoryModel;
+}
+
+void RisipAccount::setCallHistoryModel(RisipCallHistoryModel *callHistory)
+{
+    if(m_callHistoryModel != callHistory) {
+        if(m_callHistoryModel)
+            m_callHistoryModel->deleteLater();
+
+        m_callHistoryModel = callHistory;
+        emit callHistoryModelChanged(m_callHistoryModel);
     }
 }
 
@@ -422,6 +462,10 @@ void RisipAccount::setStatus(int status)
             if(m_sipEndpoint)
                 m_sipEndpoint->destroyActiveTransport();
 
+            //destroying list of risip buddy objects
+            while (!m_buddies.isEmpty())
+                m_buddies.take(m_buddies.keys().takeFirst())->deleteLater();
+
             break;
         }
         default:
@@ -451,7 +495,7 @@ void RisipAccount::refreshBuddyList()
     RisipBuddy *risipBuddy;
     for(int i=0; i<buddiesVector.size(); ++i) {
         risipBuddy = new RisipBuddy;
-        risipBuddy->setPjsipBuddy( static_cast<PjsipBuddy*>(buddiesVector[i]) );
+        risipBuddy->setPjsipBuddy( static_cast<PjsipBuddy*>(buddiesVector[i]));
         m_buddies[risipBuddy->uri()] = risipBuddy;
     }
 
