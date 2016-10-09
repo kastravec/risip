@@ -79,7 +79,7 @@ public:
     Q_INVOKABLE RisipCall *call();
 
 public Q_SLOTS:
-    void addToList();
+    void addToAccount();
     void release();
     RisipMessage *sendInstantMessage(QString message);
     void sendInstantMessage(RisipMessage *message);

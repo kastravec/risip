@@ -15,5 +15,6 @@
         <file>ui/base/ContactListView.qml</file>
         <file>ui/base/AddSipServicePage.qml</file>
         <file>ui/base/AddSipServicePageForm.ui.qml</file>
+        <file>ui/base/FavoriteContactListView.qml</file>
     </qresource>
 </RCC>

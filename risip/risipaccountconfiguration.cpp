@@ -52,22 +52,33 @@ void RisipAccountConfiguration::setAccount(RisipAccount *account)
     }
 }
 
-QString RisipAccountConfiguration::uri() const
+QString RisipAccountConfiguration::uri()
 {
+    if(m_accountConfig.idUri.empty()) {
+        QString uri = QString("sip:") + userName() + QString("@") + serverAddress();
+        setUri(uri);
+        return uri;
+    }
+
     return QString::fromStdString(m_accountConfig.idUri);
 }
 
 void RisipAccountConfiguration::setUri(QString accountUri)
 {
-    if(uri() != accountUri) {
-        m_accountConfig.idUri = accountUri.toStdString();
+    string accountUristr = accountUri.toStdString();
+    if(m_accountConfig.idUri != accountUristr) {
+        m_accountConfig.idUri = accountUristr;
         emit uriChanged(accountUri);
     }
 }
 
-QString RisipAccountConfiguration::userName() const
+QString RisipAccountConfiguration::userName()
 {
-    return QString::fromStdString(m_accountCredentials.username);
+    QString username;
+    if(!m_accountCredentials.username.empty())
+        username = QString::fromStdString(m_accountCredentials.username);
+
+    return username;
 }
 
 void RisipAccountConfiguration::setUserName(QString &name)
@@ -80,7 +91,10 @@ void RisipAccountConfiguration::setUserName(QString &name)
 
 QString RisipAccountConfiguration::password() const
 {
-    return QString::fromStdString(m_accountCredentials.data);
+    if(!m_accountCredentials.data.empty())
+        return QString::fromStdString(m_accountCredentials.data);
+
+    return QString();
 }
 
 void RisipAccountConfiguration::setPassword(QString &pass)
@@ -94,7 +108,10 @@ void RisipAccountConfiguration::setPassword(QString &pass)
 
 QString RisipAccountConfiguration::scheme() const
 {
-    return QString::fromStdString(m_accountCredentials.scheme);
+    if(!m_accountCredentials.scheme.empty())
+        return QString::fromStdString(m_accountCredentials.scheme);
+
+    return QString();
 }
 
 void RisipAccountConfiguration::setScheme(QString &credScheme)
@@ -105,11 +122,14 @@ void RisipAccountConfiguration::setScheme(QString &credScheme)
     }
 }
 
-QString RisipAccountConfiguration::serverAddress() const
+QString RisipAccountConfiguration::serverAddress()
 {
     //server address always is stored as a "sip:serveraddress" format in pjsip, so removing "sip:"
     //comes in handy for passing the just the server address around
-    return (QString::fromStdString(m_accountConfig.regConfig.registrarUri)).remove("sip:");
+    if(!m_accountConfig.regConfig.registrarUri.empty())
+        return (QString::fromStdString(m_accountConfig.regConfig.registrarUri)).remove("sip:");
+
+    return QString();
 }
 
 void RisipAccountConfiguration::setServerAddress(QString &address)

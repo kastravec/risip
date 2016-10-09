@@ -32,15 +32,17 @@ class Risip: public QObject
     Q_OBJECT
 
 public:
-
     Q_PROPERTY(QQmlListProperty<RisipAccount> accounts READ accounts NOTIFY accountsChanged)
     Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint CONSTANT)
 
+    static Risip *instance();
     Risip(QObject *parent = 0);
     ~Risip();
 
     QQmlListProperty<RisipAccount> accounts();
-    RisipEndpoint *sipEndpoint() const;
+    RisipEndpoint *sipEndpoint();
+
+    static void registerToQml();
 
     Q_INVOKABLE RisipAccount *getAccount(QString &accountUri);
     Q_INVOKABLE RisipAccount *getAccount(RisipAccountConfiguration *configuration);
@@ -51,6 +53,8 @@ Q_SIGNALS:
     void accountsChanged(QQmlListProperty<RisipAccount> accounts);
 
 private:
+
+    static Risip *m_risipInstance;
     QHash<QString, RisipAccount *> m_accounts;
     RisipEndpoint *m_sipEndpoint;
 };

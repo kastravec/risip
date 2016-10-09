@@ -28,8 +28,10 @@ import Risip 1.0
 Item {
     id: root
 
-    property RisipCall incomingCall
-    property RisipCall outgoingCall
+    property RisipEndpoint mySipEndpoint: Risip.sipEndpoint //sip endpoint - sip client instance
+    property RisipAccount myAccount //risipaccount is a SIP account/user that is logged in and can chat, make/receive calls
+    property RisipCall incomingCall // object for handling the incoming calls
+    property RisipCall outgoingCall //object for handling the outgoing calls
 
     SplashScreen {
         id: splashScreen
@@ -73,8 +75,10 @@ Item {
             Button {
                 text: qsTr("Register")
                 onClicked: {
-                    if(myEndpoint.status === RisipEndpoint.Started)
+                    if(mySipEndpoint.status === RisipEndpoint.Started) {
+                        myAccount = Risip.getAccount(myAccountConfiguration) //Using the Risip API to get/create the account
                         myAccount.login();
+                    }
                 }
             }
 
@@ -85,7 +89,7 @@ Item {
 
             RowLayout {
                 Label { text: "Engine status: "}
-                Label { text: myEndpoint.status }
+                Label { text: mySipEndpoint.status }
             }
 
             RowLayout {
@@ -126,10 +130,7 @@ Item {
 
                 Button {
                     text: "Send test IM"
-                    onClicked: {
-                        msg = myBuddy.sendInstantMessage("uiiiii");
-                        console.log("message status before : " + msg.status);
-                    }
+                    onClicked: { myBuddy.sendInstantMessage("uiiiii"); }
                 }
             }
 
@@ -141,28 +142,23 @@ Item {
             }
         }
     }
+
     // ====== Application Logic  using the Risip APIs ======
 
+    //starting the sip endpoint engine
     //endpoint represents the SIP/Voip client / in practice a pjsip library instance
-    RisipEndpoint {
-        id: myEndpoint
-        Component.onCompleted: { myEndpoint.startEngine(); }
-    }
+    Component.onCompleted: { mySipEndpoint.startEngine(); }
 
-    //risipaccount is a SIP account/user that is logged in and can chat, make/receive calls
-    RisipAccount {
-        id: myAccount
+    //handling singals from the sip account instance
+    Connections {
+        target: myAccount
 
-        //associating the account with the pjsip endpoint/library instance
-        sipEndPoint: myEndpoint
-
-        //status is a property of the account that represent the state of it
         onStatusChanged: {
             switch (status) {
             case RisipAccount.SignedIn:
                 console.log("Logged in!")
                 myAccount.presence = RisipBuddy.Online
-                myBuddy.addToList();
+                myBuddy.addToAccount();
                 break;
             case RisipAccount.SignedOut:
                 console.log("Logged out!")
@@ -182,11 +178,9 @@ Item {
             root.incomingCall = call;
         }
 
-        onIncomingMessage: {
-            console.log("incoming message: from: "
-                        + message.buddy.uri
-                        + ""+ message.messageBody) ;
-        }
+        onIncomingMessage: { console.log("incoming message: from: "
+                                         + message.buddy.uri
+                                         + message.messageBody) ; }
     }
 
     //a simple sip contact (within same sip sip2sip.info server)

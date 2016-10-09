@@ -72,10 +72,10 @@ public:
     RisipAccount *account() const;
     void setAccount(RisipAccount *account);
 
-    QString uri() const;
+    QString uri();
     void setUri(QString accountUri);
 
-    QString userName() const;
+    QString userName();
     void setUserName(QString &name);
 
     QString password() const;
@@ -84,7 +84,7 @@ public:
     QString scheme() const;
     void setScheme(QString &credScheme);
 
-    QString serverAddress() const;
+    QString serverAddress();
     void setServerAddress(QString &address);
 
     QString proxyServer() const;

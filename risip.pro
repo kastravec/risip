@@ -224,4 +224,5 @@ DISTFILES += \
     README \
     utils/runOnMac.sh \
     LICENSE.GPLv3 \
-    LICENSE.HEADER.GPLv3
+    LICENSE.HEADER.GPLv3 \
+    ui/base/qtquickcontrols2.conf

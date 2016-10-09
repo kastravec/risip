@@ -157,7 +157,7 @@ RisipAccount::RisipAccount(QObject *parent)
     ,m_pjsipAccount(NULL)
     ,m_configuration(new RisipAccountConfiguration(this))
     ,m_sipEndpoint(NULL)
-    ,m_status(NotConfigured)
+    ,m_status(NotCreated)
     ,m_buddies()
     ,m_callHistoryModel(new RisipCallHistoryModel(this))
 {
@@ -165,9 +165,11 @@ RisipAccount::RisipAccount(QObject *parent)
 
 RisipAccount::~RisipAccount()
 {
-    if(m_pjsipAccount) {
-        delete m_pjsipAccount;
-    }
+    while (!m_buddies.isEmpty())
+        m_buddies.take(m_buddies.keys().takeFirst())->release();
+
+    //TODO delete or set to NULL ?
+    m_pjsipAccount = NULL;
 }
 
 RisipAccountConfiguration *RisipAccount::configuration() const
@@ -177,14 +179,12 @@ RisipAccountConfiguration *RisipAccount::configuration() const
 
 void RisipAccount::setConfiguration(RisipAccountConfiguration *config)
 {
-    m_configuration->deleteLater();
-
     if(m_configuration != config) {
         m_configuration = config;
-        if(m_configuration != NULL) {
+
+        if(m_configuration != NULL)
             setStatus(NotCreated);
-            config->setParent(this);
-        }
+
         emit configurationChanged(m_configuration);
     }
 }
@@ -261,7 +261,6 @@ void RisipAccount::removeBuddy(RisipBuddy *buddy)
     if(buddy) {
         if(m_buddies.contains(buddy->uri())) {
             m_buddies.remove(buddy->uri());
-            buddy->deleteLater();
             emit buddiesChanged(buddies());
         }
     }
@@ -397,12 +396,16 @@ void RisipAccount::login()
     */
     if(m_status == NotCreated
             || m_status == SignedOut
-            || m_status == AccountError) {
+            || m_status == AccountError
+            || m_status == NotConfigured) {
 
-
-        //create transport and return if not success
-       if(!m_sipEndpoint->createTransportNetwork(m_configuration))
-           return;
+        //create transport if none exists and return if not success
+        if(m_sipEndpoint->activeTransportId() == -1) {
+            if(!m_sipEndpoint->createTransportNetwork(m_configuration)) {
+                setStatus(NotConfigured);
+                return;
+            }
+        }
 
        m_configuration->setTransportId(m_sipEndpoint->activeTransportId());
 
@@ -452,19 +455,13 @@ void RisipAccount::setStatus(int status)
         case NotCreated:
         case AccountError:
         {
-            //deleting the internal pjsipAccount object
-            if(m_pjsipAccount) {
-                delete m_pjsipAccount;
-                m_pjsipAccount = NULL;
-            }
-
-            //destroying the active transport network protocol, not needed.
-            if(m_sipEndpoint)
-                m_sipEndpoint->destroyActiveTransport();
-
             //destroying list of risip buddy objects
             while (!m_buddies.isEmpty())
-                m_buddies.take(m_buddies.keys().takeFirst())->deleteLater();
+                m_buddies.take(m_buddies.keys().takeFirst())->release();
+
+            //deleting the internal pjsipAccount object
+            if(m_pjsipAccount)
+                delete m_pjsipAccount;
 
             break;
         }
@@ -482,9 +479,6 @@ void RisipAccount::refreshBuddyList()
     if(m_pjsipAccount == NULL)
         return;
 
-    for(int i=0; i<m_buddies.keys().count(); ++i)
-        m_buddies.take(m_buddies.keys()[i])->deleteLater();
-
     BuddyVector buddiesVector;
     try {
         buddiesVector = m_pjsipAccount->enumBuddies();
@@ -492,11 +486,13 @@ void RisipAccount::refreshBuddyList()
         qDebug()<<"Buddies cannot be retrieved " << QString::fromStdString(err.info(true));
     }
 
-    RisipBuddy *risipBuddy;
+    RisipBuddy *buddy;
     for(int i=0; i<buddiesVector.size(); ++i) {
-        risipBuddy = new RisipBuddy;
-        risipBuddy->setPjsipBuddy( static_cast<PjsipBuddy*>(buddiesVector[i]));
-        m_buddies[risipBuddy->uri()] = risipBuddy;
+        buddy = m_buddies[m_buddies.keys()[i]];
+        if(buddy) {
+            buddy->release();
+            buddy->setPjsipBuddy( static_cast<PjsipBuddy*>(buddiesVector[i]));
+        }
     }
 
     emit buddiesChanged(buddies());

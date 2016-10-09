@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     //risi wrapper object - registering the c++ classes to the QML engine
-    Risip risip;
+    Risip::registerToQml();
 
     //the ui loader resolves which ui to be loaded for the platform/operating sytem
     UiLoader ui;

@@ -85,6 +85,9 @@ RisipEndpoint::~RisipEndpoint()
 
 int RisipEndpoint::status() const
 {
+    if(!m_pjsipEndpoint)
+        return RisipEndpoint::NotStarted;
+
     switch (m_pjsipEndpoint->libGetState()) {
     case PJSUA_STATE_NULL:
     case PJSUA_STATE_CREATED:
@@ -115,7 +118,7 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
             || status() == EngineError)
         return false;
 
-    pjsip_transport_type_e netType = PJSIP_TRANSPORT_UDP; //default always UDP
+    pjsip_transport_type_e netType;
     switch (accountConf->networkProtocol()) {
     case RisipAccountConfiguration::UDP:
         netType = PJSIP_TRANSPORT_UDP;
@@ -142,7 +145,6 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
 
     try {
         m_activeTransportId = m_pjsipEndpoint->transportCreate(netType, accountConf->pjsipTransportConfig());
-        emit activeTransportIdChanged(m_activeTransportId);
     } catch (Error& err) {
         qDebug()<<"Error in creating network transport protocol. " <<QString::fromStdString( err.info());
         return false;
@@ -155,7 +157,7 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
  * @brief RisipEndpoint::destroyActiveTransport
  * @return true/false if transport is destoryed or not.
  *
- * internal function
+ * Internal API.
  */
 bool RisipEndpoint::destroyActiveTransport()
 {
@@ -167,8 +169,8 @@ bool RisipEndpoint::destroyActiveTransport()
     try {
         m_pjsipEndpoint->transportClose(m_activeTransportId);
     } catch(Error& err) {
-        return false;
         qDebug()<<"Error closing the active transport for account: " <<QString::fromStdString( err.info() );
+        return false;
     }
 
     return true;
@@ -192,22 +194,24 @@ void RisipEndpoint::startEngine()
 
     //FIXME Codec priorities
     //TODO Codecs settings page
-        Endpoint::instance().codecSetPriority("iLBC/8000", 255);
-        Endpoint::instance().codecSetPriority("speex/16000", 0);
-        Endpoint::instance().codecSetPriority("speex/8000", 0);
-        Endpoint::instance().codecSetPriority("speex/32000", 0);
+    Endpoint::instance().codecSetPriority("iLBC/8000", 255);
+    Endpoint::instance().codecSetPriority("speex/16000", 0);
+    Endpoint::instance().codecSetPriority("speex/8000", 0);
+    Endpoint::instance().codecSetPriority("speex/32000", 0);
 }
 
 void RisipEndpoint::stopEngine()
 {
-    m_pjsipEndpoint->libDestroy();
+    if(m_pjsipEndpoint) {
+        m_pjsipEndpoint->libDestroy();
+        delete m_pjsipEndpoint;
+    }
+
     emit statusChanged(status());
-    delete m_pjsipEndpoint;
 }
 
 void RisipEndpoint::transportClosed()
 {
     m_activeTransportId = -1;
-    emit activeTransportIdChanged(m_activeTransportId);
 }
 

@@ -62,7 +62,7 @@ public:
     Q_ENUM(Status)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(int error READ error NOTIFY errorChanged)
-    Q_PROPERTY(int activeTransportId READ activeTransportId NOTIFY activeTransportIdChanged)
+    Q_PROPERTY(int activeTransportId READ activeTransportId CONSTANT)
 
     RisipEndpoint(QObject *parent = 0);
     ~RisipEndpoint();
@@ -83,7 +83,6 @@ public Q_SLOTS:
 Q_SIGNALS:
     void statusChanged(int status);
     void errorChanged(int error);
-    void activeTransportIdChanged(int activeTransportId);
 
 private slots:
     void transportClosed();

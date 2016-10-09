@@ -23,10 +23,17 @@ import QtQuick.Window 2.1
 
 ApplicationWindow {
     id: root
-
     visible: false
     visibility: Window.AutomaticVisibility
 
     width: 720
     height: 1280
+
+    footer: TabBar {
+        TabButton { text: qsTr("Contacts") }
+        TabButton { text: qsTr("Home") }
+        TabButton { text: qsTr("Dial") }
+        TabButton { text: qsTr("Settings") }
+    }
+
 }

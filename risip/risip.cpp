@@ -31,27 +31,39 @@
 #include "risipmessage.h"
 #include "risipcallhistorymodel.h"
 
+#include <QDebug>
+
+static QObject *risipSingletontypeProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+
+    return new Risip;
+}
+
+Risip *Risip::m_risipInstance = NULL;
+Risip *Risip::instance()
+{
+    if(!m_risipInstance)
+        m_risipInstance = new Risip;
+
+    return m_risipInstance;
+}
+
 Risip::Risip(QObject *parent)
     :QObject (parent)
+    ,m_sipEndpoint(new RisipEndpoint(this))
 {
-//    qmlRegisterType<RisipEndpoint>(RISIP_QML_IMPORT_URI, 1, 0, "Risip");
-    qmlRegisterType<RisipEndpoint>(RISIP_QML_IMPORT_URI, 1, 0, "RisipEndpoint");
-    qmlRegisterType<RisipAccount>(RISIP_QML_IMPORT_URI, 1, 0, "RisipAccount");
-    qmlRegisterType<RisipBuddy>(RISIP_QML_IMPORT_URI, 1, 0, "RisipBuddy");
-    qmlRegisterType<RisipCall>(RISIP_QML_IMPORT_URI, 1, 0, "RisipCall");
-    qmlRegisterType<RisipAccountConfiguration>(RISIP_QML_IMPORT_URI, 1, 0, "RisipAccountConfiguration");
-    qmlRegisterType<RisipMedia>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMedia");
-    qmlRegisterType<RisipMessage>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMessage");
-    qmlRegisterType<RisipCallHistoryModel>(RISIP_QML_IMPORT_URI, 1, 0, "RisipCallHistoryModel");
-
 }
 
 Risip::~Risip()
 {
     while (!m_accounts.isEmpty())
-        m_accounts[m_accounts.keys().takeFirst()]->deleteLater();
+        delete m_accounts.take(m_accounts.keys().takeFirst());
 
-    m_sipEndpoint->deleteLater();
+    m_sipEndpoint->stopEngine();
+    if(m_sipEndpoint)
+        delete m_sipEndpoint;
 }
 
 QQmlListProperty<RisipAccount> Risip::accounts()
@@ -60,30 +72,67 @@ QQmlListProperty<RisipAccount> Risip::accounts()
     return QQmlListProperty<RisipAccount>(this, allAccounts);
 }
 
-RisipEndpoint *Risip::sipEndpoint() const
+RisipEndpoint *Risip::sipEndpoint()
 {
     return m_sipEndpoint;
 }
 
+void Risip::registerToQml()
+{
+    qmlRegisterSingletonType<Risip>(RISIP_QML_IMPORT_URI, 1, 0, "Risip", risipSingletontypeProvider);
+    qmlRegisterType<RisipEndpoint>(RISIP_QML_IMPORT_URI, 1, 0, "RisipEndpoint");
+    qmlRegisterType<RisipAccount>(RISIP_QML_IMPORT_URI, 1, 0, "RisipAccount");
+    qmlRegisterType<RisipBuddy>(RISIP_QML_IMPORT_URI, 1, 0, "RisipBuddy");
+    qmlRegisterType<RisipCall>(RISIP_QML_IMPORT_URI, 1, 0, "RisipCall");
+    qmlRegisterType<RisipAccountConfiguration>(RISIP_QML_IMPORT_URI, 1, 0, "RisipAccountConfiguration");
+    qmlRegisterType<RisipMedia>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMedia");
+    qmlRegisterType<RisipMessage>(RISIP_QML_IMPORT_URI, 1, 0, "RisipMessage");
+    qmlRegisterType<RisipCallHistoryModel>(RISIP_QML_IMPORT_URI, 1, 0, "RisipCallHistoryModel");
+}
+
 RisipAccount *Risip::getAccount(QString &accountUri)
 {
+    if(!accountUri.isEmpty() && m_accounts.contains(accountUri))
+        return m_accounts[accountUri];
+
     return new RisipAccount();
 }
 
 RisipAccount *Risip::getAccount(RisipAccountConfiguration *configuration)
 {
-    if(m_accounts.contains(configuration->uri()))
-            return m_accounts[configuration->uri()];
+    if(!configuration)
+        return new RisipAccount();
 
-    return new RisipAccount();
+    RisipAccount *account;
+    //return an existing account and update its configuration too
+    if(m_accounts.contains(configuration->uri())) {
+        account = m_accounts[configuration->uri()];
+        account->setConfiguration(configuration);
+        return account;
+    }
+
+    //create a new account with the given configuration
+    account = new RisipAccount;
+    account->setSipEndPoint(sipEndpoint());
+    account->setConfiguration(configuration);
+    m_accounts[account->configuration()->uri()] = account;
+    return account;
 }
 
 bool Risip::removeAccount(QString &accountUri)
 {
-    return true;
+    if(m_accounts.contains(accountUri)) {
+        m_accounts.take(accountUri)->deleteLater();
+        return true;
+    }
+
+    return false;
 }
 
 bool Risip::removeAccount(RisipAccountConfiguration *configuration)
 {
-    return true;
+    QString accountUri;
+    if(configuration)
+        accountUri = configuration->uri();
+    return removeAccount(accountUri);
 }

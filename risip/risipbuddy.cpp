@@ -36,7 +36,7 @@ PjsipBuddy::~PjsipBuddy()
 
 void PjsipBuddy::onBuddyState()
 {
-    if(m_risipBuddyInterface != NULL)
+    if(m_risipBuddyInterface != NULL && m_risipBuddyInterface->account())
         m_risipBuddyInterface->presenceChanged(m_risipBuddyInterface->presence());
 }
 
@@ -94,15 +94,24 @@ PjsipBuddy *RisipBuddy::pjsipBuddy() const
  * @brief RisipBuddy::setPjsipBuddy
  * @param buddy internal pjsip buddy object
  *
- * Internal function. Do not use. deletes all existing pending and failed messages
+ * Internal API. Do NOT use.
  */
 void RisipBuddy::setPjsipBuddy(PjsipBuddy *buddy)
 {
+    if(m_pjsipBuddy)
+        delete m_pjsipBuddy;
+
     m_pjsipBuddy = buddy;
     m_pjsipBuddy->setRisipBuddyInterface(this);
     m_buddyConfig.uri = buddy->getInfo().uri;
 }
 
+/**
+ * @brief RisipBuddy::call
+ * @return the call object instance
+ *
+ * Makes a calls to this buddy.
+ */
 RisipCall *RisipBuddy::call()
 {
     RisipCall *myCall = new RisipCall;
@@ -118,7 +127,7 @@ RisipCall *RisipBuddy::call()
     return myCall;
 }
 
-void RisipBuddy::addToList()
+void RisipBuddy::addToAccount()
 {
     //check if uri and account are set - buddy cannot be created without those properties
     if(uri().isEmpty()
@@ -128,20 +137,19 @@ void RisipBuddy::addToList()
     if(m_pjsipBuddy != NULL) {
         if(m_account->findBuddy(uri()))
             return;
-        else
-            delete m_pjsipBuddy;
-    }
+    } else {
+        delete m_pjsipBuddy;
+        m_pjsipBuddy = new PjsipBuddy;
+        m_pjsipBuddy->setRisipBuddyInterface(this);
+        try {
+            m_pjsipBuddy->create(*m_account->pjsipAccount(), m_buddyConfig);
+        } catch (Error &err) {
+            qDebug()<<"Error creating/adding this buddy: " <<uri() << QString::fromStdString(err.info(true));
+        }
 
-    m_pjsipBuddy = new PjsipBuddy;
-    m_pjsipBuddy->setRisipBuddyInterface(this);
-    try {
-        m_pjsipBuddy->create(*m_account->pjsipAccount(), m_buddyConfig);
-    } catch (Error &err) {
-        qDebug()<<"Error creating/adding this buddy: " <<uri() << QString::fromStdString(err.info(true));
-    }
-
-    if(m_account) {
-        m_account->addBuddy(this);
+        if(m_account) {
+            m_account->addBuddy(this);
+        }
     }
 }
 
@@ -152,11 +160,11 @@ void RisipBuddy::addToList()
  */
 void RisipBuddy::release()
 {
-    if(m_account)
+    if(m_account) {
         m_account->removeBuddy(this);
-
-    if(m_pjsipBuddy != NULL)
-        delete m_pjsipBuddy;
+        //TODO delete or set to NULL
+        m_pjsipBuddy = NULL;
+    }
 }
 
 RisipMessage *RisipBuddy::sendInstantMessage(QString message)

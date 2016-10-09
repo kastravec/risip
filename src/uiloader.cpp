@@ -19,6 +19,7 @@
 
 #include "uiloader.h"
 #include <QQmlApplicationEngine>
+#include <QQuickStyle>
 
 UiLoaderInfo::UiLoaderInfo(QObject *parent)
     :QObject (parent)
@@ -59,6 +60,8 @@ void UiLoader::start()
 {
     if(!m_qmlEngine)
         m_qmlEngine = new QQmlApplicationEngine(this);
+
+    QQuickStyle::setStyle("Material");
 
     switch (m_platformUi) {
     case iOS:
