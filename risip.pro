@@ -1,11 +1,14 @@
 TARGET = risip
 TEMPLATE = app
 
+#CONFIG -= app_bundle
+CONFIG += exceptions c++11 static
+
 QT -= gui
 QT = core network qml quick quickcontrols2
 
-#CONFIG -= app_bundle
-CONFIG += exceptions c++11 static
+QT += svg
+QTPLUGIN += qtvirtualkeyboardplugin
 
 ### DEFINES ###
 DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
@@ -19,7 +22,9 @@ INCLUDEPATH += $$PWD/src \
 # this include path depends on the directory of your pjsip headers/libs
 # it could be different directory names for different platform where you put the pjsip headers
 # e.g. Linux desktop -> pjsip/linux-desktop , Mac desktop -> pjsip/mac-desktop, Android-arm64 -> pjsip/android-arm64
-INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
+
+INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
+#INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
 #INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
 
 
@@ -34,7 +39,9 @@ SOURCES += src/main.cpp \
     risip/risipmessage.cpp \
     risip/risipaccountconfiguration.cpp \
     src/uiloader.cpp \
-    risip/risipcallhistorymodel.cpp
+    risip/risipcallhistorymodel.cpp \
+    src/applicationsettings.cpp \
+    risip/globals.cpp
 
 HEADERS += risip/headers/risip.h \
     risip/headers/risipaccount.h \
@@ -47,7 +54,8 @@ HEADERS += risip/headers/risip.h \
     risip/headers/risipmessage.h \
     risip/headers/risipaccountconfiguration.h \
     src/uiloader.h \
-    risip/headers/risipcallhistorymodel.h
+    risip/headers/risipcallhistorymodel.h \
+    src/applicationsettings.h
 
 
 macx {

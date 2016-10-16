@@ -171,6 +171,8 @@ RisipCall::RisipCall(QObject *parent)
 
 RisipCall::~RisipCall()
 {
+    delete m_pjsipCall;
+    m_pjsipCall = NULL;
 }
 
 RisipAccount *RisipCall::account() const
@@ -231,10 +233,11 @@ int RisipCall::callId() const
  * @brief RisipCall::setPjsipCall
  * @param call
  *
- * Internal function. Initiates the call
+ * Internal API. Initiates the call
  */
 void RisipCall::setPjsipCall(PjsipCall *call)
 {
+    delete m_pjsipCall;
     m_pjsipCall = call;
     if(m_pjsipCall != NULL) {
         m_pjsipCall->setRisipCall(this);
@@ -382,14 +385,11 @@ void RisipCall::call()
             || !m_buddy)
         return;
 
-    //delete first internal pjsip call object
-    if(m_pjsipCall)
-        delete m_pjsipCall;
+    if(m_account->status() != RisipAccount::SignedIn)
+        return;
 
     setCallDirection(RisipCall::Outgoing);
     createTimestamp();
-    m_account->callHistoryModel()->addCallRecord(this);
-
     setPjsipCall(new PjsipCall(*m_account->pjsipAccount()));
     CallOpParam prm(true);
     try {
@@ -397,4 +397,6 @@ void RisipCall::call()
     } catch (Error err) {
         qDebug()<<"making call failed: " <<QString::fromStdString(err.info());
     }
+
+    m_account->callHistoryModel()->addCallRecord(this);
 }

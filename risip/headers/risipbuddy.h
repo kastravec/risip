@@ -57,10 +57,20 @@ public:
         Null = -1
     };
 
+    enum Type {
+        Internal = 1,
+        ExternalSIP,
+        GSM,
+        Undefined = -1
+    };
+
     Q_ENUM(Presence)
+    Q_ENUM(Type)
     Q_PROPERTY(int presence READ presence NOTIFY presenceChanged)
     Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
+    Q_PROPERTY(QString contact READ contact WRITE setContact NOTIFY contactChanged)
+    Q_PROPERTY(int type READ type WRITE setType NOTIFY typeChanged)
 
     RisipBuddy(QObject *parent = 0);
     ~RisipBuddy();
@@ -72,6 +82,12 @@ public:
 
     QString uri() const;
     void setUri(QString contactUri);
+
+    QString contact() const;
+    void setContact(QString &contact);
+
+    int type() const;
+    void setType(int type);
 
     PjsipBuddy *pjsipBuddy() const;
     void setPjsipBuddy(PjsipBuddy *buddy);
@@ -88,11 +104,15 @@ Q_SIGNALS:
     void presenceChanged(int presence);
     void accountChanged(RisipAccount *account);
     void uriChanged(QString &uri);
+    void contactChanged(QString &contact);
+    void typeChanged(int type);
 
 private:
     PjsipBuddy *m_pjsipBuddy;
     RisipAccount *m_account;
     BuddyConfig m_buddyConfig;
+    QString m_contact;
+    int m_type;
 };
 
 #endif // RISIPBUDDY_H

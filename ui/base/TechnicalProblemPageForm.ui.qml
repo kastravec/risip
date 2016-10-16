@@ -17,22 +17,17 @@
 **
 ************************************************************************************/
 
-#include <QGuiApplication>
+import QtQuick 2.7
 
-#include "uiloader.h"
-#include "risip.h"
+Item {
+    width: 400
+    height: 400
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
-
-    //risi wrapper object - registering the c++ classes to the QML engine
-    Risip::registerToQml();
-
-    //the ui loader resolves which ui to be loaded for the platform/operating sytem
-    UiLoader ui;
-    ui.start();
-
-    return app.exec();
+    Text {
+        id: text1
+        x: 135
+        y: 165
+        text: qsTr("ERROR")
+        font.pixelSize: 12
+    }
 }

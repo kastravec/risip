@@ -1,89 +1,34 @@
 import QtQuick 2.7
 import QtQuick.Window 2.2
 
-import Risip 1.0
-import "../base"
+/***********************************************************************************
+**    Copyright (C) 2016  Petref Saraci
+**
+**    This program is free software: you can redistribute it and/or modify
+**    it under the terms of the GNU General Public License as published by
+**    the Free Software Foundation, either version 3 of the License, or
+**    (at your option) any later version.
+**
+**    This program is distributed in the hope that it will be useful,
+**    but WITHOUT ANY WARRANTY; without even the implied warranty of
+**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**    GNU General Public License for more details.
+**
+**    You have received a copy of the GNU General Public License
+**    along with this program. See LICENSE.GPLv3
+**    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
+**
+************************************************************************************/
+import QtQuick 2.7
 
 Item {
     id: root
 
-    SplashScreen {
-        id: splashScreen
-        onTimeout: loginPageLoader.visible = true
-    }
-
     Loader {
         id: mainWindowLoader
-        source: "qrc:/ui/base/MainWindow.qml"
-        active: false
-    }
-
-    Loader {
-        id: loginPageLoader
-        source: "qrc:/ui/base/LoginPage.qml"
         active: true
-        visible: false
+        source: "qrc:/ui/base/MainWindow.qml"
+        asynchronous: true
+        anchors.fill: parent
     }
-
-    RisipEndpoint {
-        id: myEndpoint
-        Component.onCompleted: { myEndpoint.startEngine(); }
-    }
-
-    RisipAccount {
-        id: myAccount
-        sipEndPoint: myEndpoint
-
-        onStatusChanged: {
-            switch (status) {
-            case RisipAccount.SignedIn:
-                console.log("Logged in!")
-                myAccount.presence = RisipBuddy.Online
-                myBuddy.addToList();
-                break;
-            case RisipAccount.SignedOut:
-                console.log("Logged out!")
-                break;
-            case RisipAccount.NotConfigured:
-                console.log("Account details/setting missing? !")
-                break;
-            case RisipAccount.AccountError:
-                console.log("Some error..better restart!")
-                break;
-            }
-        }
-
-        onIncomingCall: {
-            answerButton.enabled = true;
-            answerButton.highlighted = true;
-            root.incomingCall = call;
-        }
-
-        onIncomingMessage: {
-            console.log("incoming message: from: "
-                        + message.buddy.uri
-                        + ""+ message.messageBody) ;
-        }
-    }
-
-    RisipBuddy {
-        id: myBuddy
-        uri: "<sip:toptop@sip2sip.info>"
-        account: myAccount;
-    }
-
-    //account details/settings, in order to login.
-    RisipAccountConfiguration {
-        id: myAccountConfiguration
-        account: myAccount
-        scheme: "digest"
-        userName: userNameInput.text
-        password: passwordInput.text
-        serverAddress: serverAddressInput.text.trim(); //"sip2sip.info" free sip server
-        proxyServer: proxyInput.text.trim(); //"proxy.sipthor.net" //always use proxy to be sure for connectivity
-        randomLocalPort: true //false
-        //            localPort: 5060
-        networkProtocol: RisipAccountConfiguration.UDP
-    }
-
 }

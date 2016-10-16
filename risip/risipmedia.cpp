@@ -70,11 +70,21 @@ void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
             m_localMedia = &m_pjsipMediaManager->getCaptureDevMedia();
             m_playbackDeviceMedia = &m_pjsipMediaManager->getPlaybackDevMedia();
 
-            AudioDevInfoVector audioInfos = m_pjsipMediaManager->enumDev();
-            for(int i=0; i<audioInfos.size(); ++i) {
-                qDebug()<<"Audio device info" << QString::fromStdString(audioInfos[i]->name)
-                       << "Audio caps: " << audioInfos[i]->caps;
-            }
+            //TODO better place where to adjust these media device settings
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_VOLUME_SETTING, 0, true);
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_OUTPUT_VOLUME_SETTING, 0, true);
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_ROUTE, 0, true);
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_OUTPUT_ROUTE, 0, true);
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_ROUTE, 0, true);
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_SIGNAL_METER, 0, true);
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_OUTPUT_SIGNAL_METER, 0, true);
+            //            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_EC, 0, true);
+
+//            AudioDevInfoVector audioInfos = m_pjsipMediaManager->enumDev();
+//            for(int i=0; i<audioInfos.size(); ++i) {
+//                qDebug()<<"Audio device info" << QString::fromStdString(audioInfos[i]->name)
+//                       << "Audio caps: " << audioInfos[i]->caps;
+//            }
         }
     }
 }

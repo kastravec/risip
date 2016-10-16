@@ -20,125 +20,117 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
+import QtQuick.Window 2.1
+
 import "../base"
 
 //importing the Risip QML module - pjsip wrapper api
 import Risip 1.0
 
-Item {
-    id: root
+ApplicationWindow {
+    id: mainWindow
 
-    property RisipEndpoint mySipEndpoint: Risip.sipEndpoint //sip endpoint - sip client instance
+    width: 720
+    height: 1280
+
+    visibility: Window.AutomaticVisibility
+    visible: true
+
     property RisipAccount myAccount //risipaccount is a SIP account/user that is logged in and can chat, make/receive calls
     property RisipCall incomingCall // object for handling the incoming calls
     property RisipCall outgoingCall //object for handling the outgoing calls
 
-    SplashScreen {
-        id: splashScreen
-        onTimeout: mainWindow.visible = true
-    }
-
     // ===== UI PART ====
 
-    MainWindow {
-        id: mainWindow
+    ColumnLayout {
+        anchors.centerIn: mainWindow.contentItem
+        spacing: 20
 
-        ColumnLayout {
-            anchors.centerIn: mainWindow.contentItem
+        TextField {
+            id: userNameInput
+            placeholderText: "Username";
+            text: "topatop"
+        }
 
-            spacing: 20
+        TextField {
+            id: passwordInput
+            placeholderText: "Password"
+            echoMode: TextInput.Password
+        }
 
-            TextField {
-                id: userNameInput
-                placeholderText: "Username";
-                text: "topatop"
+        TextField {
+            id: serverAddressInput
+            placeholderText: "SIP Server (e.g. sip2sip.info)"
+            text: "sip2sip.info"
+        }
+
+        TextField {
+            id: proxyInput
+            placeholderText: "SIP Proxy"
+            text: "proxy.sipthor.net"
+        }
+
+        Button {
+            text: qsTr("Register")
+            onClicked: {
+                //checking if sip endpoint is started!
+                if(Risip.sipEndpoint.status === RisipEndpoint.Started) {
+                    myAccount = Risip.getAccount(myAccountConfiguration) //Using the Risip API to get/create the account
+                    //signing in using the given configuration
+                    myAccount.login();
+                }
             }
+        }
 
-            TextField {
-                id: passwordInput
-                placeholderText: "Password"
-                echoMode: TextInput.Password
-            }
+        Button {
+            text: qsTr("Unregister")
+            onClicked: { myAccount.logout(); }
+        }
 
-            TextField {
-                id: serverAddressInput
-                placeholderText: "SIP Server (e.g. sip2sip.info)"
-                text: "sip2sip.info"
-            }
+        RowLayout {
+            Label { text: "Engine status: "}
+            Label { text: Risip.sipEndpoint.status }
+        }
 
+        RowLayout {
+            Label { text: "Account status: " }
+            Label { text: myAccount.statusText }
+        }
+
+        RowLayout {
             TextField {
-                id: proxyInput
-                placeholderText: "SIP Proxy"
-                text: "proxy.sipthor.net"
+                id: contactUriInput
+                placeholderText: "sip account to call"
             }
 
             Button {
-                text: qsTr("Register")
+                text: "Call"
+                onClicked: { mainWindow.outgoingCall = myBuddy.call(); }
+            }
+
+            Button {
+                id: answerButton
+                text: "Answer"
+                enabled: false
+
                 onClicked: {
-                    if(mySipEndpoint.status === RisipEndpoint.Started) {
-                        myAccount = Risip.getAccount(myAccountConfiguration) //Using the Risip API to get/create the account
-                        myAccount.login();
-                    }
+                    console.log("Call status: " + incomingCall.status)
+                    incomingCall.answer();
+                    answerButton.highlighted = false;
+                    answerButton.enabled = false;
                 }
             }
 
             Button {
-                text: qsTr("Unregister")
-                onClicked: { myAccount.logout(); }
+                text: "End"
+                onClicked: {
+                    outgoingCall.hangup(); incomingCall.hangup();
+                    answerButton.highlighted = false; answerButton.enabled = false; }
             }
 
-            RowLayout {
-                Label { text: "Engine status: "}
-                Label { text: mySipEndpoint.status }
-            }
-
-            RowLayout {
-                Label { text: "Account status: " }
-                Label { text: myAccount.statusText }
-            }
-
-            RowLayout {
-                TextField {
-                    id: conctactUriInput
-                    placeholderText: "sip account to call"
-                }
-
-                Button {
-                    text: "Call"
-                    onClicked: { root.outgoingCall = myBuddy.call(); }
-                }
-
-                Button {
-                    id: answerButton
-                    text: "Answer"
-                    enabled: false
-
-                    onClicked: {
-                        console.log("Call status: " + incomingCall.status)
-                        incomingCall.answer();
-                        answerButton.highlighted = false;
-                        answerButton.enabled = false;
-                    }
-                }
-
-                Button {
-                    text: "End"
-                    onClicked: {
-                        outgoingCall.hangup(); incomingCall.hangup();
-                        answerButton.highlighted = false; answerButton.enabled = false; }
-                }
-
-                Button {
-                    text: "Send test IM"
-                    onClicked: { myBuddy.sendInstantMessage("uiiiii"); }
-                }
-            }
-
-            Label { text: "Call History: " }
-
-            CallHistoryListView {
-                id: callHistoryList
-                model: myAccount.callHistoryModel
+            Button {
+                text: "Send test IM"
+                onClicked: { myBuddy.sendInstantMessage("message from risip client..uiiiiii"); }
             }
         }
     }
@@ -147,7 +139,7 @@ Item {
 
     //starting the sip endpoint engine
     //endpoint represents the SIP/Voip client / in practice a pjsip library instance
-    Component.onCompleted: { mySipEndpoint.startEngine(); }
+    Component.onCompleted: { Risip.sipEndpoint.startEngine(); }
 
     //handling singals from the sip account instance
     Connections {
@@ -175,7 +167,7 @@ Item {
         onIncomingCall: {
             answerButton.enabled = true;
             answerButton.highlighted = true;
-            root.incomingCall = call;
+            mainWindow.incomingCall = call;
         }
 
         onIncomingMessage: { console.log("incoming message: from: "
@@ -186,11 +178,13 @@ Item {
     //a simple sip contact (within same sip sip2sip.info server)
     RisipBuddy {
         id: myBuddy
-        uri: "<sip:toptop@sip2sip.info>"
+        contact: contactUriInput.text
         account: myAccount;
     }
 
     //account details/settings, in order to login.
+    // for this demo a free SIP Service is used , check the the sip2sip.info, create sip accounts there
+    // and simply use Risip to make your own clients.
     RisipAccountConfiguration {
         id: myAccountConfiguration
         account: myAccount

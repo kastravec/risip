@@ -1,9 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>ui/simpledemo/SimpleDemo.qml</file>
-        <file>ui/testui/PageLoader.qml</file>
-        <file>ui/testui/WelcomeScreen.qml</file>
-        <file>ui/testui/WelcomeScreenForm.ui.qml</file>
         <file>ui/base/SplashScreen.qml</file>
         <file>ui/base/MainWindow.qml</file>
         <file>ui/base/Main.qml</file>
@@ -12,9 +9,19 @@
         <file>ui/base/CallHistoryListViewDelegate.qml</file>
         <file>ui/base/LoginPage.qml</file>
         <file>ui/base/LoginPageForm.ui.qml</file>
-        <file>ui/base/ContactListView.qml</file>
         <file>ui/base/AddSipServicePage.qml</file>
         <file>ui/base/AddSipServicePageForm.ui.qml</file>
-        <file>ui/base/FavoriteContactListView.qml</file>
+        <file>ui/base/TechnicalProblemPage.qml</file>
+        <file>ui/base/TechnicalProblemPageForm.ui.qml</file>
+        <file>ui/base/HomePage.qml</file>
+        <file>ui/base/HomePageForm.ui.qml</file>
+        <file>ui/base/ContactsPage.qml</file>
+        <file>ui/base/ContactsPageForm.ui.qml</file>
+        <file>ui/base/WelcomeScreen.qml</file>
+        <file>ui/base/DialPage.qml</file>
+        <file>ui/base/DialPageForm.ui.qml</file>
+        <file>ui/base/SettingsPageForm.ui.qml</file>
+        <file>ui/base/SettingsPage.qml</file>
+        <file>ui/base/RisipApplication.qml</file>
     </qresource>
 </RCC>

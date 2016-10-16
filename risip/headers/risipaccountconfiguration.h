@@ -61,10 +61,13 @@ public:
     Q_PROPERTY(int proxyPort READ proxyPort WRITE setProxyPort NOTIFY proxyPortChanged)
     Q_PROPERTY(int transportId READ transportId WRITE setTransportId NOTIFY transportIdChanged)
 
+    Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
+
     //user-defined
     Q_PROPERTY(int networkProtocol READ networkProtocol WRITE setNetworkProtocol NOTIFY networkProtocolChanged)
     Q_PROPERTY(int localPort READ localPort WRITE setLocalPort NOTIFY localPortChanged)
     Q_PROPERTY(bool randomLocalPort READ randomLocalPort WRITE setRandomLocalPort NOTIFY randomLocalPortChanged)
+
 
     RisipAccountConfiguration(QObject *parent = 0);
     ~RisipAccountConfiguration();
@@ -76,19 +79,19 @@ public:
     void setUri(QString accountUri);
 
     QString userName();
-    void setUserName(QString &name);
+    void setUserName(QString name);
 
     QString password() const;
-    void setPassword(QString &pass);
+    void setPassword(QString pass);
 
     QString scheme() const;
-    void setScheme(QString &credScheme);
+    void setScheme(QString credScheme);
 
     QString serverAddress();
-    void setServerAddress(QString &address);
+    void setServerAddress(QString address);
 
     QString proxyServer() const;
-    void setProxyServer(QString &proxy);
+    void setProxyServer(QString proxy);
 
     int proxyPort() const;
     void setProxyPort(int port);
@@ -104,6 +107,8 @@ public:
 
     bool randomLocalPort() const;
     void setRandomLocalPort(bool random);
+
+    bool valid();
 
     void setCodecPriority(Codecs codecId, int priority);
 
@@ -126,6 +131,7 @@ Q_SIGNALS:
     void networkProtocolChanged(int protocol);
     void localPortChanged(int port);
     void randomLocalPortChanged(bool randomPort);
+    void validChanged(bool valid);
 
 private:
     RisipAccount *m_risipAccount;

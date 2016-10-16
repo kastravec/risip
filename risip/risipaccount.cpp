@@ -169,6 +169,7 @@ RisipAccount::~RisipAccount()
         m_buddies.take(m_buddies.keys().takeFirst())->release();
 
     //TODO delete or set to NULL ?
+    delete m_pjsipAccount;
     m_pjsipAccount = NULL;
 }
 
@@ -177,13 +178,24 @@ RisipAccountConfiguration *RisipAccount::configuration() const
     return m_configuration;
 }
 
+/**
+ * @brief RisipAccount::setConfiguration
+ * @param config setting it as the configuration object for this account.
+ *
+ * This function also changes ownership of the config object, it is passed to the account.
+ */
 void RisipAccount::setConfiguration(RisipAccountConfiguration *config)
 {
     if(m_configuration != config) {
+
+        delete m_configuration;
+        m_configuration = NULL;
         m_configuration = config;
 
-        if(m_configuration != NULL)
+        if(m_configuration != NULL) {
+            m_configuration->setParent(this);
             setStatus(NotCreated);
+        }
 
         emit configurationChanged(m_configuration);
     }
@@ -417,6 +429,7 @@ void RisipAccount::login()
         } catch(Error& err) {
             setStatus(AccountError);
             qDebug() << "Account creation error: " << err.info().c_str() << endl;
+            return;
         }
        //updating status
        setStatus(Registering);
@@ -460,8 +473,8 @@ void RisipAccount::setStatus(int status)
                 m_buddies.take(m_buddies.keys().takeFirst())->release();
 
             //deleting the internal pjsipAccount object
-            if(m_pjsipAccount)
-                delete m_pjsipAccount;
+            delete m_pjsipAccount;
+            m_pjsipAccount = NULL;
 
             break;
         }

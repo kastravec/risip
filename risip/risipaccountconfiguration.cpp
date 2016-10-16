@@ -81,7 +81,7 @@ QString RisipAccountConfiguration::userName()
     return username;
 }
 
-void RisipAccountConfiguration::setUserName(QString &name)
+void RisipAccountConfiguration::setUserName(QString name)
 {
     if(userName() != name) {
         m_accountCredentials.username = name.toStdString();
@@ -97,7 +97,7 @@ QString RisipAccountConfiguration::password() const
     return QString();
 }
 
-void RisipAccountConfiguration::setPassword(QString &pass)
+void RisipAccountConfiguration::setPassword(QString pass)
 {
     if(password() != pass) {
         m_accountCredentials.data = pass.toStdString();
@@ -114,7 +114,7 @@ QString RisipAccountConfiguration::scheme() const
     return QString();
 }
 
-void RisipAccountConfiguration::setScheme(QString &credScheme)
+void RisipAccountConfiguration::setScheme(QString credScheme)
 {
     if(scheme() != credScheme) {
         m_accountCredentials.scheme = credScheme.toStdString();
@@ -132,7 +132,7 @@ QString RisipAccountConfiguration::serverAddress()
     return QString();
 }
 
-void RisipAccountConfiguration::setServerAddress(QString &address)
+void RisipAccountConfiguration::setServerAddress(QString address)
 {
     //always add the "sip:" prefix to properly store server address inside pjsip.
     if(serverAddress() != address) {
@@ -146,7 +146,7 @@ QString RisipAccountConfiguration::proxyServer() const
     return m_proxyAddress;
 }
 
-void RisipAccountConfiguration::setProxyServer(QString &proxy)
+void RisipAccountConfiguration::setProxyServer(QString proxy)
 {
     if(m_proxyAddress != proxy) {
         m_proxyAddress = proxy;
@@ -214,6 +214,20 @@ void RisipAccountConfiguration::setRandomLocalPort(bool random)
         m_randomLocalPort = random;
         emit randomLocalPortChanged(random);
     }
+}
+
+bool RisipAccountConfiguration::valid()
+{
+    if(serverAddress().isEmpty()
+            || uri().isEmpty()
+            || userName().isEmpty()
+            || password().isEmpty()) {
+
+        qDebug()<<"Invalid Configuration: " << serverAddress() <<uri() <<userName() << password();
+        return false;
+    }
+
+    return true;
 }
 
 int RisipAccountConfiguration::transportId() const

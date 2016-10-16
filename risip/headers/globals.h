@@ -27,7 +27,22 @@
 //#  define QSYNC_EXPORT Q_DECL_IMPORT
 //#endif
 
-static const char *RISIP_QML_IMPORT_URI = "Risip";
+#include <QString>
 
+struct RisipSettingsParam {
+
+    static const char *QmlUri;
+    static const QString AccountGroup;
+    static const QString TotalAccounts;
+    static const QString Uri;
+    static const QString Username;
+    static const QString Password;
+    static const QString ServerAddress;
+    static const QString NetworkType;
+    static const QString Scheme;
+    static const QString ProxyServer;
+    static const QString LocalPort;
+    static const QString RandomLocalPort;
+};
 
 #endif // GLOBALS_H

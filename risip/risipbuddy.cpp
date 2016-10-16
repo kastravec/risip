@@ -21,6 +21,7 @@
 #include "risipaccount.h"
 #include "risipmessage.h"
 #include "risipcall.h"
+#include "risipaccountconfiguration.h"
 #include "risipcallhistorymodel.h"
 
 #include <QDebug>
@@ -49,6 +50,7 @@ RisipBuddy::RisipBuddy(QObject *parent)
     :QObject(parent)
     ,m_pjsipBuddy(NULL)
     ,m_account(NULL)
+    ,m_type(Internal)
 {
     //always subscribe to the buddy presence
     m_buddyConfig.subscribe = true;
@@ -85,6 +87,40 @@ void RisipBuddy::setUri(QString contactUri)
     }
 }
 
+QString RisipBuddy::contact() const
+{
+    return m_contact;
+}
+
+void RisipBuddy::setContact(QString &contact)
+{
+    if(m_contact != contact) {
+        m_contact = contact;
+
+        if(type() == Internal
+                || type() == ExternalSIP) {
+            if(!m_contact.isEmpty() && m_account)
+                setUri(QString("sip:")
+                       + m_contact
+                       + QString("@")
+                       + m_account->configuration()->serverAddress());
+        }
+    }
+}
+
+int RisipBuddy::type() const
+{
+    return m_type;
+}
+
+void RisipBuddy::setType(int type)
+{
+    if(m_type != type) {
+        m_type = type;
+        emit typeChanged(m_type);
+    }
+}
+
 PjsipBuddy *RisipBuddy::pjsipBuddy() const
 {
     return m_pjsipBuddy;
@@ -118,9 +154,6 @@ RisipCall *RisipBuddy::call()
     if(m_account && !uri().isEmpty()) {
         myCall->setAccount(m_account);
         myCall->setBuddy(this);
-        myCall->setCallDirection(RisipCall::Outgoing);
-        myCall->createTimestamp();
-        m_account->callHistoryModel()->addCallRecord(myCall);
         myCall->call();
     }
 
@@ -157,12 +190,14 @@ void RisipBuddy::addToAccount()
  * @brief RisipBuddy::release
  *
  * Removes this buddy from the list and destroys it. All pending and failed messages are deleted.
+ * Must call this function in order to remove a contact and delete any other application reference to it.
  */
 void RisipBuddy::release()
 {
     if(m_account) {
         m_account->removeBuddy(this);
         //TODO delete or set to NULL
+        delete m_pjsipBuddy;
         m_pjsipBuddy = NULL;
     }
 }

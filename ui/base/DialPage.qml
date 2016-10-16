@@ -19,14 +19,5 @@
 
 import QtQuick 2.7
 
-Loader {
-    property bool activate: false
-
-    id: loader
-    active: activate
-    visible: activate
-    asynchronous: true
-    focus: activate
-//    z: -1
-    anchors.fill: parent
+DialPageForm {
 }

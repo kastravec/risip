@@ -36,6 +36,8 @@ PjsipEndpoint::PjsipEndpoint()
     :Endpoint()
     ,m_risipEndpoint(NULL)
 {
+    delete pjsipEndpoinInstance;
+    pjsipEndpoinInstance = NULL;
 }
 
 PjsipEndpoint::~PjsipEndpoint()
@@ -81,6 +83,9 @@ RisipEndpoint::RisipEndpoint(QObject *parent)
 
 RisipEndpoint::~RisipEndpoint()
 {
+    delete PjsipEndpoint::instance();
+    m_pjsipEndpoint = NULL;
+
 }
 
 int RisipEndpoint::status() const
@@ -104,6 +109,7 @@ int RisipEndpoint::status() const
 
 int RisipEndpoint::error() const
 {
+    //FIXME
     return 0;
 }
 
@@ -186,9 +192,23 @@ void RisipEndpoint::startEngine()
     m_pjsipEndpoint = PjsipEndpoint::instance();
     m_pjsipEndpoint->setRisipEndpointInterface(this);
 
-    m_pjsipEndpoint->libCreate();
-    m_pjsipEndpoint->libInit(m_endpointConfig);
-    m_pjsipEndpoint->libStart();
+    try {
+        m_pjsipEndpoint->libCreate();
+    } catch (Error &err) {
+        qDebug()<<"Error creating the sip endpoint: " <<QString::fromStdString(err.info(true));
+    }
+
+    try {
+        m_pjsipEndpoint->libInit(m_endpointConfig);
+    } catch (Error &err) {
+        qDebug()<<"Error initializing the sip endpoint: " <<QString::fromStdString(err.info(true));
+    }
+
+    try {
+        m_pjsipEndpoint->libStart();
+    } catch (Error &err) {
+        qDebug()<<"Error starting the sip endpoint: " <<QString::fromStdString(err.info(true));
+    }
 
     emit statusChanged(status());
 
@@ -202,10 +222,8 @@ void RisipEndpoint::startEngine()
 
 void RisipEndpoint::stopEngine()
 {
-    if(m_pjsipEndpoint) {
+    if(m_pjsipEndpoint && m_pjsipEndpoint->libGetState() != PJSUA_STATE_NULL)
         m_pjsipEndpoint->libDestroy();
-        delete m_pjsipEndpoint;
-    }
 
     emit statusChanged(status());
 }

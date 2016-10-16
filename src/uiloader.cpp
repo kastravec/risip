@@ -18,42 +18,30 @@
 ************************************************************************************/
 
 #include "uiloader.h"
+#include "applicationsettings.h"
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 
-UiLoaderInfo::UiLoaderInfo(QObject *parent)
-    :QObject (parent)
+static QObject *applicationSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
-}
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
 
-UiLoaderInfo::~UiLoaderInfo()
-{
-
+    return ApplicationSettings::instance();
 }
 
 UiLoader::UiLoader(QObject *parent)
     :QObject(parent)
     ,m_qmlEngine(NULL)
 {
-    updatePlatformUi();
+    ApplicationSettings::instance()->setOrganizationName(QString("risip"));
+    ApplicationSettings::instance()->setApplicationName(QString("risip"));
+    ApplicationSettings::instance()->setOrganizationDomain(QString("risip.io"));
 }
 
 UiLoader::~UiLoader()
 {
-    m_qmlEngine->deleteLater();
-}
-
-void UiLoader::setPlatformUi(int platform)
-{
-    if(m_platformUi != platform) {
-        m_platformUi = platform;
-        emit platformUiChanged(m_platformUi);
-    }
-}
-
-int UiLoader::platformUi() const
-{
-    return m_platformUi;
+    delete ApplicationSettings::instance();
 }
 
 void UiLoader::start()
@@ -63,59 +51,16 @@ void UiLoader::start()
 
     QQuickStyle::setStyle("Material");
 
-    switch (m_platformUi) {
-    case iOS:
-    case iOS_iPad:
-    case iOS_iPhone:
-    case iOS_iWatch:
-    case Android:
-    case Android_Phone:
-    case Android_Tablet:
-    case Android_Watch:
-    case Windows:
-    case Windows_Phone:
-    case Windows_Tablet:
-    case Linux_Embedded:
-        break;
-    case OSX:
-    case Linux_Desktop:
-    case Windows_Desktop:
-    case SimpleDemo:
-        m_qmlEngine->load(QUrl(QLatin1String("qrc:/ui/simpledemo/SimpleDemo.qml")));
-        break;
-    }
+    qmlRegisterSingletonType<ApplicationSettings>("Application", 1, 0, "ApplicationSettings", applicationSingletonProvider);
+
+//    TODO check platform before loading
+
+    m_qmlEngine->load(QUrl(QLatin1String("qrc:/ui/base/Main.qml")));
+
+//    m_qmlEngine->load(QUrl(QLatin1String("qrc:/ui/simpledemo/SimpleDemo.qml")));
 }
 
-void UiLoader::updatePlatformUi()
+ApplicationSettings *UiLoader::applicationSettings()
 {
-
-#if defined (Q_OS_ANDROID)
-    m_platformUi = Android;
-#endif
-
-#if defined (Q_OS_IOS)
-    m_platformUi = iOS;
-#endif
-
-#if defined (Q_OS_ANDROID)
-    m_platformUi = Android_Phone;
-#endif
-
-#if defined (Q_OS_OSX)
-    m_platformUi = OSX;
-#endif
-
-#if defined (Q_OS_WIN)
-    m_platformUi = Windows;
-#endif
-
-#if defined (Q_OS_LINUX)
-    m_platformUi = Linux_Desktop;
-#endif
-
-#if defined (Q_OS_WINRT)
-    m_platformUi = WindowRT;
-#endif
-
-    emit platformUiChanged(m_platformUi);
+    return ApplicationSettings::instance();
 }

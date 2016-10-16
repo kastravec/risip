@@ -23,60 +23,23 @@
 #include <QObject>
 
 class QQmlApplicationEngine;
-
-class UiLoaderInfo : public QObject
-{
-    Q_OBJECT
-public:
-    UiLoaderInfo(QObject *parent = 0);
-    ~UiLoaderInfo();
-};
+class ApplicationSettings;
 
 class UiLoader : public QObject
 {
     Q_OBJECT
 
 public:
-    enum PlatformUI {
-        iOS,
-        iOS_iPhone = 1,
-        iOS_iPad,
-        iOS_iWatch,
-        OSX,
-        Android,
-        Android_Phone,
-        Android_Tablet,
-        Android_Watch,
-        Windows,
-        WindowRT,
-        Windows_Phone,
-        Windows_Tablet,
-        Windows_Desktop,
-        Linux_Desktop,
-        Linux_Embedded,
-        SimpleDemo,
-        Custom = -1
-    };
-
-    Q_ENUM(PlatformUI)
-    Q_PROPERTY(int platformUi READ platformUi WRITE setPlatformUi NOTIFY platformUiChanged)
+    Q_PROPERTY(ApplicationSettings * applicationSettings READ applicationSettings CONSTANT)
 
     UiLoader(QObject *parent = 0);
     ~UiLoader();
 
-    void setPlatformUi(int platform);
-    int platformUi() const;
-
     void start();
-
-Q_SIGNALS:
-    void platformUiChanged(int platform);
+    ApplicationSettings *applicationSettings();
 
 private:
-    void updatePlatformUi();
-
     QQmlApplicationEngine *m_qmlEngine;
-    int m_platformUi;
 };
 
 #endif // UILOADER_H
