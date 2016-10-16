@@ -20,12 +20,17 @@
 #include <QGuiApplication>
 
 #include "uiloader.h"
+#include "applicationsettings.h"
 #include "risip.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
+
+    ApplicationSettings::instance()->setOrganizationName(QString("risip"));
+    ApplicationSettings::instance()->setApplicationName(QString("risip"));
+    ApplicationSettings::instance()->setOrganizationDomain(QString("risip.io"));
 
     //risi wrapper object - registering the c++ classes to the QML engine
     Risip::registerToQml();

@@ -49,6 +49,7 @@ Item {
         TextField {
             id: passwordInput
             placeholderText: qsTr("Password")
+            echoMode: TextInput.Password
         }
 
         TextField {

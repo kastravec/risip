@@ -54,6 +54,9 @@ Risip::Risip(QObject *parent)
     :QObject (parent)
     ,m_settings(QCoreApplication::organizationName(), QCoreApplication::applicationName())
 {
+    qDebug()<<"settings paths: " << m_settings.applicationName() << m_settings.organizationName()
+           << m_settings.fileName() << m_settings.isWritable();
+
     readSettings();
 }
 
@@ -155,8 +158,10 @@ bool Risip::removeAccount(RisipAccountConfiguration *configuration)
 
 bool Risip::readSettings()
 {
-    m_settings.beginGroup(RisipSettingsParam::AccountGroup);
     int totaltAccounts = m_settings.value(RisipSettingsParam::TotalAccounts).toInt();
+
+    m_settings.beginGroup(RisipSettingsParam::AccountGroup);
+    qDebug()<<"total account read from settings: " << totaltAccounts;
 
     RisipAccount *account = NULL;
     for(int i=0; i<totaltAccounts; ++i) {
@@ -179,8 +184,10 @@ bool Risip::readSettings()
 
 bool Risip::saveSettings()
 {
+    m_settings.clear();
+
+    m_settings.setValue(RisipSettingsParam::TotalAccounts, m_accounts.size());
     m_settings.beginGroup(RisipSettingsParam::AccountGroup);
-    m_settings.setValue(RisipSettingsParam::TotalAccounts, m_accounts.count());
 
     RisipAccount *account = NULL;
     for(int i=0; i<m_accounts.count(); ++i) {
@@ -199,10 +206,6 @@ bool Risip::saveSettings()
     }
 
     m_settings.endGroup();
-
-    m_settings.sync();
-
-//    qDebug()<<"settings path is: " <<m_settings);/
     return true;
 }
 

@@ -34,9 +34,6 @@ UiLoader::UiLoader(QObject *parent)
     :QObject(parent)
     ,m_qmlEngine(NULL)
 {
-    ApplicationSettings::instance()->setOrganizationName(QString("risip"));
-    ApplicationSettings::instance()->setApplicationName(QString("risip"));
-    ApplicationSettings::instance()->setOrganizationDomain(QString("risip.io"));
 }
 
 UiLoader::~UiLoader()

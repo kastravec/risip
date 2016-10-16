@@ -38,16 +38,17 @@ Page {
         spacing: 15
 
         TextField {
-            id: passwordInput
-            Layout.fillWidth: true
-            echoMode: TextInput.PasswordEchoOnEdit
-            placeholderText: qsTr("Enter your password")
-        }
-
-        TextField {
             id: uernameInput
             Layout.fillWidth: true
             placeholderText: qsTr("Enter your username")
+        }
+
+        TextField {
+            id: passwordInput
+            Layout.fillWidth: true
+            echoMode: TextInput.Password
+
+            placeholderText: qsTr("Enter your password")
         }
 
         ComboBox {

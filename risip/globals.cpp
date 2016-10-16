@@ -1,7 +1,7 @@
 #include "globals.h"
 
 const char *RisipSettingsParam::QmlUri="Risip";
-const QString RisipSettingsParam::AccountGroup("SIP Accounts");
+const QString RisipSettingsParam::AccountGroup("SIP_Accounts");
 const QString RisipSettingsParam::TotalAccounts("totalAccounts");
 const QString RisipSettingsParam::Uri("uri");
 const QString RisipSettingsParam::Username("username");
