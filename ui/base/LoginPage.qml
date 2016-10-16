@@ -41,14 +41,18 @@ LoginPageForm {
         target: sipAccount
 
         onStatusChanged: {
-            console.log("account status is : " + sipAccount.statusText);
-
             if(sipAccount.status === RisipAccount.SignedIn)
                 root.signedIn();
         }
     }
 
     sipServicesInput.model: Risip.accountNames
+
+    sipServicesInput.onCurrentIndexChanged: {
+        sipAccount = Risip.accountForUri(sipServicesInput.currentText);
+        uernameInput.text = sipAccount.configuration.userName
+        passwordInput.text = sipAccount.configuration.password
+    }
 
     sipServicesInput.onActivated: {
         console.log("looking for account : " + sipServicesInput.currentText);

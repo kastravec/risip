@@ -30,6 +30,7 @@
 #include "risipmessage.h"
 #include "risipcallhistorymodel.h"
 
+#include <QSettings>
 #include <QCoreApplication>
 #include <QDebug>
 
@@ -52,11 +53,7 @@ Risip *Risip::instance()
 
 Risip::Risip(QObject *parent)
     :QObject (parent)
-    ,m_settings(QCoreApplication::organizationName(), QCoreApplication::applicationName())
 {
-    qDebug()<<"settings paths: " << m_settings.applicationName() << m_settings.organizationName()
-           << m_settings.fileName() << m_settings.isWritable();
-
     readSettings();
 }
 
@@ -158,25 +155,25 @@ bool Risip::removeAccount(RisipAccountConfiguration *configuration)
 
 bool Risip::readSettings()
 {
-    int totaltAccounts = m_settings.value(RisipSettingsParam::TotalAccounts).toInt();
-
-    m_settings.beginGroup(RisipSettingsParam::AccountGroup);
-    qDebug()<<"total account read from settings: " << totaltAccounts;
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    int totaltAccounts = settings.value(RisipSettingsParam::TotalAccounts).toInt();
 
     RisipAccount *account = NULL;
+    settings.beginGroup(RisipSettingsParam::AccountGroup);
     for(int i=0; i<totaltAccounts; ++i) {
-        m_settings.beginReadArray(QString("account" + QString::number(i)));
+        settings.beginReadArray(QString("account" + QString::number(i))); //settings array for account
         account = new RisipAccount(this);
-        account->configuration()->setUri(m_settings.value(RisipSettingsParam::Uri).toString());
-        account->configuration()->setUserName(m_settings.value(RisipSettingsParam::Username).toString());
-        account->configuration()->setPassword(m_settings.value(RisipSettingsParam::Password).toString());
-        account->configuration()->setNetworkProtocol(m_settings.value(RisipSettingsParam::NetworkType).toInt());
-        account->configuration()->setServerAddress(m_settings.value(RisipSettingsParam::ServerAddress).toString());
-        account->configuration()->setProxyServer(m_settings.value(RisipSettingsParam::ProxyServer).toString());
-        account->configuration()->setLocalPort(m_settings.value(RisipSettingsParam::LocalPort).toInt());
-        account->configuration()->setRandomLocalPort(m_settings.value(RisipSettingsParam::RandomLocalPort).toInt());
-        account->configuration()->setScheme( m_settings.value(RisipSettingsParam::Scheme).toString() );
+        account->configuration()->setUri(settings.value(RisipSettingsParam::Uri).toString());
+        account->configuration()->setUserName(settings.value(RisipSettingsParam::Username).toString());
+        account->configuration()->setPassword(settings.value(RisipSettingsParam::Password).toString());
+        account->configuration()->setNetworkProtocol(settings.value(RisipSettingsParam::NetworkType).toInt());
+        account->configuration()->setServerAddress(settings.value(RisipSettingsParam::ServerAddress).toString());
+        account->configuration()->setProxyServer(settings.value(RisipSettingsParam::ProxyServer).toString());
+        account->configuration()->setLocalPort(settings.value(RisipSettingsParam::LocalPort).toInt());
+        account->configuration()->setRandomLocalPort(settings.value(RisipSettingsParam::RandomLocalPort).toInt());
+        account->configuration()->setScheme( settings.value(RisipSettingsParam::Scheme).toString() );
         m_accounts[account->configuration()->uri()] = account;
+        settings.endArray(); //end array
     }
 
     return true;
@@ -184,28 +181,27 @@ bool Risip::readSettings()
 
 bool Risip::saveSettings()
 {
-    m_settings.clear();
-
-    m_settings.setValue(RisipSettingsParam::TotalAccounts, m_accounts.size());
-    m_settings.beginGroup(RisipSettingsParam::AccountGroup);
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    settings.setValue(RisipSettingsParam::TotalAccounts, m_accounts.size());
+    settings.beginGroup(RisipSettingsParam::AccountGroup);
 
     RisipAccount *account = NULL;
     for(int i=0; i<m_accounts.count(); ++i) {
-        m_settings.beginWriteArray(QString("account" + QString::number(i)));
+        settings.beginWriteArray(QString("account" + QString::number(i)), 9); //settings array for account
         account = m_accounts[m_accounts.keys()[i]];
-        m_settings.setValue(RisipSettingsParam::Uri, m_accounts.keys()[i]);
-        m_settings.setValue(RisipSettingsParam::Username, account->configuration()->userName());
-        m_settings.setValue(RisipSettingsParam::Password, account->configuration()->password());
-        m_settings.setValue(RisipSettingsParam::NetworkType, account->configuration()->networkProtocol());
-        m_settings.setValue(RisipSettingsParam::ServerAddress, account->configuration()->serverAddress());
-        m_settings.setValue(RisipSettingsParam::ProxyServer, account->configuration()->proxyServer());
-        m_settings.setValue(RisipSettingsParam::Scheme, account->configuration()->scheme());
-        m_settings.setValue(RisipSettingsParam::LocalPort, account->configuration()->localPort());
-        m_settings.setValue(RisipSettingsParam::RandomLocalPort, account->configuration()->randomLocalPort());
-        m_settings.endArray();
+        settings.setValue(RisipSettingsParam::Uri, m_accounts.keys()[i]);
+        settings.setValue(RisipSettingsParam::Username, account->configuration()->userName());
+        settings.setValue(RisipSettingsParam::Password, account->configuration()->password());
+        settings.setValue(RisipSettingsParam::NetworkType, account->configuration()->networkProtocol());
+        settings.setValue(RisipSettingsParam::ServerAddress, account->configuration()->serverAddress());
+        settings.setValue(RisipSettingsParam::ProxyServer, account->configuration()->proxyServer());
+        settings.setValue(RisipSettingsParam::Scheme, account->configuration()->scheme());
+        settings.setValue(RisipSettingsParam::LocalPort, account->configuration()->localPort());
+        settings.setValue(RisipSettingsParam::RandomLocalPort, account->configuration()->randomLocalPort());
+        settings.endArray(); //end settings array for account
     }
 
-    m_settings.endGroup();
+    settings.endGroup();
     return true;
 }
 

@@ -60,14 +60,12 @@ public:
     Q_PROPERTY(QString proxyServer READ proxyServer WRITE setProxyServer NOTIFY proxyServerChanged)
     Q_PROPERTY(int proxyPort READ proxyPort WRITE setProxyPort NOTIFY proxyPortChanged)
     Q_PROPERTY(int transportId READ transportId WRITE setTransportId NOTIFY transportIdChanged)
-
     Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
 
     //user-defined
     Q_PROPERTY(int networkProtocol READ networkProtocol WRITE setNetworkProtocol NOTIFY networkProtocolChanged)
     Q_PROPERTY(int localPort READ localPort WRITE setLocalPort NOTIFY localPortChanged)
     Q_PROPERTY(bool randomLocalPort READ randomLocalPort WRITE setRandomLocalPort NOTIFY randomLocalPortChanged)
-
 
     RisipAccountConfiguration(QObject *parent = 0);
     ~RisipAccountConfiguration();
@@ -76,22 +74,22 @@ public:
     void setAccount(RisipAccount *account);
 
     QString uri();
-    void setUri(QString accountUri);
+    void setUri(const QString &accountUri);
 
     QString userName();
-    void setUserName(QString name);
+    void setUserName(const QString &name);
 
     QString password() const;
-    void setPassword(QString pass);
+    void setPassword(const QString &pass);
 
     QString scheme() const;
-    void setScheme(QString credScheme);
+    void setScheme(const QString &credScheme);
 
     QString serverAddress();
-    void setServerAddress(QString address);
+    void setServerAddress(const QString &address);
 
     QString proxyServer() const;
-    void setProxyServer(QString proxy);
+    void setProxyServer(const QString &proxy);
 
     int proxyPort() const;
     void setProxyPort(int port);
@@ -120,12 +118,12 @@ public:
 
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);
-    void uriChanged(QString &uri);
-    void userNameChanged(QString &username);
-    void passwordChanged(QString &password);
-    void schemeChanged(QString &scheme);
-    void serverAddressChanged(QString &serverAddress);
-    void proxyServerChanged(QString &proxy);
+    void uriChanged(const QString &uri);
+    void userNameChanged(const QString &username);
+    void passwordChanged(const QString &password);
+    void schemeChanged(const QString &scheme);
+    void serverAddressChanged(const QString &serverAddress);
+    void proxyServerChanged(const QString &proxy);
     void proxyPortChanged(int &port);
     void transportIdChanged(int transportId);
     void networkProtocolChanged(int protocol);

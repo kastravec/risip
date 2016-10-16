@@ -21,7 +21,6 @@
 #define RISIP_H
 
 #include "risipendpoint.h"
-#include <QSettings>
 #include <QQmlListProperty>
 
 class RisipAccount;
@@ -65,7 +64,6 @@ private:
     static Risip *m_risipInstance;
     QHash<QString, RisipAccount *> m_accounts;
     RisipEndpoint m_sipEndpoint;
-    QSettings m_settings;
 };
 
 #endif // RISIP_H

@@ -63,7 +63,7 @@ QString RisipAccountConfiguration::uri()
     return QString::fromStdString(m_accountConfig.idUri);
 }
 
-void RisipAccountConfiguration::setUri(QString accountUri)
+void RisipAccountConfiguration::setUri(const QString &accountUri)
 {
     string accountUristr = accountUri.toStdString();
     if(m_accountConfig.idUri != accountUristr) {
@@ -81,7 +81,7 @@ QString RisipAccountConfiguration::userName()
     return username;
 }
 
-void RisipAccountConfiguration::setUserName(QString name)
+void RisipAccountConfiguration::setUserName(const QString &name)
 {
     if(userName() != name) {
         m_accountCredentials.username = name.toStdString();
@@ -97,7 +97,7 @@ QString RisipAccountConfiguration::password() const
     return QString();
 }
 
-void RisipAccountConfiguration::setPassword(QString pass)
+void RisipAccountConfiguration::setPassword(const QString &pass)
 {
     if(password() != pass) {
         m_accountCredentials.data = pass.toStdString();
@@ -114,7 +114,7 @@ QString RisipAccountConfiguration::scheme() const
     return QString();
 }
 
-void RisipAccountConfiguration::setScheme(QString credScheme)
+void RisipAccountConfiguration::setScheme(const QString &credScheme)
 {
     if(scheme() != credScheme) {
         m_accountCredentials.scheme = credScheme.toStdString();
@@ -132,7 +132,7 @@ QString RisipAccountConfiguration::serverAddress()
     return QString();
 }
 
-void RisipAccountConfiguration::setServerAddress(QString address)
+void RisipAccountConfiguration::setServerAddress(const QString &address)
 {
     //always add the "sip:" prefix to properly store server address inside pjsip.
     if(serverAddress() != address) {
@@ -146,7 +146,7 @@ QString RisipAccountConfiguration::proxyServer() const
     return m_proxyAddress;
 }
 
-void RisipAccountConfiguration::setProxyServer(QString proxy)
+void RisipAccountConfiguration::setProxyServer(const QString &proxy)
 {
     if(m_proxyAddress != proxy) {
         m_proxyAddress = proxy;
