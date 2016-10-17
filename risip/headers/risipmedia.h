@@ -68,10 +68,11 @@ Q_SIGNALS:
     void keepMediaSettingsChanged(bool keep);
 
 private:
-    AudDevManager *m_pjsipMediaManager;
-    AudioMedia *m_callMedia;
-    AudioMedia *m_localMedia;
-    AudioMedia *m_playbackDeviceMedia;
+    VidDevManager *m_pjsipVideoManager;
+    AudDevManager *m_pjsipAudioManager;
+    AudioMedia *m_callAudio;
+    AudioMedia *m_localAudioMedia;
+    AudioMedia *m_audioDevice;
     RisipCall *m_activeCall;
     RisipEndpoint *m_sipEndpoint;
 

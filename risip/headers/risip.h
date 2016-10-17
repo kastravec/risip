@@ -35,22 +35,25 @@ public:
     Q_PROPERTY(QQmlListProperty<RisipAccount> accounts READ accounts NOTIFY accountsChanged)
     Q_PROPERTY(QStringList accountNames READ accountNames NOTIFY accountNamesChanged)
     Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint CONSTANT)
+    Q_PROPERTY(RisipAccount * defaultAccount READ defaultAccount NOTIFY defaultAccountChanged)
+    Q_PROPERTY(bool firstRun READ firstRun CONSTANT)
 
-    static Risip *instance();
     ~Risip();
+    static Risip *instance();
+    static void registerToQml();
 
     QQmlListProperty<RisipAccount> accounts();
     QStringList accountNames() const;
     RisipEndpoint *sipEndpoint();
-
-    static void registerToQml();
+    RisipAccount *defaultAccount();
+    bool firstRun() const;
 
     Q_INVOKABLE RisipAccount *accountForUri(const QString &accountUri);
     Q_INVOKABLE RisipAccount *accountForConfiguration(RisipAccountConfiguration *configuration);
     Q_INVOKABLE RisipAccount *createAccount(RisipAccountConfiguration *configuration);
     Q_INVOKABLE bool removeAccount(QString &accountUri);
     Q_INVOKABLE bool removeAccount(RisipAccountConfiguration *configuration);
-
+    Q_INVOKABLE void setDefaultAccount(const QString &uri);
     Q_INVOKABLE bool readSettings();
     Q_INVOKABLE bool saveSettings();
     Q_INVOKABLE bool resetSettings();
@@ -58,12 +61,14 @@ public:
 Q_SIGNALS:
     void accountsChanged();
     void accountNamesChanged();
+    void defaultAccountChanged(RisipAccount *account);
 
 private:
     Risip(QObject *parent = 0);
     static Risip *m_risipInstance;
     QHash<QString, RisipAccount *> m_accounts;
     RisipEndpoint m_sipEndpoint;
+    QString m_defaultAccountUri;
 };
 
 #endif // RISIP_H

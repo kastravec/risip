@@ -93,6 +93,7 @@ public:
     Q_PROPERTY(RisipEndpoint * sipEndPoint READ sipEndPoint WRITE setSipEndPoint NOTIFY sipEndPointChanged)
     Q_PROPERTY(int presence READ presence WRITE setPresence NOTIFY presenceChanged)
     Q_PROPERTY(QString presenceNote READ presenceNote WRITE setPresenceNote NOTIFY presenceNoteChanged)
+    Q_PROPERTY(bool autoSignIn READ autoSignIn WRITE setAutoSignIn NOTIFY autoSignInChanged)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusTextChanged)
     Q_PROPERTY(QQmlListProperty<RisipBuddy> buddies READ buddies NOTIFY buddiesChanged)
@@ -116,6 +117,9 @@ public:
     QString presenceNote() const;
     void setPresenceNote(const QString &note);
 
+    bool autoSignIn() const;
+    void setAutoSignIn(bool signin);
+
     int status() const;
     QString statusText() const;
 
@@ -136,6 +140,7 @@ Q_SIGNALS:
     void presenceChanged(int presence);
     void presenceNoteChanged(QString note);
     void statusChanged(int status);
+    void autoSignInChanged(bool signin);
     void statusTextChanged(QString);
     void incomingCall(RisipCall *call);
     void incomingMessage(RisipMessage *message);
@@ -154,6 +159,7 @@ private:
     RisipAccountConfiguration *m_configuration;
     RisipEndpoint *m_sipEndpoint;
     PresenceStatus m_presence;
+    bool m_autoSignIn;
     int m_status;
     QHash<QString, RisipBuddy *> m_buddies;
     RisipCallHistoryModel *m_callHistoryModel;

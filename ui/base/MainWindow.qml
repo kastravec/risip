@@ -21,6 +21,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.1
 import QtQuick.Layouts 1.3
+import QtQuick.Controls.Material 2.0
 
 import Risip 1.0
 
@@ -30,6 +31,10 @@ ApplicationWindow {
     height: 1280
     visibility: Window.AutomaticVisibility
     visible: true
+
+    Material.theme: Material.Dark
+//    Material.color:
+    Material.accent: Material.Purple
 
     property string uiBasePath: "qrc:/ui/base/"
     property RisipApplication risipApp: RisipApplication {}
@@ -101,6 +106,15 @@ ApplicationWindow {
             source: uiBasePath + "SettingsPage.qml"
             active: false
             asynchronous: true
+        }
+    }
+
+    Connections {
+        target: homePageLoader.item
+
+        onSignedOut: {
+            loginPageLoader.active = true;
+            root.footer.enabled = false;
         }
     }
 

@@ -158,6 +158,7 @@ RisipAccount::RisipAccount(QObject *parent)
     ,m_configuration(new RisipAccountConfiguration(this))
     ,m_sipEndpoint(NULL)
     ,m_status(NotCreated)
+    ,m_autoSignIn(true)
     ,m_buddies()
     ,m_callHistoryModel(new RisipCallHistoryModel(this))
 {
@@ -391,6 +392,19 @@ void RisipAccount::setPresenceNote(const QString &note)
         } catch (Error &err) {
             qDebug()<<"Error setting presence notes for the account!" << QString::fromStdString( err.info(true) );
         }
+    }
+}
+
+bool RisipAccount::autoSignIn() const
+{
+    return m_autoSignIn;
+}
+
+void RisipAccount::setAutoSignIn(bool signin)
+{
+    if(m_autoSignIn != signin) {
+        m_autoSignIn = signin;
+        emit autoSignInChanged(m_autoSignIn);
     }
 }
 

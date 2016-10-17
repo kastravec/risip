@@ -32,6 +32,11 @@
 struct RisipSettingsParam {
 
     static const char *QmlUri;
+
+    static const QString FirstRun;
+    static const QString DefaultAccount;
+    static const QString AutoSignIn;
+
     static const QString AccountGroup;
     static const QString TotalAccounts;
     static const QString Uri;

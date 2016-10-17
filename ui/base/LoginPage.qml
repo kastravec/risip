@@ -28,35 +28,24 @@ LoginPageForm {
     signal signedIn
     signal addSipService
 
-    addSipServiceButton.onClicked: {
-        root.addSipService();
-    }
+    addSipServiceButton.onClicked: { root.addSipService(); }
 
-    loginButton.onClicked: {
-        console.log("Sign in with account and configuration is valid? : " + sipAccount.configuration.valid)
-        sipAccount.login();
-    }
+    loginButton.onClicked: { sipAccount.login(); }
 
     Connections {
         target: sipAccount
 
         onStatusChanged: {
-            if(sipAccount.status === RisipAccount.SignedIn)
+            if(sipAccount.status === RisipAccount.SignedIn) {
+                Risip.setDefaultAccount(sipAccount.configuration.uri);
                 root.signedIn();
+            }
         }
     }
 
     sipServicesInput.model: Risip.accountNames
 
-    sipServicesInput.onCurrentIndexChanged: {
-        sipAccount = Risip.accountForUri(sipServicesInput.currentText);
-        uernameInput.text = sipAccount.configuration.userName
-        passwordInput.text = sipAccount.configuration.password
-    }
-
     sipServicesInput.onActivated: {
-        console.log("looking for account : " + sipServicesInput.currentText);
-
         sipAccount = Risip.accountForUri(sipServicesInput.currentText);
         uernameInput.text = sipAccount.configuration.userName
         passwordInput.text = sipAccount.configuration.password

@@ -26,25 +26,10 @@ Item {
     width: 400
     height: 600
 
-
     ColumnLayout {
-        anchors.top: parent.top
-        anchors.topMargin: 25
+        spacing: 20
+        anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-
-        RowLayout {
-
-            ComboBox {
-                id: comboBox1
-                Layout.preferredHeight: 40
-                Layout.preferredWidth: 227
-            }
-
-            CheckBox {
-                id: checkBox1
-                text: qsTr("GSM")
-            }
-        }
 
         TextField {
             id: textField1
@@ -53,76 +38,15 @@ Item {
             Layout.preferredWidth: 322
         }
 
+        CheckBox {
+            id: checkBox1
+            text: qsTr("GSM")
+        }
+
         Button {
             id: button1
             text: qsTr("Call")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        }
-    }
-
-
-    ColumnLayout {
-        x: 35
-        y: 245
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 25
-        anchors.horizontalCenter: parent.horizontalCenter
-
-        ListView {
-            id: listView1
-            Layout.preferredHeight: 283
-            Layout.preferredWidth: 322
-            model: ListModel {
-                ListElement {
-                    name: "Some text message"
-                }
-
-                ListElement {
-                    name: "Another one "
-                }
-
-                ListElement {
-                    name: "More more more "
-                }
-
-                ListElement {
-                    name: "Less ..."
-                }
-            }
-            delegate: Item {
-                x: 5
-                width: 80
-                height: 40
-                Row {
-                    id: row1
-                    Rectangle {
-                        width: 40
-                        height: 40
-                    }
-
-                    Text {
-                        text: name
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.bold: true
-                    }
-                    spacing: 10
-                }
-            }
-        }
-
-        RowLayout {
-
-            TextField {
-                id: textField2
-                placeholderText: qsTr("Send a message..")
-                Layout.preferredHeight: 40
-                Layout.preferredWidth: 216
-            }
-
-            Button {
-                id: button2
-                text: qsTr("Button")
-            }
         }
     }
 }

@@ -18,6 +18,25 @@
 ************************************************************************************/
 
 import QtQuick 2.7
+import Risip 1.0
 
 HomePageForm {
+    id: root
+
+    property RisipAccount sipAccount: Risip.defaultAccount
+    signal signedOut
+
+    statusLabel.text: sipAccount.statusText
+    userNameLabel.text: sipAccount.configuration.userName
+
+    signOutButton.onClicked: { sipAccount.logout(); }
+
+    Connections {
+        target: sipAccount
+
+        onStatusChanged: {
+            if(sipAccount.status === RisipAccount.SignedOut)
+                root.signedOut();
+        }
+    }
 }

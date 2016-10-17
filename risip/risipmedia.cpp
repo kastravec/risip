@@ -25,10 +25,10 @@
 
 RisipMedia::RisipMedia(QObject *parent)
     :QObject(parent)
-    ,m_pjsipMediaManager(NULL)
-    ,m_callMedia(NULL)
-    ,m_localMedia(NULL)
-    ,m_playbackDeviceMedia(NULL)
+    ,m_pjsipAudioManager(NULL)
+    ,m_callAudio(NULL)
+    ,m_localAudioMedia(NULL)
+    ,m_audioDevice(NULL)
     ,m_activeCall(NULL)
     ,m_sipEndpoint(NULL)
     ,m_keepMediaSettings(true)
@@ -66,9 +66,9 @@ void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
         emit sipEndpointChanged(m_sipEndpoint);
 
         if(m_sipEndpoint) {
-            m_pjsipMediaManager = &m_sipEndpoint->endpointInstance()->audDevManager();
-            m_localMedia = &m_pjsipMediaManager->getCaptureDevMedia();
-            m_playbackDeviceMedia = &m_pjsipMediaManager->getPlaybackDevMedia();
+            m_pjsipAudioManager = &(m_sipEndpoint->endpointInstance()->audDevManager());
+            m_localAudioMedia = &m_pjsipAudioManager->getCaptureDevMedia();
+            m_audioDevice = &m_pjsipAudioManager->getPlaybackDevMedia();
 
             //TODO better place where to adjust these media device settings
 //            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_VOLUME_SETTING, 0, true);
@@ -115,8 +115,8 @@ void RisipMedia::setActiveCall(RisipCall *call)
 
 int RisipMedia::speakerVolume() const
 {
-    if(m_pjsipMediaManager)
-        return m_pjsipMediaManager->getOutputVolume();
+    if(m_pjsipAudioManager)
+        return m_pjsipAudioManager->getOutputVolume();
 
     return -1;
 }
@@ -127,9 +127,9 @@ int RisipMedia::speakerVolume() const
  */
 void RisipMedia::setSpeakerVolume(int volume)
 {
-    if(m_pjsipMediaManager) {
-        if(m_pjsipMediaManager->getOutputVolume() != volume) {
-            m_pjsipMediaManager->setOutputVolume(volume, m_keepMediaSettings);
+    if(m_pjsipAudioManager) {
+        if(m_pjsipAudioManager->getOutputVolume() != volume) {
+            m_pjsipAudioManager->setOutputVolume(volume, m_keepMediaSettings);
             emit speakerVolumeChanged(volume);
         }
     }
@@ -137,8 +137,8 @@ void RisipMedia::setSpeakerVolume(int volume)
 
 int RisipMedia::micVolume() const
 {
-    if(m_pjsipMediaManager)
-        return m_pjsipMediaManager->getInputVolume();
+    if(m_pjsipAudioManager)
+        return m_pjsipAudioManager->getInputVolume();
 }
 
 /**
@@ -147,9 +147,9 @@ int RisipMedia::micVolume() const
  */
 void RisipMedia::setMicVolume(int volume)
 {
-    if(m_pjsipMediaManager) {
-        if(m_pjsipMediaManager->getInputVolume() != volume) {
-            m_pjsipMediaManager->setInputVolume(volume, m_keepMediaSettings);
+    if(m_pjsipAudioManager) {
+        if(m_pjsipAudioManager->getInputVolume() != volume) {
+            m_pjsipAudioManager->setInputVolume(volume, m_keepMediaSettings);
             emit micVolumeChanged(volume);
         }
     }
@@ -186,18 +186,18 @@ void RisipMedia::startCallMedia()
     // Iterate all the call medias
     for (int i = 0; i < callInfo.media.size(); ++i) {
         if (callInfo.media[i].type == PJMEDIA_TYPE_AUDIO && m_activeCall->pjsipCall()->getMedia(i)) {
-            m_callMedia = (AudioMedia *)m_activeCall->pjsipCall()->getMedia(i);
+            m_callAudio = (AudioMedia *)m_activeCall->pjsipCall()->getMedia(i);
             break;
         }
     }
 
     // Connect the call audio media to sound device
-    m_localMedia->startTransmit(*m_callMedia);
-    m_callMedia->startTransmit(*m_playbackDeviceMedia);
+    m_localAudioMedia->startTransmit(*m_callAudio);
+    m_callAudio->startTransmit(*m_audioDevice);
 
 //    m_callMedia->adjustRxLevel()
-    m_callMedia->adjustRxLevel(1.0);
-    m_callMedia->adjustTxLevel(1.0);
-    m_localMedia->adjustRxLevel(1.0);
-    m_localMedia->adjustTxLevel(1.0);
+    m_callAudio->adjustRxLevel(1.0);
+    m_callAudio->adjustTxLevel(1.0);
+    m_localAudioMedia->adjustRxLevel(1.0);
+    m_localAudioMedia->adjustTxLevel(1.0);
 }

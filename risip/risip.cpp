@@ -82,6 +82,26 @@ RisipEndpoint *Risip::sipEndpoint()
     return &m_sipEndpoint;
 }
 
+RisipAccount *Risip::defaultAccount()
+{
+    return accountForUri(m_defaultAccountUri);
+}
+
+bool Risip::firstRun() const
+{
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+
+    return settings.value(RisipSettingsParam::FirstRun, true).toBool();
+}
+
+void Risip::setDefaultAccount(const QString &uri)
+{
+    if(m_defaultAccountUri != uri) {
+        m_defaultAccountUri = uri;
+        emit defaultAccountChanged(accountForUri(m_defaultAccountUri));
+    }
+}
+
 void Risip::registerToQml()
 {
     qmlRegisterSingletonType<Risip>(RisipSettingsParam::QmlUri, 1, 0, "Risip", risipSingletontypeProvider);
@@ -103,7 +123,6 @@ RisipAccount *Risip::accountForUri(const QString &accountUri)
     return new RisipAccount(this);
 }
 
-//sip2sip.info
 RisipAccount *Risip::accountForConfiguration(RisipAccountConfiguration *configuration)
 {
     if(configuration) {
@@ -158,24 +177,29 @@ bool Risip::readSettings()
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     int totaltAccounts = settings.value(RisipSettingsParam::TotalAccounts).toInt();
 
-    RisipAccount *account = NULL;
+    RisipAccountConfiguration *configuration = NULL;
     settings.beginGroup(RisipSettingsParam::AccountGroup);
     for(int i=0; i<totaltAccounts; ++i) {
         settings.beginReadArray(QString("account" + QString::number(i))); //settings array for account
-        account = new RisipAccount(this);
-        account->configuration()->setUri(settings.value(RisipSettingsParam::Uri).toString());
-        account->configuration()->setUserName(settings.value(RisipSettingsParam::Username).toString());
-        account->configuration()->setPassword(settings.value(RisipSettingsParam::Password).toString());
-        account->configuration()->setNetworkProtocol(settings.value(RisipSettingsParam::NetworkType).toInt());
-        account->configuration()->setServerAddress(settings.value(RisipSettingsParam::ServerAddress).toString());
-        account->configuration()->setProxyServer(settings.value(RisipSettingsParam::ProxyServer).toString());
-        account->configuration()->setLocalPort(settings.value(RisipSettingsParam::LocalPort).toInt());
-        account->configuration()->setRandomLocalPort(settings.value(RisipSettingsParam::RandomLocalPort).toInt());
-        account->configuration()->setScheme( settings.value(RisipSettingsParam::Scheme).toString() );
-        m_accounts[account->configuration()->uri()] = account;
+
+        configuration = new RisipAccountConfiguration;
+        configuration->setUri(settings.value(RisipSettingsParam::Uri).toString());
+        configuration->setUserName(settings.value(RisipSettingsParam::Username).toString());
+        configuration->setPassword(settings.value(RisipSettingsParam::Password).toString());
+        configuration->setNetworkProtocol(settings.value(RisipSettingsParam::NetworkType).toInt());
+        configuration->setServerAddress(settings.value(RisipSettingsParam::ServerAddress).toString());
+        configuration->setProxyServer(settings.value(RisipSettingsParam::ProxyServer).toString());
+        configuration->setLocalPort(settings.value(RisipSettingsParam::LocalPort).toInt());
+        configuration->setRandomLocalPort(settings.value(RisipSettingsParam::RandomLocalPort).toInt());
+        configuration->setScheme(settings.value(RisipSettingsParam::Scheme).toString());
+
+        RisipAccount *acc = createAccount(configuration); //creating account`
+        acc->setAutoSignIn(settings.value(RisipSettingsParam::AutoSignIn).toBool());
         settings.endArray(); //end array
     }
 
+    //setting default account always
+    setDefaultAccount(settings.value(RisipSettingsParam::DefaultAccount).toString());
     return true;
 }
 
@@ -183,9 +207,11 @@ bool Risip::saveSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue(RisipSettingsParam::TotalAccounts, m_accounts.size());
-    settings.beginGroup(RisipSettingsParam::AccountGroup);
+    settings.setValue(RisipSettingsParam::FirstRun, false);
+    settings.setValue(RisipSettingsParam::DefaultAccount, defaultAccount()->configuration()->uri());
 
     RisipAccount *account = NULL;
+    settings.beginGroup(RisipSettingsParam::AccountGroup);
     for(int i=0; i<m_accounts.count(); ++i) {
         settings.beginWriteArray(QString("account" + QString::number(i)), 9); //settings array for account
         account = m_accounts[m_accounts.keys()[i]];
@@ -198,6 +224,7 @@ bool Risip::saveSettings()
         settings.setValue(RisipSettingsParam::Scheme, account->configuration()->scheme());
         settings.setValue(RisipSettingsParam::LocalPort, account->configuration()->localPort());
         settings.setValue(RisipSettingsParam::RandomLocalPort, account->configuration()->randomLocalPort());
+        settings.setValue(RisipSettingsParam::AutoSignIn, account->autoSignIn());
         settings.endArray(); //end settings array for account
     }
 
@@ -207,6 +234,8 @@ bool Risip::saveSettings()
 
 bool Risip::resetSettings()
 {
-
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    settings.clear();
+    settings.sync();
     return true;
 }
