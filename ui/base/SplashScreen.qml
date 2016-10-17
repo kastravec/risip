@@ -22,18 +22,19 @@ import QtQuick.Window 2.1
 
 Window {
     id: splash
+    width: 720
+    height: 1280
     color: "transparent"
     modality: Qt.ApplicationModal
     flags: Qt.SplashScreen
     visibility: Window.AutomaticVisibility
 
-    property int timeoutInterval: 1250
+    property int timeoutInterval: 700
     signal timeout()
 
     Image {
         id: splashImage
-        fillMode: Image.PreserveAspectFit
-        source: "qrc:/images/hello.jpeg"
+        source: "qrc:/images/calling.jpeg"
         anchors.fill: parent
     }
 

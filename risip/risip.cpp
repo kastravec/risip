@@ -63,7 +63,7 @@ Risip::~Risip()
     while (!m_accounts.isEmpty())
         delete m_accounts.take(m_accounts.keys().takeFirst());
 
-    m_sipEndpoint.stopEngine();
+    m_sipEndpoint.stop();
 }
 
 QQmlListProperty<RisipAccount> Risip::accounts()

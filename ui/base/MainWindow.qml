@@ -30,17 +30,15 @@ ApplicationWindow {
     width: 720
     height: 1280
     visibility: Window.AutomaticVisibility
-    visible: true
 
     Material.theme: Material.Dark
-//    Material.color:
     Material.accent: Material.Purple
 
     property string uiBasePath: "qrc:/ui/base/"
-    property RisipApplication risipApp: RisipApplication {}
+    property RisipEndpoint sipEndpoint: Risip.sipEndpoint
 
-    Component.onCompleted: { risipApp.start(); }
-    Component.onDestruction: { risipApp.stop(); }
+    Component.onCompleted: { sipEndpoint.start(); }
+    Component.onDestruction: { sipEndpoint.stop(); }
 
     footer: TabBar {
         id: mainTabBar
@@ -51,62 +49,58 @@ ApplicationWindow {
         TabButton { text: qsTr("Settings") }
     }
 
+    StackLayout {
+        id: stackLayout
+        currentIndex: mainTabBar.currentIndex
+        anchors.fill: root.contentItem
+
+        PageLoader {
+            id: contactsPageLoader
+            source: uiBasePath + "ContactsPage.qml"
+            active: true
+        }
+
+        PageLoader {
+            id: homePageLoader
+            source: uiBasePath + "HomePage.qml"
+            active: true
+        }
+
+        PageLoader {
+            id: dialPageLoader
+            source: uiBasePath + "DialPage.qml"
+            active: true
+        }
+
+        PageLoader {
+            id: settingsPageLoader
+            source: uiBasePath + "SettingsPage.qml"
+            active: true
+        }
+    }
+
+    Loader {
+        id: loginPageLoader
+        source: uiBasePath + "LoginPage.qml"
+        active: true
+        width: root.width
+        height: root.height
+        z:1
+    }
+
+    PageLoader {
+        id: addSipServicePageLoader
+        source: uiBasePath + "AddSipServicePage.qml"
+        active: false
+    }
+
     Loader {
         id: welcomeScreenLoader
         active: true
         source: uiBasePath + "WelcomeScreen.qml"
         width: root.width
         height: root.height
-        asynchronous: true
         z:1
-    }
-
-    Loader {
-        id: loginPageLoader
-        source: uiBasePath + "LoginPage.qml"
-        active: false
-        anchors.fill: root.contentItem
-    }
-
-    Loader {
-        id: addSipServicePageLoader
-        source: uiBasePath + "AddSipServicePage.qml"
-        active: false
-        anchors.fill: root.contentItem
-    }
-
-    StackLayout {
-        id: stackLayout
-        currentIndex: mainTabBar.currentIndex
-        anchors.fill: root.contentItem
-
-        Loader {
-            id: contactsPageLoader
-            source: uiBasePath + "ContactsPage.qml"
-            active: false
-            asynchronous: true
-        }
-
-        Loader {
-            id: homePageLoader
-            source: uiBasePath + "HomePage.qml"
-            active: false
-            asynchronous: true
-        }
-
-        Loader {
-            id: dialPageLoader
-            source: uiBasePath + "DialPage.qml"
-            active: false
-            asynchronous: true
-        }
-
-        Loader {
-            id: settingsPageLoader
-            source: uiBasePath + "SettingsPage.qml"
-            active: false
-            asynchronous: true
-        }
     }
 
     Connections {
@@ -153,17 +147,12 @@ ApplicationWindow {
             welcomeScreenLoader.active = false;
             root.footer.enabled = false;
 
-            loginPageLoader.active = true;
-
             contactsPageLoader.active = true;
             homePageLoader.active = true;
             dialPageLoader.active = true;
             settingsPageLoader.active = true;
-        }
-    }
 
-    Connections {
-        target: risipApp
-        onReadyChanged: {console.log("READY!")}
+            loginPageLoader.active = true;
+        }
     }
 }

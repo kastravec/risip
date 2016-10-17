@@ -26,5 +26,6 @@
         <file>ui/base/qtquickcontrols2.conf</file>
         <file>ui/base/CallPage.qml</file>
         <file>ui/base/CallPageForm.ui.qml</file>
+        <file>ui/base/PageLoader.qml</file>
     </qresource>
 </RCC>

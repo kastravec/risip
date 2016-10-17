@@ -77,8 +77,8 @@ public:
     static PjsipEndpoint *endpointInstance();
 
 public Q_SLOTS:
-    void startEngine();
-    void stopEngine();
+    void start();
+    void stop();
 
 Q_SIGNALS:
     void statusChanged(int status);

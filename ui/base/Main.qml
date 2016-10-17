@@ -1,6 +1,3 @@
-import QtQuick 2.7
-import QtQuick.Window 2.2
-
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
 **
@@ -24,11 +21,23 @@ import QtQuick 2.7
 Item {
     id: root
 
+    property string uiBasePath: "qrc:/ui/base/"
+    Loader {
+        id: splashScreenLoader
+        source: uiBasePath + "SplashScreen.qml"
+        active: true
+    }
+
     Loader {
         id: mainWindowLoader
         active: true
-        source: "qrc:/ui/base/MainWindow.qml"
+        source: "MainWindow.qml"
         asynchronous: true
         anchors.fill: parent
+    }
+
+    Connections {
+        target: splashScreenLoader.item
+        onTimeout: { mainWindowLoader.item.visible = true; }
     }
 }

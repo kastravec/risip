@@ -187,7 +187,7 @@ PjsipEndpoint *RisipEndpoint::endpointInstance()
     return PjsipEndpoint::instance();
 }
 
-void RisipEndpoint::startEngine()
+void RisipEndpoint::start()
 {
     m_pjsipEndpoint = PjsipEndpoint::instance();
     m_pjsipEndpoint->setRisipEndpointInterface(this);
@@ -220,7 +220,7 @@ void RisipEndpoint::startEngine()
     Endpoint::instance().codecSetPriority("speex/32000", 0);
 }
 
-void RisipEndpoint::stopEngine()
+void RisipEndpoint::stop()
 {
     if(m_pjsipEndpoint && m_pjsipEndpoint->libGetState() != PJSUA_STATE_NULL)
         m_pjsipEndpoint->libDestroy();
