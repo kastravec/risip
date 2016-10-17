@@ -1,3 +1,6 @@
+Copyright (C) 2016  Petref Saraci
+ petref.saraci@risip.io
+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -12,8 +15,6 @@
  along with this program. See LICENSE.GPLv3
  A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 
- Copyright (C) 2016  Petref Saraci
-
 
 * What is Risip? *
 
@@ -23,7 +24,16 @@ Risip software provides a set of APIs, headers, source files and other utilities
 
 1. Download the latest Qt open source package and follow the instructions. (http://qt.io)
 
-2. Build PJSIP
+Install Qt and make sure everything is running smoothly with QtCreator IDE.
+
+2. Use (build/compile) PJSIP
+
+Risip provides Pjsip binaries for all supported platforms (Win, OSX, Linux, Android, iOS) and they can be found in the Download section of this repository. The link can be found here:
+
+**https://bitbucket.org/psaraci/risip/downloads**
+
+
+Otherwise:
 Use always the latest PJSIP available, download and follow the compilation and build steps provided by the PJSIP team.
 Pjsip build instruction: https://trac.pjsip.org/repos/wiki/Getting-Started
 Pjsip website: http://pjsip.org/
@@ -47,9 +57,16 @@ For more details on where and which directory names to be used, please refer to 
 - do not forget Defines - just use the risip project file as sample
 - do not forget Mac/iOS Frameworks or libs, same on Android and so forth
 
-4. Use some SIP server to start testing
-SIP accounts - Calls
-- URI : sip:username@server.com
-- registar: sip:server.com
-- do not forget proxies and port number - if needed
-- do not forget codecs , their priorities may break the call.
+4. ----- Use some SIP server to start testing --------
+
+There are many free SIP services out there that offer fantastic and reliable SIP routing.
+For simplicity it is highly recommended to use the http://sip2ip.info service. Create a SIP account at the sip2sip.info and then use Risip to start making calls to other sip2sip.info users.
+
+NOTE: when adding a sip2sip.info account to Risip , always add the sip2sip.info proxy too.
+
+Example:
+SIP accounts
+- username: userA
+- URI : sip:userA@sip2sip.info
+- registar/server: sip2sip.info
+- proxy: proxy.sipthor.net
