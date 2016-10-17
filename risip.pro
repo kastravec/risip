@@ -23,8 +23,8 @@ INCLUDEPATH += $$PWD/src \
 # it could be different directory names for different platform where you put the pjsip headers
 # e.g. Linux desktop -> pjsip/linux-desktop , Mac desktop -> pjsip/mac-desktop, Android-arm64 -> pjsip/android-arm64
 
-INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
-#INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
+#INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
+INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
 #INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
 
 
@@ -41,7 +41,10 @@ SOURCES += src/main.cpp \
     src/uiloader.cpp \
     risip/risipcallhistorymodel.cpp \
     src/applicationsettings.cpp \
-    risip/globals.cpp
+    risip/globals.cpp \
+    sipregistrars/httpmanager.cpp \
+    sipregistrars/httpresponse.cpp \
+    sipregistrars/mor/morapi.cpp
 
 HEADERS += risip/headers/risip.h \
     risip/headers/risipaccount.h \
@@ -55,11 +58,13 @@ HEADERS += risip/headers/risip.h \
     risip/headers/risipaccountconfiguration.h \
     src/uiloader.h \
     risip/headers/risipcallhistorymodel.h \
-    src/applicationsettings.h
-
+    src/applicationsettings.h \
+    sipregistrars/httpmanager.h \
+    sipregistrars/httpresponse.h \
+    sipregistrars/mor/morapi.h
 
 macx {
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 }
 
 ########## LIBS ##########

@@ -18,37 +18,10 @@
 **
 ************************************************************************************/
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#include "morapi.h"
 
-//#include <QtCore/qglobal.h>
-//#if defined(QSYNC_LIBRARY)
-//#  define QSYNC_EXPORT Q_DECL_EXPORT
-//#else
-//#  define QSYNC_EXPORT Q_DECL_IMPORT
-//#endif
+MorApi::MorApi(QObject *parent)
+    :QObject(parent)
+{
 
-#include <QString>
-
-struct RisipSettingsParam {
-
-    static const char *QmlUri;
-
-    static const QString FirstRun;
-    static const QString DefaultAccount;
-    static const QString AutoSignIn;
-
-    static const QString AccountGroup;
-    static const QString TotalAccounts;
-    static const QString Uri;
-    static const QString Username;
-    static const QString Password;
-    static const QString ServerAddress;
-    static const QString NetworkType;
-    static const QString Scheme;
-    static const QString ProxyServer;
-    static const QString LocalPort;
-    static const QString RandomLocalPort;
-};
-
-#endif // GLOBALS_H
+}
