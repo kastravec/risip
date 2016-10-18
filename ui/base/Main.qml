@@ -17,27 +17,23 @@
 **
 ************************************************************************************/
 import QtQuick 2.7
+import Risip 1.0
 
 Item {
     id: root
 
-    property string uiBasePath: "qrc:/ui/base/"
-    Loader {
-        id: splashScreenLoader
-        source: uiBasePath + "SplashScreen.qml"
-        active: true
-    }
+    width: 720
+    height: 1280
 
+    property string uiBasePath: "qrc:/ui/base/"
+    property bool firstRun: Risip.firstRun
+
+    //MainWindow loader - main window of the app
     Loader {
         id: mainWindowLoader
         active: true
         source: "MainWindow.qml"
         asynchronous: true
         anchors.fill: parent
-    }
-
-    Connections {
-        target: splashScreenLoader.item
-        onTimeout: { mainWindowLoader.item.visible = true; }
     }
 }

@@ -33,6 +33,7 @@ class RisipAccountConfiguration;
 class RisipBuddy;
 class RisipCall;
 class RisipCallHistoryModel;
+class RisipAccountProfile;
 
 /**
  * @brief The PjsipAccount class
@@ -89,6 +90,7 @@ public:
     };
 
     Q_ENUM(Status)
+    Q_PROPERTY(RisipAccountProfile * profile READ profile WRITE setProfile NOTIFY profileChanged)
     Q_PROPERTY(RisipAccountConfiguration * configuration READ configuration WRITE setConfiguration NOTIFY configurationChanged)
     Q_PROPERTY(RisipEndpoint * sipEndPoint READ sipEndPoint WRITE setSipEndPoint NOTIFY sipEndPointChanged)
     Q_PROPERTY(int presence READ presence WRITE setPresence NOTIFY presenceChanged)
@@ -101,6 +103,9 @@ public:
 
     RisipAccount(QObject *parent = 0);
     ~RisipAccount();
+
+    RisipAccountProfile *profile();
+    void setProfile(RisipAccountProfile *profile);
 
     RisipAccountConfiguration *configuration() const;
     void setConfiguration(RisipAccountConfiguration *config);
@@ -135,6 +140,7 @@ public:
     Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
 
 Q_SIGNALS:
+    void profileChanged(RisipAccountProfile *profile);
     void configurationChanged(RisipAccountConfiguration *config);
     void sipEndPointChanged(RisipEndpoint *sipendpoint);
     void presenceChanged(int presence);
@@ -156,6 +162,7 @@ private:
     void setStatus(int status);
 
     PjsipAccount *m_pjsipAccount;
+    RisipAccountProfile *m_profile;
     RisipAccountConfiguration *m_configuration;
     RisipEndpoint *m_sipEndpoint;
     PresenceStatus m_presence;

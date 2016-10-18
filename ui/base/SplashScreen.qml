@@ -18,7 +18,7 @@
 ************************************************************************************/
 
 import QtQuick 2.7
-import QtQuick.Window 2.1
+import QtQuick.Window 2.2
 
 Window {
     id: splash

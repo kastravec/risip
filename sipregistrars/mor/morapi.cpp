@@ -18,10 +18,22 @@
 **
 ************************************************************************************/
 
+#include "risipaccountprofile.h"
+
 #include "morapi.h"
 
 MorApi::MorApi(QObject *parent)
     :QObject(parent)
 {
 
+}
+
+MorApi::~MorApi()
+{
+
+}
+
+RisipAccountProfile *MorApi::getUserProfile(const QString &username)
+{
+    return new RisipAccountProfile;
 }

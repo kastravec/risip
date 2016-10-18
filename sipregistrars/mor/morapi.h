@@ -23,12 +23,23 @@
 
 #include <QObject>
 
+class RisipAccountProfile;
+
 class MorApi : public QObject
 {
     Q_OBJECT
 public:
+
+    enum ApiError {
+        ErrorResponse
+    };
+
+    Q_ENUM(ApiError)
+
     explicit MorApi(QObject *parent = 0);
     ~MorApi();
+
+    Q_INVOKABLE RisipAccountProfile *getUserProfile(const QString &username);
 
 Q_SIGNALS:
 

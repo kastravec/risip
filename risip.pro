@@ -42,6 +42,7 @@ SOURCES += src/main.cpp \
     risip/risipcallhistorymodel.cpp \
     src/applicationsettings.cpp \
     risip/globals.cpp \
+    risip/risipaccountprofile.cpp \
     sipregistrars/httpmanager.cpp \
     sipregistrars/httpresponse.cpp \
     sipregistrars/mor/morapi.cpp
@@ -56,6 +57,7 @@ HEADERS += risip/headers/risip.h \
     risip/headers/risipinterface.h \
     risip/headers/risipmessage.h \
     risip/headers/risipaccountconfiguration.h \
+    risip/headers/risipaccountprofile.h \
     src/uiloader.h \
     risip/headers/risipcallhistorymodel.h \
     src/applicationsettings.h \

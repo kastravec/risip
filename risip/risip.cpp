@@ -1,5 +1,3 @@
-#include <QtQml>
-
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
 **
@@ -20,7 +18,6 @@
 ************************************************************************************/
 
 #include "risip.h"
-
 #include "globals.h"
 #include "risipaccount.h"
 #include "risipbuddy.h"
@@ -30,6 +27,7 @@
 #include "risipmessage.h"
 #include "risipcallhistorymodel.h"
 
+#include <QtQml>
 #include <QSettings>
 #include <QCoreApplication>
 #include <QDebug>
@@ -54,12 +52,15 @@ Risip *Risip::instance()
 Risip::Risip(QObject *parent)
     :QObject (parent)
 {
+    //FIXME do not call this here - better handling
     readSettings();
 }
 
 Risip::~Risip()
 {
+    //FIXME do not call this here - better handling
     saveSettings();
+
     while (!m_accounts.isEmpty())
         delete m_accounts.take(m_accounts.keys().takeFirst());
 
@@ -90,8 +91,11 @@ RisipAccount *Risip::defaultAccount()
 bool Risip::firstRun() const
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    QVariant val = settings.value(RisipSettingsParam::FirstRun);
+    if(val.isNull())
+        return true;
 
-    return settings.value(RisipSettingsParam::FirstRun, true).toBool();
+    return settings.value(RisipSettingsParam::FirstRun).toBool();
 }
 
 void Risip::setDefaultAccount(const QString &uri)
@@ -207,7 +211,7 @@ bool Risip::saveSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue(RisipSettingsParam::TotalAccounts, m_accounts.size());
-    settings.setValue(RisipSettingsParam::FirstRun, false);
+    settings.setValue(RisipSettingsParam::FirstRun, true); //FIXME always to true for testing
     settings.setValue(RisipSettingsParam::DefaultAccount, defaultAccount()->configuration()->uri());
 
     RisipAccount *account = NULL;

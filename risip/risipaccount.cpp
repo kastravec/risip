@@ -25,6 +25,7 @@
 #include "risipbuddy.h"
 #include "risipcall.h"
 #include "risipcallhistorymodel.h"
+#include "risipaccountprofile.h"
 
 #include <QDebug>
 
@@ -155,6 +156,7 @@ void PjsipAccount::setRisipInterface(RisipAccount *acc)
 RisipAccount::RisipAccount(QObject *parent)
     :QObject(parent)
     ,m_pjsipAccount(NULL)
+    ,m_profile(NULL)
     ,m_configuration(new RisipAccountConfiguration(this))
     ,m_sipEndpoint(NULL)
     ,m_status(NotCreated)
@@ -172,6 +174,28 @@ RisipAccount::~RisipAccount()
     //TODO delete or set to NULL ?
     delete m_pjsipAccount;
     m_pjsipAccount = NULL;
+
+    delete m_profile;
+    m_profile = NULL;
+}
+
+RisipAccountProfile *RisipAccount::profile()
+{
+    return m_profile;
+}
+
+void RisipAccount::setProfile(RisipAccountProfile *profile)
+{
+    if(m_profile != profile) {
+        delete m_profile;
+        m_profile = NULL;
+
+        m_profile = profile;
+        if(m_profile)
+            m_profile->setParent(this);
+
+        emit profileChanged(m_profile);
+    }
 }
 
 RisipAccountConfiguration *RisipAccount::configuration() const

@@ -30,6 +30,16 @@
 
 #include <QString>
 
+struct RisipCurrencies {
+
+    enum Currency {
+        EUR = 1,
+        USD,
+        LEK,
+        Unknown = 1
+    };
+};
+
 struct RisipSettingsParam {
 
     static const char *QmlUri;

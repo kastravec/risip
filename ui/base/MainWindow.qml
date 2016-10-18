@@ -19,7 +19,7 @@
 
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Window 2.1
+import QtQuick.Window 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.0
 
@@ -29,7 +29,9 @@ ApplicationWindow {
     id: root
     width: 720
     height: 1280
+
     visibility: Window.AutomaticVisibility
+    visible: true
 
     Material.theme: Material.Dark
     Material.accent: Material.Purple
@@ -79,15 +81,7 @@ ApplicationWindow {
         }
     }
 
-    Loader {
-        id: loginPageLoader
-        source: uiBasePath + "LoginPage.qml"
-        active: true
-        width: root.width
-        height: root.height
-        z:1
-    }
-
+    //TODO ?
     PageLoader {
         id: addSipServicePageLoader
         source: uiBasePath + "AddSipServicePage.qml"
@@ -95,12 +89,60 @@ ApplicationWindow {
     }
 
     Loader {
-        id: welcomeScreenLoader
+        id: splashScreenLoader
+        source: uiBasePath + "SplashScreen.qml"
         active: true
+        width: root.width
+        height: root.height
+    }
+
+    PageLoader {
+        id: loginPageLoader
+        source: uiBasePath + "LoginPage.qml"
+        active: true
+        visible: false
+    }
+
+    //welcome screen is unloaded once is first used.
+    // active only on first run.
+    Loader {
+        id: welcomeScreenLoader
         source: uiBasePath + "WelcomeScreen.qml"
+        active: firstRun //firstRun is set in settings always true for testing
+        visible: true
         width: root.width
         height: root.height
         z:1
+    }
+
+    Connections {
+        target: splashScreenLoader.item
+        onTimeout: {
+            if(Risip.firstRun) {
+                welcomeScreenLoader.visible = true;
+            } else {
+                if(Risip.defaultAccount.status === RisipAccount.SignedIn)
+                    root.visible = true;
+                else
+                    loginPageLoader.visible = true;
+            }
+
+            splashScreenLoader.active = false;
+        }
+    }
+
+    Connections {
+        target: welcomeScreenLoader.item
+
+        onEnterClicked: {
+            welcomeScreenLoader.active = false;
+            if(Risip.defaultAccount.status === RisipAccount.SignedIn)
+                mainWindowLoader.item.visible = true;
+            else {
+                loginPageLoader.visible = true;
+                root.footer.enabled = false;
+            }
+        }
     }
 
     Connections {
@@ -137,22 +179,6 @@ ApplicationWindow {
         onCanceled: {
             addSipServicePageLoader.active = false;
             loginPageLoader.visible = true;
-        }
-    }
-
-    Connections {
-        target: welcomeScreenLoader.item
-
-        onEnterClicked: {
-            welcomeScreenLoader.active = false;
-            root.footer.enabled = false;
-
-            contactsPageLoader.active = true;
-            homePageLoader.active = true;
-            dialPageLoader.active = true;
-            settingsPageLoader.active = true;
-
-            loginPageLoader.active = true;
         }
     }
 }
