@@ -45,7 +45,8 @@ SOURCES += src/main.cpp \
     risip/risipaccountprofile.cpp \
     sipregistrars/httpmanager.cpp \
     sipregistrars/httpresponse.cpp \
-    sipregistrars/mor/morapi.cpp
+    sipregistrars/mor/morapi.cpp \
+    risip/risipcallmanager.cpp
 
 HEADERS += risip/headers/risip.h \
     risip/headers/risipaccount.h \
@@ -54,7 +55,6 @@ HEADERS += risip/headers/risip.h \
     risip/headers/risipmedia.h \
     risip/headers/risipendpoint.h \
     risip/headers/globals.h \
-    risip/headers/risipinterface.h \
     risip/headers/risipmessage.h \
     risip/headers/risipaccountconfiguration.h \
     risip/headers/risipaccountprofile.h \
@@ -63,7 +63,8 @@ HEADERS += risip/headers/risip.h \
     src/applicationsettings.h \
     sipregistrars/httpmanager.h \
     sipregistrars/httpresponse.h \
-    sipregistrars/mor/morapi.h
+    sipregistrars/mor/morapi.h \
+    risip/headers/risipcallmanager.h
 
 macx {
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12

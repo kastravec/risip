@@ -290,6 +290,7 @@ AccountConfig RisipAccountConfiguration::pjsipAccountConfig()
 
     m_accountConfig.callConfig.timerMinSESec = 1200;
     m_accountConfig.callConfig.timerSessExpiresSec = 22000;
+
     return m_accountConfig;
 }
 

@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -21,7 +22,6 @@
 #include "risipaccountconfiguration.h"
 
 #include <QDebug>
-#include <QTimer>
 
 PjsipEndpoint *PjsipEndpoint::pjsipEndpoinInstance = NULL;
 PjsipEndpoint *PjsipEndpoint::instance()
@@ -191,6 +191,8 @@ void RisipEndpoint::start()
 {
     m_pjsipEndpoint = PjsipEndpoint::instance();
     m_pjsipEndpoint->setRisipEndpointInterface(this);
+
+//    m_endpointConfig.uaConfig.maxCalls = 4;
 
     try {
         m_pjsipEndpoint->libCreate();

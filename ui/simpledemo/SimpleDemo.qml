@@ -1,6 +1,7 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
-**
+**    http://risip.io
+
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
 **    the Free Software Foundation, either version 3 of the License, or
@@ -36,9 +37,11 @@ ApplicationWindow {
     visibility: Window.AutomaticVisibility
     visible: true
 
-    property RisipAccount myAccount //risipaccount is a SIP account/user that is logged in and can chat, make/receive calls
-    property RisipCall incomingCall // object for handling the incoming calls
-    property RisipCall outgoingCall //object for handling the outgoing calls
+    //risipaccount is a SIP account/user that is logged in and can chat, make/receive calls
+    property RisipAccount myAccount: Risip.defaultAccount
+
+    // object for handling the incoming/outgoing calls
+    property RisipCall activeCall
 
     // ===== UI PART ====
 
@@ -75,8 +78,9 @@ ApplicationWindow {
             onClicked: {
                 //checking if sip endpoint is started!
                 if(Risip.sipEndpoint.status === RisipEndpoint.Started) {
-                    myAccount = Risip.getAccount(myAccountConfiguration) //Using the Risip API to get/create the account
+                    myAccount = Risip.accountForConfiguration(myAccountConfiguration) //Using the Risip API to get/create the account
                     //signing in using the given configuration
+                    Risip.setDefaultAccount(myAccount.configuration.uri);
                     myAccount.login();
                 }
             }
@@ -105,7 +109,7 @@ ApplicationWindow {
 
             Button {
                 text: "Call"
-                onClicked: { mainWindow.outgoingCall = myBuddy.call(); }
+                onClicked: { mainWindow.activeCall = RisipCallManager.callContact(contactUriInput.text); }
             }
 
             Button {
@@ -114,8 +118,8 @@ ApplicationWindow {
                 enabled: false
 
                 onClicked: {
-                    console.log("Call status: " + incomingCall.status)
-                    incomingCall.answer();
+                    console.log("Call status: " + activeCall.status)
+                    activeCall.answer();
                     answerButton.highlighted = false;
                     answerButton.enabled = false;
                 }
@@ -124,8 +128,9 @@ ApplicationWindow {
             Button {
                 text: "End"
                 onClicked: {
-                    outgoingCall.hangup(); incomingCall.hangup();
-                    answerButton.highlighted = false; answerButton.enabled = false; }
+                    activeCall.hangup();
+                    answerButton.highlighted = false; answerButton.enabled = false;
+                }
             }
 
             Button {
@@ -139,7 +144,23 @@ ApplicationWindow {
 
     //starting the sip endpoint engine
     //endpoint represents the SIP/Voip client / in practice a pjsip library instance
-    Component.onCompleted: { Risip.sipEndpoint.startEngine(); }
+    Component.onCompleted: { Risip.sipEndpoint.start(); }
+    Component.onDestruction: { Risip.sipEndpoint.stop(); }
+
+    Connections {
+        target: RisipCallManager
+
+        onIncomingCall: {
+            mainWindow.activeCall = call;
+            answerButton.enabled = true;
+            answerButton.highlighted = true;
+        }
+
+        onOutgoingCall: {
+            mainWindow.activeCall = call;
+            answerButton.enabled = false;
+        }
+    }
 
     //handling singals from the sip account instance
     Connections {
@@ -162,12 +183,6 @@ ApplicationWindow {
                 console.log("Some error..better restart!")
                 break;
             }
-        }
-
-        onIncomingCall: {
-            answerButton.enabled = true;
-            answerButton.highlighted = true;
-            mainWindow.incomingCall = call;
         }
 
         onIncomingMessage: { console.log("incoming message: from: "

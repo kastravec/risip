@@ -19,12 +19,14 @@
 
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.0
+import QtQuick.Layouts 1.3
 
-Item {
+Page {
     id: item1
-    width: 400
-    height: 600
+
+    property alias callButton: callButton
+    property alias phoneCheckbox: phoneCheckbox
+    property alias contactInput: contactInput
 
     ColumnLayout {
         spacing: 20
@@ -32,21 +34,48 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         TextField {
-            id: textField1
+            id: contactInput
             placeholderText: qsTr("Someone you want to talk to ?")
             Layout.preferredHeight: 40
             Layout.preferredWidth: 322
         }
 
         CheckBox {
-            id: checkBox1
-            text: qsTr("GSM")
+            id: phoneCheckbox
+            text: qsTr("Mobile/Landline")
         }
 
         Button {
-            id: button1
+            id: callButton
             text: qsTr("Call")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        }
+    }
+
+    RowLayout {
+        y: 527
+        anchors.right: parent.right
+        anchors.rightMargin: 10
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 10
+
+        Label {
+            id: label1
+            text: qsTr("Note: ")
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            font.pointSize: 12
+        }
+
+        TextArea {
+            id: textArea1
+            text: qsTr("Simply enter the username of the contact you want to call of the same SIP registrar. ")
+            font.pointSize: 11
+            font.italic: true
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            wrapMode: Text.WordWrap
         }
     }
 }

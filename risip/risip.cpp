@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -18,6 +19,7 @@
 ************************************************************************************/
 
 #include "risip.h"
+
 #include "globals.h"
 #include "risipaccount.h"
 #include "risipbuddy.h"
@@ -26,18 +28,27 @@
 #include "risipmedia.h"
 #include "risipmessage.h"
 #include "risipcallhistorymodel.h"
+#include "risipcallmanager.h"
 
 #include <QtQml>
 #include <QSettings>
 #include <QCoreApplication>
 #include <QDebug>
 
-static QObject *risipSingletontypeProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
+static QObject *risipSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
 
     return Risip::instance();
+}
+
+static QObject *risipCallManagerSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+
+    return RisipCallManager::instance();
 }
 
 Risip *Risip::m_risipInstance = NULL;
@@ -108,7 +119,10 @@ void Risip::setDefaultAccount(const QString &uri)
 
 void Risip::registerToQml()
 {
-    qmlRegisterSingletonType<Risip>(RisipSettingsParam::QmlUri, 1, 0, "Risip", risipSingletontypeProvider);
+    qmlRegisterSingletonType<Risip>(RisipSettingsParam::QmlUri, 1, 0, "Risip", risipSingletonProvider);
+    qmlRegisterSingletonType<RisipCallManager>(RisipSettingsParam::QmlUri, 1, 0,
+                                               "RisipCallManager", risipCallManagerSingletonProvider);
+
     qmlRegisterType<RisipEndpoint>(RisipSettingsParam::QmlUri, 1, 0, "RisipEndpoint");
     qmlRegisterType<RisipAccount>(RisipSettingsParam::QmlUri, 1, 0, "RisipAccount");
     qmlRegisterType<RisipBuddy>(RisipSettingsParam::QmlUri, 1, 0, "RisipBuddy");

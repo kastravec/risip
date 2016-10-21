@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -135,6 +136,7 @@ public Q_SLOTS:
     void answer();
     void hangup();
     void call();
+    void initiateIncomingCall();
 
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);

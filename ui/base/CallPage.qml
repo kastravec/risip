@@ -19,6 +19,69 @@
 ************************************************************************************/
 
 import QtQuick 2.7
+import Risip 1.0
 
 CallPageForm {
+    id: callPage;
+    visible: false
+
+    property RisipCall activeCall
+    usernameLabel.text: activeCall.buddy.uri;
+
+    Connections {
+        target: RisipCallManager
+
+        onIncomingCall: {
+            //first hangup if any call is active
+            if(activeCall)
+                activeCall.hangup();
+
+            callPage.activeCall = call;
+            callPage.state = "incoming";
+            callPage.visible = true;
+        }
+
+        onOutgoingCall: {
+            callPage.activeCall = call;
+            callPage.state = "outgoing"
+            callPage.visible = true;
+        }
+    }
+
+    answerCallButton.onClicked: activeCall.answer();
+    endCallButton.onClicked: activeCall.hangup();
+
+    Connections {
+        target: activeCall
+
+        onStatusChanged: {
+            switch (status) {
+            case RisipCall.CallConfirmed:
+                statusLabel.text = "Call connected, enjoy!";
+                callPage.state = "incall";
+                callPage.visible = true;
+                break;
+            case RisipCall.CallDisconnected:
+                statusLabel.text = "Call disconnected, good bye!";
+                callPage.visible = false;
+                break;
+            case RisipCall.ConnectingToCall:
+                statusLabel.text = "we are working to establish the call..and.."
+                break;
+            case RisipCall.IncomingCallStarted:
+                statusLabel.text = "who may be calling now?.."
+                break;
+            case RisipCall.OutgoingCallStarted:
+                statusLabel.text = "trying to reach..and calling"
+                break;
+            case RisipCall.Null:
+                statusLabel.text = ".. trying reaching somebody";
+                callPage.visible = false;
+                break;
+            default:
+                callPage.visible = false;
+                break;
+            }
+        }
+    }
 }

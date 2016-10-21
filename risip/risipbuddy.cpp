@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -78,6 +79,7 @@ QString RisipBuddy::uri() const
     return QString::fromStdString(m_buddyConfig.uri);
 }
 
+//TODO what about the contact?
 void RisipBuddy::setUri(QString contactUri)
 {
     //FIXME too many conversions of strings here..
@@ -92,7 +94,7 @@ QString RisipBuddy::contact() const
     return m_contact;
 }
 
-void RisipBuddy::setContact(QString &contact)
+void RisipBuddy::setContact(const QString contact)
 {
     if(m_contact != contact) {
         m_contact = contact;
@@ -100,11 +102,14 @@ void RisipBuddy::setContact(QString &contact)
         if(type() == Internal
                 || type() == ExternalSIP) {
             if(!m_contact.isEmpty() && m_account)
-                setUri(QString("sip:")
+                setUri(QString("<sip:")
                        + m_contact
                        + QString("@")
-                       + m_account->configuration()->serverAddress());
+                       + m_account->configuration()->serverAddress()
+                       + QString(">"));
         }
+
+        emit contactChanged(m_contact);
     }
 }
 
@@ -140,24 +145,6 @@ void RisipBuddy::setPjsipBuddy(PjsipBuddy *buddy)
     m_pjsipBuddy = buddy;
     m_pjsipBuddy->setRisipBuddyInterface(this);
     m_buddyConfig.uri = buddy->getInfo().uri;
-}
-
-/**
- * @brief RisipBuddy::call
- * @return the call object instance
- *
- * Makes a calls to this buddy.
- */
-RisipCall *RisipBuddy::call()
-{
-    RisipCall *myCall = new RisipCall;
-    if(m_account && !uri().isEmpty()) {
-        myCall->setAccount(m_account);
-        myCall->setBuddy(this);
-        myCall->call();
-    }
-
-    return myCall;
 }
 
 void RisipBuddy::addToAccount()

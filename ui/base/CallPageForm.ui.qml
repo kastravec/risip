@@ -20,15 +20,71 @@
 
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 
-Item {
-    width: 400
-    height: 400
+Page {
+    id: page1
 
-    Button {
-        id: button2
-        x: 150
-        y: 324
-        text: qsTr("Button")
+    property alias endCallButton: endCallButton
+    property alias answerCallButton: answerCallButton
+    property alias usernameLabel: usernameLabel
+    property alias statusLabel: statusLabel
+    hoverEnabled: true
+
+    Label {
+        id: statusLabel
+        text: qsTr("status")
+        font.pointSize: 15
+        font.italic: true
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
     }
+
+    Label {
+        id: usernameLabel
+        text: "User"
+        font.bold: true
+        font.pointSize: 20
+        anchors.bottom: statusLabel.top
+        anchors.bottomMargin: 50
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
+    RowLayout {
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 25
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 20
+
+        Button {
+            id: answerCallButton
+            text: qsTr("Answer")
+        }
+
+        Button {
+            id: endCallButton
+            text: qsTr("End")
+        }
+    }
+
+    states: [
+        State {
+            name: "incoming"
+        },
+        State {
+            name: "outgoing"
+
+            PropertyChanges {
+                target: answerCallButton
+                enabled: false
+            }
+        },
+        State {
+            name: "incall"
+            PropertyChanges {
+                target: answerCallButton
+                enabled: false
+            }
+        }
+    ]
 }

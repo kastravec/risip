@@ -26,7 +26,7 @@ import QtQuick.Controls.Material 2.0
 import Risip 1.0
 
 ApplicationWindow {
-    id: root
+    id: mainWindow
     width: 720
     height: 1280
 
@@ -38,6 +38,7 @@ ApplicationWindow {
 
     property string uiBasePath: "qrc:/ui/base/"
     property RisipEndpoint sipEndpoint: Risip.sipEndpoint
+    property RisipAccount sipAccount: Risip.defaultAccount
 
     Component.onCompleted: { sipEndpoint.start(); }
     Component.onDestruction: { sipEndpoint.stop(); }
@@ -54,7 +55,7 @@ ApplicationWindow {
     StackLayout {
         id: stackLayout
         currentIndex: mainTabBar.currentIndex
-        anchors.fill: root.contentItem
+        anchors.fill: mainWindow.contentItem
 
         PageLoader {
             id: contactsPageLoader
@@ -92,8 +93,8 @@ ApplicationWindow {
         id: splashScreenLoader
         source: uiBasePath + "SplashScreen.qml"
         active: true
-        width: root.width
-        height: root.height
+        width: mainWindow.width
+        height: mainWindow.height
     }
 
     PageLoader {
@@ -110,9 +111,14 @@ ApplicationWindow {
         source: uiBasePath + "WelcomeScreen.qml"
         active: firstRun //firstRun is set in settings always true for testing
         visible: true
-        width: root.width
-        height: root.height
+        width: mainWindow.width
+        height: mainWindow.height
         z:1
+    }
+
+    CallPage {
+        id: callPage
+        anchors.fill: mainWindow.contentItem
     }
 
     Connections {
@@ -122,7 +128,7 @@ ApplicationWindow {
                 welcomeScreenLoader.visible = true;
             } else {
                 if(Risip.defaultAccount.status === RisipAccount.SignedIn)
-                    root.visible = true;
+                    mainWindow.visible = true;
                 else
                     loginPageLoader.visible = true;
             }
@@ -140,7 +146,7 @@ ApplicationWindow {
                 mainWindowLoader.item.visible = true;
             else {
                 loginPageLoader.visible = true;
-                root.footer.enabled = false;
+                mainWindow.footer.enabled = false;
             }
         }
     }
@@ -150,7 +156,7 @@ ApplicationWindow {
 
         onSignedOut: {
             loginPageLoader.active = true;
-            root.footer.enabled = false;
+            mainWindow.footer.enabled = false;
         }
     }
 
@@ -159,7 +165,7 @@ ApplicationWindow {
 
         onSignedIn: {
             loginPageLoader.active = false;
-            root.footer.enabled = true;
+            mainWindow.footer.enabled = true;
         }
 
         onAddSipService: {

@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -84,15 +85,13 @@ public:
     void setUri(QString contactUri);
 
     QString contact() const;
-    void setContact(QString &contact);
+    void setContact(const QString contact);
 
     int type() const;
     void setType(int type);
 
     PjsipBuddy *pjsipBuddy() const;
     void setPjsipBuddy(PjsipBuddy *buddy);
-
-    Q_INVOKABLE RisipCall *call();
 
 public Q_SLOTS:
     void addToAccount();

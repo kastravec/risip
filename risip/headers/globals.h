@@ -30,14 +30,19 @@
 
 #include <QString>
 
-struct RisipCurrencies {
+struct RisipGlobals {
 
-    enum Currency {
+    enum Currencies {
         EUR = 1,
         USD,
         LEK,
         Unknown = 1
     };
+
+    static QString formatToSip(const QString &contact, const QString &server);
+};
+
+struct RisipCurrencies {
 };
 
 struct RisipSettingsParam {

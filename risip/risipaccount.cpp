@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -24,11 +25,21 @@
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
 #include "risipcall.h"
-#include "risipcallhistorymodel.h"
 #include "risipaccountprofile.h"
 
 #include <QDebug>
 
+/**
+ * @brief The PjsipAccount class
+ *
+ * This is an internal class. It inherits the Account class from Pjsip and implements the respective
+ * callbacks, see Pjsip Account C++ API reference.
+ *
+ * Instances of this class are created from RisipAccount class, which is the Qt wrapper representative.
+ * PjsipAccount contains the pointer to the RisipAccount which created it, in order to
+ * in order to send messages/callbacks to the wrapper class.
+ *
+ */
 PjsipAccount::PjsipAccount()
     :Account()
     ,m_risipAccount(NULL)
@@ -80,12 +91,8 @@ void PjsipAccount::onIncomingCall(OnIncomingCallParam &prm)
     if(!m_risipAccount)
         return;
 
-    RisipCall  *call = new RisipCall;
-    call->setAccount(m_risipAccount);
-    call->setPjsipCall(new PjsipCall(*m_risipAccount->pjsipAccount(), prm.callId));
-    call->createTimestamp();
-    call->setCallDirection(RisipCall::Incoming);
-    m_risipAccount->incomingCall(call);
+    m_risipAccount->setIncomingPjsipCall(new PjsipCall(*m_risipAccount->pjsipAccount(), prm.callId));
+    m_risipAccount->incomingCall();
 }
 
 void PjsipAccount::onIncomingSubscribe(OnIncomingSubscribeParam &prm)
@@ -148,10 +155,10 @@ void PjsipAccount::setRisipInterface(RisipAccount *acc)
 }
 
 /**
- * @brief RisipAccount::RisipAccount
- * @param parent
+ * @brief The RisipAccount class
  *
- * RisipAccount is a wrapper on on the PJSUA2 Account class. It provides a Qt based API ready to be used in QML
+ * RisipAccount represents the Account class of Pjsip C++ API. It creates instances of Account classes (PjsipAccount)
+ * and manages these instances.
  */
 RisipAccount::RisipAccount(QObject *parent)
     :QObject(parent)
@@ -159,10 +166,10 @@ RisipAccount::RisipAccount(QObject *parent)
     ,m_profile(NULL)
     ,m_configuration(new RisipAccountConfiguration(this))
     ,m_sipEndpoint(NULL)
-    ,m_status(NotCreated)
     ,m_autoSignIn(true)
+    ,m_status(NotCreated)
     ,m_buddies()
-    ,m_callHistoryModel(new RisipCallHistoryModel(this))
+    ,m_incomingPjsipCall(NULL)
 {
 }
 
@@ -176,7 +183,6 @@ RisipAccount::~RisipAccount()
     m_pjsipAccount = NULL;
 
     delete m_profile;
-    m_profile = NULL;
 }
 
 RisipAccountProfile *RisipAccount::profile()
@@ -303,20 +309,15 @@ void RisipAccount::removeBuddy(RisipBuddy *buddy)
     }
 }
 
-RisipCallHistoryModel *RisipAccount::callHistoryModel()
+PjsipCall *RisipAccount::incomingPjsipCall()
 {
-    return m_callHistoryModel;
+    return m_incomingPjsipCall;
 }
 
-void RisipAccount::setCallHistoryModel(RisipCallHistoryModel *callHistory)
+void RisipAccount::setIncomingPjsipCall(PjsipCall *call)
 {
-    if(m_callHistoryModel != callHistory) {
-        if(m_callHistoryModel)
-            m_callHistoryModel->deleteLater();
-
-        m_callHistoryModel = callHistory;
-        emit callHistoryModelChanged(m_callHistoryModel);
-    }
+    if(m_incomingPjsipCall != call)
+        m_incomingPjsipCall = call;
 }
 
 RisipBuddy *RisipAccount::findBuddy(const QString &uri)
@@ -324,7 +325,7 @@ RisipBuddy *RisipAccount::findBuddy(const QString &uri)
     if(m_buddies.contains(uri))
         return m_buddies[uri];
 
-    return 0;
+    return NULL;
 }
 
 PjsipAccount *RisipAccount::pjsipAccount() const

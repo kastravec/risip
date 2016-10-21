@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -26,6 +27,8 @@
 class RisipAccount;
 class RisipEndpoint;
 class RisipAccountConfiguration;
+class RisipCall;
+class RisipBuddy;
 
 class Risip: public QObject
 {
@@ -54,6 +57,7 @@ public:
     Q_INVOKABLE bool removeAccount(QString &accountUri);
     Q_INVOKABLE bool removeAccount(RisipAccountConfiguration *configuration);
     Q_INVOKABLE void setDefaultAccount(const QString &uri);
+
     Q_INVOKABLE bool readSettings();
     Q_INVOKABLE bool saveSettings();
     Q_INVOKABLE bool resetSettings();

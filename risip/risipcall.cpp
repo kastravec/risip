@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -23,6 +24,7 @@
 #include "risipmedia.h"
 #include "risipbuddy.h"
 #include "risipcallhistorymodel.h"
+#include "risipcallmanager.h"
 
 #include <QObject>
 #include <QDebug>
@@ -37,6 +39,13 @@ PjsipCall::~PjsipCall()
 {
 }
 
+/**
+ * @brief PjsipCall::onCallState
+ * @param prm
+ *
+ * Pjsip callback each time the state of the call is updated.
+ * A call is active when a session has been initiated.
+ */
 void PjsipCall::onCallState(OnCallStateParam &prm)
 {
     Q_UNUSED(prm)
@@ -45,7 +54,12 @@ void PjsipCall::onCallState(OnCallStateParam &prm)
         return;
     }
 
-    m_risipCall->statusChanged(m_risipCall->status());
+    //if call is no longer active then set to NULL
+    // emit a status change signal otherwise
+    if(!isActive())
+        m_risipCall->setPjsipCall(NULL);
+    else
+        m_risipCall->statusChanged(m_risipCall->status());
 }
 
 void PjsipCall::onCallTsxState(OnCallTsxStateParam &prm)
@@ -60,7 +74,7 @@ void PjsipCall::onCallTsxState(OnCallTsxStateParam &prm)
  * This callback from Pjsip is triggered each time Pjsip intializes the media, in practice this means when the
  * call is being answered and Audio/Video is ready to be transmitted.
  *
- * See more details on @RisipCall::initalizeMediaHandler
+ * See more details on @see RisipCall::initalizeMediaHandler
  */
 void PjsipCall::onCallMediaState(OnCallMediaStateParam &prm)
 {
@@ -171,8 +185,7 @@ RisipCall::RisipCall(QObject *parent)
 
 RisipCall::~RisipCall()
 {
-    delete m_pjsipCall;
-    m_pjsipCall = NULL;
+   setPjsipCall(NULL);
 }
 
 RisipAccount *RisipCall::account() const
@@ -209,8 +222,10 @@ RisipMedia *RisipCall::media() const
 void RisipCall::setMedia(RisipMedia *med)
 {
     if(m_risipMedia != med) {
-        if(m_risipMedia)
-            m_risipMedia->deleteLater();
+        if(m_risipMedia) {
+            delete m_risipMedia;
+            m_risipMedia = NULL;
+        }
 
         m_risipMedia = med;
         if(m_risipMedia) {
@@ -238,16 +253,16 @@ int RisipCall::callId() const
 void RisipCall::setPjsipCall(PjsipCall *call)
 {
     delete m_pjsipCall;
+    m_pjsipCall = NULL;
+
     m_pjsipCall = call;
+    setMedia(NULL);
+
     if(m_pjsipCall != NULL) {
         m_pjsipCall->setRisipCall(this);
-
-        //setting the buddy pointer - needed for later on to make a call
-        if(m_account) {
-            if(!buddy() && m_pjsipCall->isActive())
-                setBuddy(m_account->findBuddy(QString::fromStdString(m_pjsipCall->getInfo().remoteUri)));
-        }
     }
+
+    emit statusChanged(status());
 }
 
 PjsipCall *RisipCall::pjsipCall() const
@@ -273,22 +288,24 @@ int RisipCall::status() const
     if(m_pjsipCall == NULL)
         return Null;
 
-    CallInfo callInfo = m_pjsipCall->getInfo();
-    switch (callInfo.state) {
-    case PJSIP_INV_STATE_CALLING:
-        return RisipCall::OutgoingCallStarted;
-    case PJSIP_INV_STATE_CONNECTING:
-        return RisipCall::ConnectingToCall;
-    case PJSIP_INV_STATE_CONFIRMED:
-        return RisipCall::CallConfirmed;
-    case PJSIP_INV_STATE_DISCONNECTED:
-        return RisipCall::CallDisconnected;
-    case PJSIP_INV_STATE_EARLY:
-        return RisipCall::CallEarly;
-    case PJSIP_INV_STATE_INCOMING:
-        return RisipCall::IncomingCallStarted;
-    case PJSIP_INV_STATE_NULL:
-        return RisipCall::Null;
+    if(m_pjsipCall->isActive()) {
+        CallInfo callInfo = m_pjsipCall->getInfo();
+        switch (callInfo.state) {
+        case PJSIP_INV_STATE_CALLING:
+            return RisipCall::OutgoingCallStarted;
+        case PJSIP_INV_STATE_CONNECTING:
+            return RisipCall::ConnectingToCall;
+        case PJSIP_INV_STATE_CONFIRMED:
+            return RisipCall::CallConfirmed;
+        case PJSIP_INV_STATE_DISCONNECTED:
+            return RisipCall::CallDisconnected;
+        case PJSIP_INV_STATE_EARLY:
+            return RisipCall::CallEarly;
+        case PJSIP_INV_STATE_INCOMING:
+            return RisipCall::IncomingCallStarted;
+        case PJSIP_INV_STATE_NULL:
+            return RisipCall::Null;
+        }
     }
 
     return RisipCall::Null;
@@ -350,6 +367,7 @@ void RisipCall::answer()
         return;
 
     if(m_pjsipCall != NULL) { //check if call object is set
+        RisipCallManager::instance()->setActiveCall(this);
         CallOpParam prm;
         prm.statusCode = PJSIP_SC_OK;
         try {
@@ -370,14 +388,24 @@ void RisipCall::hangup()
         return;
     }
 
+    if(!m_pjsipCall->isActive())
+        return;
+
     CallOpParam prm;
     try {
         m_pjsipCall->hangup(prm);
     } catch (Error &err) {
         qDebug()<<"error hanging up the call... " <<QString::fromStdString(err.reason) <<err.status;
     }
+
+    RisipCallManager::instance()->setActiveCall(NULL);
 }
 
+/**
+ * @brief RisipCall::call
+ *
+ * Internal API. Use with caution. @see RisipCallManager
+ */
 void RisipCall::call()
 {
     if(m_callType == Undefined
@@ -397,6 +425,16 @@ void RisipCall::call()
     } catch (Error err) {
         qDebug()<<"making call failed: " <<QString::fromStdString(err.info());
     }
+}
 
-    m_account->callHistoryModel()->addCallRecord(this);
+void RisipCall::initiateIncomingCall()
+{
+    if(!m_account)
+        return;
+
+    if(m_account->status() == RisipAccount::SignedIn) {
+        setPjsipCall(m_account->incomingPjsipCall());
+        createTimestamp();
+        setCallDirection(RisipCall::Incoming);
+    }
 }

@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -32,20 +33,10 @@ class RisipEndpoint;
 class RisipAccountConfiguration;
 class RisipBuddy;
 class RisipCall;
+class PjsipCall;
 class RisipCallHistoryModel;
 class RisipAccountProfile;
 
-/**
- * @brief The PjsipAccount class
- *
- * This is an internal class. It inherits the Account class from Pjsip and implements the respective
- * callbacks, see Pjsip Account C++ API reference.
- *
- * Instances of this class are created from RisipAccount class, which is the Qt wrapper representative.
- * PjsipAccount contains the pointer to the RisipAccount which created it, in order to
- * in order to send messages/callbacks to the wrapper class.
- *
- */
 class PjsipAccount: public Account
 {
 public:
@@ -67,12 +58,6 @@ private:
     RisipAccount *m_risipAccount;
 };
 
-/**
- * @brief The RisipAccount class
- *
- * RisipAccount represents the Account class of Pjsip C++ API. It creates instances of Account classes (PjsipAccount)
- * and manages these instances.
- */
 class RisipAccount: public QObject
 {
     friend PjsipAccount;
@@ -99,7 +84,6 @@ public:
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusTextChanged)
     Q_PROPERTY(QQmlListProperty<RisipBuddy> buddies READ buddies NOTIFY buddiesChanged)
-    Q_PROPERTY(RisipCallHistoryModel * callHistoryModel READ callHistoryModel WRITE setCallHistoryModel NOTIFY callHistoryModelChanged)
 
     RisipAccount(QObject *parent = 0);
     ~RisipAccount();
@@ -134,8 +118,8 @@ public:
     void addBuddy(RisipBuddy *buddy);
     void removeBuddy(RisipBuddy *buddy);
 
-    RisipCallHistoryModel *callHistoryModel();
-    void setCallHistoryModel(RisipCallHistoryModel *callHistory);
+    PjsipCall *incomingPjsipCall();
+    void setIncomingPjsipCall(PjsipCall *call);
 
     Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
 
@@ -148,10 +132,9 @@ Q_SIGNALS:
     void statusChanged(int status);
     void autoSignInChanged(bool signin);
     void statusTextChanged(QString);
-    void incomingCall(RisipCall *call);
-    void incomingMessage(RisipMessage *message);
     void buddiesChanged(QQmlListProperty<RisipBuddy> buddies);
-    void callHistoryModelChanged(RisipCallHistoryModel *calHistoryModel);
+    void incomingCall();
+    void incomingMessage(RisipMessage *message);
 
 public Q_SLOTS:
     void login();
@@ -169,7 +152,7 @@ private:
     bool m_autoSignIn;
     int m_status;
     QHash<QString, RisipBuddy *> m_buddies;
-    RisipCallHistoryModel *m_callHistoryModel;
+    PjsipCall *m_incomingPjsipCall;
 };
 
 #endif // RISIPACCOUNT_H

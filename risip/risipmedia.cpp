@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -78,7 +79,7 @@ void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
 //            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_ROUTE, 0, true);
 //            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_SIGNAL_METER, 0, true);
 //            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_OUTPUT_SIGNAL_METER, 0, true);
-            //            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_EC, 0, true);
+//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_EC, 0, true);
 
 //            AudioDevInfoVector audioInfos = m_pjsipMediaManager->enumDev();
 //            for(int i=0; i<audioInfos.size(); ++i) {
@@ -139,6 +140,8 @@ int RisipMedia::micVolume() const
 {
     if(m_pjsipAudioManager)
         return m_pjsipAudioManager->getInputVolume();
+
+    return -1;
 }
 
 /**
