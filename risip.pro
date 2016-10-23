@@ -17,7 +17,7 @@ DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
 
 ### INCLUDES ###
 INCLUDEPATH += $$PWD/src \
-               $$PWD/risip/headers
+               $$PWD/src/risip/headers
 
 # this include path depends on the directory of your pjsip headers/libs
 # it could be different directory names for different platform where you put the pjsip headers
@@ -29,43 +29,43 @@ INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
 
 ### SOURCE & HEADER FILES ###
 SOURCES += src/main.cpp \
-    risip/risip.cpp \
-    risip/risipaccount.cpp \
-    risip/risipcall.cpp \
-    risip/risipbuddy.cpp \
-    risip/risipmedia.cpp \
-    risip/risipendpoint.cpp \
-    risip/risipmessage.cpp \
-    risip/risipaccountconfiguration.cpp \
+    src/risip/risip.cpp \
+    src/risip/risipaccount.cpp \
+    src/risip/risipcall.cpp \
+    src/risip/risipbuddy.cpp \
+    src/risip/risipmedia.cpp \
+    src/risip/risipendpoint.cpp \
+    src/risip/risipmessage.cpp \
+    src/risip/risipaccountconfiguration.cpp \
     src/uiloader.cpp \
     src/applicationsettings.cpp \
-    risip/globals.cpp \
-    risip/risipaccountprofile.cpp \
-    sipregistrars/httpmanager.cpp \
-    sipregistrars/httpresponse.cpp \
-    sipregistrars/mor/morapi.cpp \
-    risip/risipcallmanager.cpp \
-    risip/risipcontactmanager.cpp \
-    risip/risipmodels.cpp
+    src/risip/globals.cpp \
+    src/risip/risipaccountprofile.cpp \
+    src/sipregistrars/httpmanager.cpp \
+    src/sipregistrars/httpresponse.cpp \
+    src/sipregistrars/mor/morapi.cpp \
+    src/risip/risipcallmanager.cpp \
+    src/risip/risipcontactmanager.cpp \
+    src/risip/risipmodels.cpp
 
-HEADERS += risip/headers/risip.h \
-    risip/headers/risipaccount.h \
-    risip/headers/risipcall.h \
-    risip/headers/risipbuddy.h \
-    risip/headers/risipmedia.h \
-    risip/headers/risipendpoint.h \
-    risip/headers/globals.h \
-    risip/headers/risipmessage.h \
-    risip/headers/risipaccountconfiguration.h \
-    risip/headers/risipaccountprofile.h \
+HEADERS += src/risip/headers/risip.h \
+    src/risip/headers/risipaccount.h \
+    src/risip/headers/risipcall.h \
+    src/risip/headers/risipbuddy.h \
+    src/risip/headers/risipmedia.h \
+    src/risip/headers/risipendpoint.h \
+    src/risip/headers/globals.h \
+    src/risip/headers/risipmessage.h \
+    src/risip/headers/risipaccountconfiguration.h \
+    src/risip/headers/risipaccountprofile.h \
     src/uiloader.h \
     src/applicationsettings.h \
-    sipregistrars/httpmanager.h \
-    sipregistrars/httpresponse.h \
-    sipregistrars/mor/morapi.h \
-    risip/headers/risipcallmanager.h \
-    risip/headers/risipcontactmanager.h \
-    risip/headers/risipmodels.h
+    src/sipregistrars/httpmanager.h \
+    src/sipregistrars/httpresponse.h \
+    src/sipregistrars/mor/morapi.h \
+    src/risip/headers/risipcallmanager.h \
+    src/risip/headers/risipcontactmanager.h \
+    src/risip/headers/risipmodels.h
 
 ########## LIBS ##########
 
