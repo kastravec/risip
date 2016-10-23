@@ -121,7 +121,7 @@ Page {
         id: enterButton
         text: qsTr("Enter")
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottomMargin: 20
+        anchors.bottomMargin: 50
         anchors.bottom: parent.bottom
 
         onClicked: {

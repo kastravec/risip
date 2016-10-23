@@ -25,44 +25,58 @@ Item {
     id: item1
     width: 400
     height: 400
+    property alias callHistoryListview: callHistoryListview
     property alias userNameLabel: userNameLabel
     property alias statusLabel: statusLabel
     property alias signOutButton: signOutButton
 
-    Pane {
-        id: pane1
-        x: 15
-        width: 370
-        height: 145
-        anchors.top: parent.top
-        anchors.topMargin: 10
-        anchors.horizontalCenter: parent.horizontalCenter
+    ColumnLayout {
+        anchors.fill: parent
 
-        RowLayout {
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            anchors.top: parent.top
-            anchors.topMargin: 10
-            spacing: 30
+        Pane {
+            id: pane1
 
-            Label {
-                id: userNameLabel
-                text: qsTr("User")
+            RowLayout {
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                spacing: 30
+
+                Label {
+                    id: userNameLabel
+                    text: qsTr("User")
+                }
+
+                Label {
+                    id: statusLabel
+                    text: qsTr("status")
+                    font.italic: true
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Button {
+                    id: signOutButton
+                    text: qsTr("Sign out")
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                }
             }
+        }// end of Pane
 
-            Label {
-                id: statusLabel
-                text: qsTr("status")
-                font.italic: true
-                horizontalAlignment: Text.AlignHCenter
-            }
+        ListView {
+            id: callHistoryListview
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            delegate: Item {
+                width: parent.width
+                height: 40
 
-            Button {
-                id: signOutButton
-                text: qsTr("Sign out")
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Label {
+                    text: contact
+                    font.bold: true
+                }
             }
         }
 

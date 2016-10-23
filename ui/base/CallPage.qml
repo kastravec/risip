@@ -65,6 +65,7 @@ CallPageForm {
                 statusLabel.text = "Call disconnected, good bye!";
                 callPage.visible = false;
                 break;
+            case RisipCall.CallEarly:
             case RisipCall.ConnectingToCall:
                 statusLabel.text = "we are working to establish the call..and.."
                 break;
@@ -76,9 +77,6 @@ CallPageForm {
                 break;
             case RisipCall.Null:
                 statusLabel.text = ".. trying reaching somebody";
-                callPage.visible = false;
-                break;
-            default:
                 callPage.visible = false;
                 break;
             }

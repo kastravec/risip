@@ -23,7 +23,7 @@
 #include "risipaccountconfiguration.h"
 #include "risipmedia.h"
 #include "risipbuddy.h"
-#include "risipcallhistorymodel.h"
+#include "risipmodels.h"
 #include "risipcallmanager.h"
 
 #include <QObject>

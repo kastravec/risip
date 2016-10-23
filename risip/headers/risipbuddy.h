@@ -31,6 +31,7 @@ class RisipBuddy;
 class RisipAccount;
 class RisipMessage;
 class RisipCall;
+class RisipBuddy;
 
 class PjsipBuddy: public Buddy
 {
@@ -39,7 +40,8 @@ public:
     ~PjsipBuddy();
 
     void onBuddyState();
-    void setRisipBuddyInterface(RisipBuddy *risipBuddy);
+    void setRisipInterface(RisipBuddy *risipBuddy);
+    RisipBuddy *risipInterface();
 
 private:
     RisipBuddy *m_risipBuddyInterface;
@@ -72,6 +74,7 @@ public:
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
     Q_PROPERTY(QString contact READ contact WRITE setContact NOTIFY contactChanged)
     Q_PROPERTY(int type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
 
     RisipBuddy(QObject *parent = 0);
     ~RisipBuddy();
@@ -84,7 +87,7 @@ public:
     QString uri() const;
     void setUri(QString contactUri);
 
-    QString contact() const;
+    QString contact();
     void setContact(const QString contact);
 
     int type() const;
@@ -93,9 +96,11 @@ public:
     PjsipBuddy *pjsipBuddy() const;
     void setPjsipBuddy(PjsipBuddy *buddy);
 
+    bool valid() const;
+
 public Q_SLOTS:
-    void addToAccount();
-    void release();
+    void create();
+    void releaseFromAccount();
     RisipMessage *sendInstantMessage(QString message);
     void sendInstantMessage(RisipMessage *message);
 
@@ -103,8 +108,9 @@ Q_SIGNALS:
     void presenceChanged(int presence);
     void accountChanged(RisipAccount *account);
     void uriChanged(QString &uri);
-    void contactChanged(QString &contact);
+    void contactChanged(const QString &contact);
     void typeChanged(int type);
+    void validChanged(bool valid);
 
 private:
     PjsipBuddy *m_pjsipBuddy;

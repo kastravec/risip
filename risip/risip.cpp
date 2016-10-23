@@ -27,13 +27,15 @@
 #include "risipaccountconfiguration.h"
 #include "risipmedia.h"
 #include "risipmessage.h"
-#include "risipcallhistorymodel.h"
+#include "risipmodels.h"
 #include "risipcallmanager.h"
+#include "risipcontactmanager.h"
 
 #include <QtQml>
 #include <QSettings>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QSortFilterProxyModel>
 
 static QObject *risipSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
@@ -51,6 +53,14 @@ static QObject *risipCallManagerSingletonProvider(QQmlEngine *engine, QJSEngine 
     return RisipCallManager::instance();
 }
 
+static QObject *risipContactManagerSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+
+    return RisipContactManager::instance();
+}
+
 Risip *Risip::m_risipInstance = NULL;
 Risip *Risip::instance()
 {
@@ -62,9 +72,10 @@ Risip *Risip::instance()
 
 Risip::Risip(QObject *parent)
     :QObject (parent)
+    ,m_accounts()
+    ,m_defaultAccountUri()
+    ,m_defaultAccountAlways(true)
 {
-    //FIXME do not call this here - better handling
-    readSettings();
 }
 
 Risip::~Risip()
@@ -89,6 +100,16 @@ QStringList Risip::accountNames() const
     return m_accounts.keys();
 }
 
+RisipContactManager *Risip::contactManager() const
+{
+    return RisipContactManager::instance();
+}
+
+RisipCallManager *Risip::callManager() const
+{
+    return RisipCallManager::instance();
+}
+
 RisipEndpoint *Risip::sipEndpoint()
 {
     return &m_sipEndpoint;
@@ -109,10 +130,37 @@ bool Risip::firstRun() const
     return settings.value(RisipSettingsParam::FirstRun).toBool();
 }
 
+bool Risip::defaultAccountAlways() const
+{
+    return m_defaultAccountAlways;
+}
+
+/**
+ * @brief Risip::setDefaultAccountAlways
+ * @param always
+ *
+ * Setting this to true will enable the call manager to use always the default account set
+ * in Risip::defaultAccount @see Risip::setDefaultAccount
+ */
+
+void Risip::setDefaultAccountAlways(bool always)
+{
+    if(m_defaultAccountAlways != always) {
+        m_defaultAccountAlways = always;
+        emit defaultAccountAlwaysChanged(m_defaultAccountAlways);
+    }
+}
+
 void Risip::setDefaultAccount(const QString &uri)
 {
     if(m_defaultAccountUri != uri) {
         m_defaultAccountUri = uri;
+
+        if(m_defaultAccountAlways) {
+            RisipCallManager::instance()->setActiveAccount(accountForUri(m_defaultAccountUri));
+            RisipContactManager::instance()->setActiveAccount(accountForUri(m_defaultAccountUri));
+        }
+
         emit defaultAccountChanged(accountForUri(m_defaultAccountUri));
     }
 }
@@ -122,6 +170,8 @@ void Risip::registerToQml()
     qmlRegisterSingletonType<Risip>(RisipSettingsParam::QmlUri, 1, 0, "Risip", risipSingletonProvider);
     qmlRegisterSingletonType<RisipCallManager>(RisipSettingsParam::QmlUri, 1, 0,
                                                "RisipCallManager", risipCallManagerSingletonProvider);
+    qmlRegisterSingletonType<RisipContactManager>(RisipSettingsParam::QmlUri, 1, 0,
+                                               "RisipContactManager", risipContactManagerSingletonProvider);
 
     qmlRegisterType<RisipEndpoint>(RisipSettingsParam::QmlUri, 1, 0, "RisipEndpoint");
     qmlRegisterType<RisipAccount>(RisipSettingsParam::QmlUri, 1, 0, "RisipAccount");
@@ -131,6 +181,10 @@ void Risip::registerToQml()
     qmlRegisterType<RisipMedia>(RisipSettingsParam::QmlUri, 1, 0, "RisipMedia");
     qmlRegisterType<RisipMessage>(RisipSettingsParam::QmlUri, 1, 0, "RisipMessage");
     qmlRegisterType<RisipCallHistoryModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipCallHistoryModel");
+    qmlRegisterType<RisipBuddiesModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipBuddiesModel");
+    qmlRegisterType<RisipContactHistoryModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipContactHistoryModel");
+
+    qmlRegisterType<QSortFilterProxyModel>(RisipSettingsParam::QmlUri, 1, 0, "QSortFilterProxyModel");
 }
 
 RisipAccount *Risip::accountForUri(const QString &accountUri)
@@ -161,11 +215,18 @@ RisipAccount *Risip::createAccount(RisipAccountConfiguration *configuration)
     if(!configuration)
         return new RisipAccount(this);
 
+    if(!configuration->valid())
+        return new RisipAccount(this);
+
     //create a new account with the given configuration
     RisipAccount *account = new RisipAccount(this);
     account->setSipEndPoint(sipEndpoint());
     account->setConfiguration(configuration);
     m_accounts[account->configuration()->uri()] = account;
+
+    RisipContactManager::instance()->createModelsForAccount(account);
+    RisipCallManager::instance()->createModelsForAccount(account);
+
     emit accountsChanged();
     emit accountNamesChanged();
 
@@ -176,6 +237,8 @@ bool Risip::removeAccount(QString &accountUri)
 {
     if(m_accounts.contains(accountUri)) {
         m_accounts.take(accountUri)->deleteLater();
+        RisipContactManager::instance()->removeModelsForAccount(accountForUri(accountUri));
+        RisipCallManager::instance()->removeModelsForAccount(accountForUri(accountUri));
         return true;
     }
 
@@ -216,8 +279,8 @@ bool Risip::readSettings()
         settings.endArray(); //end array
     }
 
-    //setting default account always
-    setDefaultAccount(settings.value(RisipSettingsParam::DefaultAccount).toString());
+    //TODO setting default account always when reading settings ??
+//    setDefaultAccount(settings.value(RisipSettingsParam::DefaultAccount).toString());
     return true;
 }
 

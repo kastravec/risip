@@ -33,8 +33,10 @@ ApplicationWindow {
     visibility: Window.AutomaticVisibility
     visible: true
 
-    Material.theme: Material.Dark
+    Material.theme: Material.Light
     Material.accent: Material.Purple
+    Material.primary: "#fafafa" //Material.BlueGrey
+    Material.foreground: Material.Red
 
     property string uiBasePath: "qrc:/ui/base/"
     property RisipEndpoint sipEndpoint: Risip.sipEndpoint
@@ -42,6 +44,19 @@ ApplicationWindow {
 
     Component.onCompleted: { sipEndpoint.start(); }
     Component.onDestruction: { sipEndpoint.stop(); }
+
+    header: ToolBar {
+        id: mainToolBar
+
+        RowLayout {
+            anchors.fill: parent
+
+            Label {
+                text: qsTr(" Risip")
+                Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
+            }
+        }
+    }
 
     footer: TabBar {
         id: mainTabBar
@@ -121,6 +136,30 @@ ApplicationWindow {
         anchors.fill: mainWindow.contentItem
     }
 
+    RisipBuddy {
+        id: buddy
+        uri: "<sip:toptop@sip2sip.info>"
+    }
+
+    RisipBuddy {
+        id: buddy2
+        uri: "<sip:topatop@sip2sip.info>"
+    }
+
+    //connection on active SIP account to handle different account states
+    Connections {
+        target: sipAccount
+
+        //handle signed in/out and errors
+        onStatusChanged: {
+            if(Risip.defaultAccount.status === RisipAccount.SignedIn) {
+                sipAccount.addRisipBuddy(buddy2);
+                sipAccount.addRisipBuddy(buddy);
+            }
+        }
+    }
+
+    //handle splaschreen signals - when it times out what comes first!
     Connections {
         target: splashScreenLoader.item
         onTimeout: {
@@ -137,6 +176,9 @@ ApplicationWindow {
         }
     }
 
+    //welcome screen singal handler, from which we go to either
+    //the Login page or if autologin is enabled then directly to
+    //the Home page.
     Connections {
         target: welcomeScreenLoader.item
 
@@ -151,6 +193,7 @@ ApplicationWindow {
         }
     }
 
+    //Signal handler for Home page.
     Connections {
         target: homePageLoader.item
 
@@ -160,6 +203,7 @@ ApplicationWindow {
         }
     }
 
+    //Handling all signals from the Login Page
     Connections {
         target: loginPageLoader.item
 

@@ -37,7 +37,6 @@ LoginPageForm {
 
         onStatusChanged: {
             if(sipAccount.status === RisipAccount.SignedIn) {
-                Risip.setDefaultAccount(sipAccount.configuration.uri);
                 root.signedIn();
             }
         }
@@ -49,5 +48,6 @@ LoginPageForm {
         sipAccount = Risip.accountForUri(sipServicesInput.currentText);
         uernameInput.text = sipAccount.configuration.userName
         passwordInput.text = sipAccount.configuration.password
+        Risip.setDefaultAccount(sipAccount.configuration.uri);
     }
 }

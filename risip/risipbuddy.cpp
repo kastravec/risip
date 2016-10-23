@@ -23,7 +23,7 @@
 #include "risipmessage.h"
 #include "risipcall.h"
 #include "risipaccountconfiguration.h"
-#include "risipcallhistorymodel.h"
+#include "risipmodels.h"
 
 #include <QDebug>
 
@@ -42,9 +42,14 @@ void PjsipBuddy::onBuddyState()
         m_risipBuddyInterface->presenceChanged(m_risipBuddyInterface->presence());
 }
 
-void PjsipBuddy::setRisipBuddyInterface(RisipBuddy *risipBuddy)
+void PjsipBuddy::setRisipInterface(RisipBuddy *risipBuddy)
 {
     m_risipBuddyInterface = risipBuddy;
+}
+
+RisipBuddy *PjsipBuddy::risipInterface()
+{
+    return m_risipBuddyInterface;
 }
 
 RisipBuddy::RisipBuddy(QObject *parent)
@@ -86,11 +91,17 @@ void RisipBuddy::setUri(QString contactUri)
     if(QString::fromStdString(m_buddyConfig.uri) != contactUri) {
         m_buddyConfig.uri = contactUri.toStdString();
         emit uriChanged(contactUri);
+        emit contactChanged(contact());
     }
 }
 
-QString RisipBuddy::contact() const
+QString RisipBuddy::contact()
 {
+    if(m_account) {
+        m_contact = uri().remove(QString("<sip:"));
+        m_contact = m_contact.remove(QString("@") + m_account->configuration()->serverAddress() + QString(">"));
+    }
+
     return m_contact;
 }
 
@@ -143,11 +154,19 @@ void RisipBuddy::setPjsipBuddy(PjsipBuddy *buddy)
         delete m_pjsipBuddy;
 
     m_pjsipBuddy = buddy;
-    m_pjsipBuddy->setRisipBuddyInterface(this);
+    m_pjsipBuddy->setRisipInterface(this);
     m_buddyConfig.uri = buddy->getInfo().uri;
 }
 
-void RisipBuddy::addToAccount()
+bool RisipBuddy::valid() const
+{
+    if(uri().isEmpty())
+        return false;
+
+    return true;
+}
+
+void RisipBuddy::create()
 {
     //check if uri and account are set - buddy cannot be created without those properties
     if(uri().isEmpty()
@@ -160,15 +179,11 @@ void RisipBuddy::addToAccount()
     } else {
         delete m_pjsipBuddy;
         m_pjsipBuddy = new PjsipBuddy;
-        m_pjsipBuddy->setRisipBuddyInterface(this);
+        m_pjsipBuddy->setRisipInterface(this);
         try {
             m_pjsipBuddy->create(*m_account->pjsipAccount(), m_buddyConfig);
         } catch (Error &err) {
             qDebug()<<"Error creating/adding this buddy: " <<uri() << QString::fromStdString(err.info(true));
-        }
-
-        if(m_account) {
-            m_account->addBuddy(this);
         }
     }
 }
@@ -179,14 +194,10 @@ void RisipBuddy::addToAccount()
  * Removes this buddy from the list and destroys it. All pending and failed messages are deleted.
  * Must call this function in order to remove a contact and delete any other application reference to it.
  */
-void RisipBuddy::release()
+void RisipBuddy::releaseFromAccount()
 {
-    if(m_account) {
-        m_account->removeBuddy(this);
-        //TODO delete or set to NULL
-        delete m_pjsipBuddy;
-        m_pjsipBuddy = NULL;
-    }
+    delete m_pjsipBuddy;
+    m_pjsipBuddy = NULL;
 }
 
 RisipMessage *RisipBuddy::sendInstantMessage(QString message)

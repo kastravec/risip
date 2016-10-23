@@ -20,6 +20,7 @@
 
 #include "risipendpoint.h"
 #include "risipaccountconfiguration.h"
+#include "risip.h"
 
 #include <QDebug>
 
@@ -212,7 +213,11 @@ void RisipEndpoint::start()
         qDebug()<<"Error starting the sip endpoint: " <<QString::fromStdString(err.info(true));
     }
 
+    //FIXME do not call this here - better handling
+    Risip::instance()->readSettings();
+
     emit statusChanged(status());
+
 
     //FIXME Codec priorities
     //TODO Codecs settings page

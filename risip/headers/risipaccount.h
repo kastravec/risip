@@ -115,13 +115,12 @@ public:
     QQmlListProperty<RisipBuddy> buddies();
     int buddiesCount(QQmlListProperty<RisipBuddy>*list);
 
-    void addBuddy(RisipBuddy *buddy);
-    void removeBuddy(RisipBuddy *buddy);
-
     PjsipCall *incomingPjsipCall();
     void setIncomingPjsipCall(PjsipCall *call);
 
     Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
+    Q_INVOKABLE void addBuddy(const QString &buddyUri);
+    Q_INVOKABLE void addRisipBuddy(RisipBuddy *buddy);
 
 Q_SIGNALS:
     void profileChanged(RisipAccountProfile *profile);
@@ -139,7 +138,6 @@ Q_SIGNALS:
 public Q_SLOTS:
     void login();
     void logout();
-    void refreshBuddyList();
 
 private:
     void setStatus(int status);
@@ -151,8 +149,8 @@ private:
     PresenceStatus m_presence;
     bool m_autoSignIn;
     int m_status;
-    QHash<QString, RisipBuddy *> m_buddies;
     PjsipCall *m_incomingPjsipCall;
+    QList<RisipBuddy *> m_allBuddies;
 };
 
 #endif // RISIPACCOUNT_H

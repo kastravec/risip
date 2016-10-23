@@ -22,87 +22,73 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 Page {
-    id: root
+    id: contactsPage
+
+    property alias buddyModel: sipListView.model
+    property alias sipListView: sipListView
+    property alias searchContactInput: searchContactInput
+    property alias phoneListView: phoneListView
 
     footer: TabBar {
-        id: contactsTabBar
-
-        TabButton {
-            id: phoneContacts
-            text: qsTr("Phone")
-        }
+        id: tabBar
+        currentIndex: 0
 
         TabButton {
             id: sipContacts
             text: qsTr("SIP")
         }
+
+        TabButton {
+            id: phoneContacts
+            text: qsTr("Phone")
+        }
     }
 
-    StackLayout {
-        id: stackLayout
-        currentIndex: contactsTabBar.currentIndex
+    ColumnLayout {
+        anchors.fill: contactsPage.contentItem
 
-        ListView {
-            id: listView1
-
-            delegate: Item {
-                width: 80
-                height: 40
-                Row {
-                    id: row1
-                    Rectangle {
-                        width: 40
-                        height: 40
-                        color: colorCode
-                    }
-
-                    Text {
-                        text: name
-                        font.bold: true
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                    spacing: 10
-                }
-            }
-
-            model: ListModel {
-                ListElement {
-                    name: "Grey"
-                    colorCode: "grey"
-                }
-            }
+        TextField {
+            id: searchContactInput
+            Layout.fillWidth: true
+            placeholderText: qsTr("Search a contact..");
         }
 
+        StackLayout {
+            id: stackLayout
 
-        ListView {
-            id: listView2
+            currentIndex: tabBar.currentIndex
 
-            delegate: Item {
-                width: 80
-                height: 40
-                Row {
-                    id: row2
-                    Rectangle {
-                        width: 40
-                        height: 40
-                        color: colorCode
+            ListView {
+                id: sipListView
+
+                delegate: Item {
+                    width: parent.width
+                    height: 50
+                    Text {
+                        anchors.fill: parent
+                        text: contact
+                        font.bold: true
+                        font.pointSize: 12
                     }
+                }
+            }
+
+            ListView {
+                id: phoneListView
+
+                delegate: Item {
+                    width: parent.width
+                    height: 50
 
                     Text {
-                        text: name
+                        anchors.fill: parent
+                        text: uri
                         font.bold: true
                         anchors.verticalCenter: parent.verticalCenter
                     }
-                    spacing: 10
                 }
             }
 
-            model: ListModel {
-                ListElement {
-                    name: "Grey"
-                    colorCode: "grey"
-                }
-            }
         }
     }
 }

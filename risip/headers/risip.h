@@ -29,6 +29,8 @@ class RisipEndpoint;
 class RisipAccountConfiguration;
 class RisipCall;
 class RisipBuddy;
+class RisipContactManager;
+class RisipCallManager;
 
 class Risip: public QObject
 {
@@ -36,10 +38,13 @@ class Risip: public QObject
 
 public:
     Q_PROPERTY(QQmlListProperty<RisipAccount> accounts READ accounts NOTIFY accountsChanged)
+    Q_PROPERTY(RisipContactManager * contactManager READ contactManager CONSTANT)
+    Q_PROPERTY(RisipCallManager * callManager READ callManager CONSTANT)
     Q_PROPERTY(QStringList accountNames READ accountNames NOTIFY accountNamesChanged)
     Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint CONSTANT)
     Q_PROPERTY(RisipAccount * defaultAccount READ defaultAccount NOTIFY defaultAccountChanged)
     Q_PROPERTY(bool firstRun READ firstRun CONSTANT)
+    Q_PROPERTY(bool defaultAccountAlways READ defaultAccountAlways WRITE setDefaultAccountAlways NOTIFY defaultAccountAlwaysChanged)
 
     ~Risip();
     static Risip *instance();
@@ -47,9 +52,14 @@ public:
 
     QQmlListProperty<RisipAccount> accounts();
     QStringList accountNames() const;
+    RisipContactManager *contactManager() const;
+    RisipCallManager *callManager() const;
     RisipEndpoint *sipEndpoint();
     RisipAccount *defaultAccount();
     bool firstRun() const;
+
+    bool defaultAccountAlways() const;
+    void setDefaultAccountAlways(bool always = true);
 
     Q_INVOKABLE RisipAccount *accountForUri(const QString &accountUri);
     Q_INVOKABLE RisipAccount *accountForConfiguration(RisipAccountConfiguration *configuration);
@@ -66,13 +76,15 @@ Q_SIGNALS:
     void accountsChanged();
     void accountNamesChanged();
     void defaultAccountChanged(RisipAccount *account);
+    void defaultAccountAlwaysChanged(bool always);
 
 private:
-    Risip(QObject *parent = 0);
+    explicit Risip(QObject *parent = 0);
     static Risip *m_risipInstance;
     QHash<QString, RisipAccount *> m_accounts;
     RisipEndpoint m_sipEndpoint;
     QString m_defaultAccountUri;
+    bool m_defaultAccountAlways;
 };
 
 #endif // RISIP_H

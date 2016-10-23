@@ -4,8 +4,8 @@ TEMPLATE = app
 #CONFIG -= app_bundle
 CONFIG += exceptions c++11 static
 
-QT -= gui
 QT = core network qml quick quickcontrols2
+QT -= gui widgets
 
 QT += svg
 QTPLUGIN += qtvirtualkeyboardplugin
@@ -27,7 +27,6 @@ INCLUDEPATH += $$PWD/src \
 INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
 #INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
 
-
 ### SOURCE & HEADER FILES ###
 SOURCES += src/main.cpp \
     risip/risip.cpp \
@@ -39,14 +38,15 @@ SOURCES += src/main.cpp \
     risip/risipmessage.cpp \
     risip/risipaccountconfiguration.cpp \
     src/uiloader.cpp \
-    risip/risipcallhistorymodel.cpp \
     src/applicationsettings.cpp \
     risip/globals.cpp \
     risip/risipaccountprofile.cpp \
     sipregistrars/httpmanager.cpp \
     sipregistrars/httpresponse.cpp \
     sipregistrars/mor/morapi.cpp \
-    risip/risipcallmanager.cpp
+    risip/risipcallmanager.cpp \
+    risip/risipcontactmanager.cpp \
+    risip/risipmodels.cpp
 
 HEADERS += risip/headers/risip.h \
     risip/headers/risipaccount.h \
@@ -59,18 +59,19 @@ HEADERS += risip/headers/risip.h \
     risip/headers/risipaccountconfiguration.h \
     risip/headers/risipaccountprofile.h \
     src/uiloader.h \
-    risip/headers/risipcallhistorymodel.h \
     src/applicationsettings.h \
     sipregistrars/httpmanager.h \
     sipregistrars/httpresponse.h \
     sipregistrars/mor/morapi.h \
-    risip/headers/risipcallmanager.h
+    risip/headers/risipcallmanager.h \
+    risip/headers/risipcontactmanager.h \
+    risip/headers/risipmodels.h
+
+########## LIBS ##########
 
 macx {
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 }
-
-########## LIBS ##########
 
 linux {
 LIBS += -L$$PWD/pjsip/linux-desktop/lib \

@@ -19,5 +19,15 @@
 
 import QtQuick 2.7
 
+import Risip 1.0
+
 ContactsPageForm {
+    id: contactsPage
+
+    buddyModel: RisipContactManager.activeBuddiesModel.proxy
+
+    searchContactInput.onTextChanged: {
+        buddyModel.filterRole = RisipBuddiesModel.ContactRole;
+        buddyModel.setFilterRegExp(searchContactInput.text);
+    }
 }

@@ -62,7 +62,7 @@ Page {
             id: loginButton
             text: qsTr("Sign in")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.fillWidth: false
+            Layout.fillWidth: true
         }
 
         CheckBox {

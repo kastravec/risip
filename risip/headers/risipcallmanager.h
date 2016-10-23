@@ -21,48 +21,65 @@
 #define RISIPCALLMANAGER_H
 
 #include <QObject>
+#include <QAbstractItemModel>
+#include <QQmlListProperty>
 
 class RisipAccount;
 class RisipBuddy;
 class RisipCall;
+class RisipCallHistoryModel;
 
 class RisipCallManager : public QObject
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(RisipAccount * defaultAccount READ defaultAccount WRITE setDefaultAccount NOTIFY defaultAccountChanged)
+    Q_PROPERTY(RisipAccount * activeAccount READ activeAccount WRITE setActiveAccount NOTIFY activeAccountChanged)
     Q_PROPERTY(RisipCall * activeCall READ activeCall NOTIFY activeCallChanged)
+    Q_PROPERTY(QAbstractItemModel * activeCallHistoryModel READ activeCallHistoryModel WRITE setActiveCallHistoryModel NOTIFY activeCallHistoryModelChanged)
+    Q_PROPERTY(QQmlListProperty<QAbstractItemModel> callHistoryModels READ callHistoryModels NOTIFY callHistoryModelsChanged)
 
     static RisipCallManager *instance();
     ~RisipCallManager();
 
-    RisipAccount *defaultAccount();
-    void setDefaultAccount(RisipAccount *defaultAccount);
+    RisipAccount *activeAccount() const;
+    void setActiveAccount(RisipAccount *activeAccount);
 
     RisipCall *activeCall();
     void setActiveCall(RisipCall *call);
 
+    QAbstractItemModel *activeCallHistoryModel() const;
+    void setActiveCallHistoryModel(QAbstractItemModel *model);
+
+    QQmlListProperty<QAbstractItemModel> callHistoryModels();
+
+    Q_INVOKABLE QAbstractItemModel *callHistoryModelForAccount(const QString &account) const;
     Q_INVOKABLE void callContact(const QString uri);
     Q_INVOKABLE void callBuddy(RisipBuddy *buddy);
     Q_INVOKABLE void callPhone(const QString &number);
 
+    void createModelsForAccount(RisipAccount *account);
+    void removeModelsForAccount(const RisipAccount *account);
+
 Q_SIGNALS:
-    void defaultAccountChanged(RisipAccount *account);
+    void activeAccountChanged(RisipAccount *activeAccount);
     void activeCallChanged(RisipCall *call);
+    void activeCallHistoryModelChanged(QAbstractItemModel *model);
+    void callHistoryModelsChanged(QQmlListProperty<QAbstractItemModel> models);
+    void defaultAccountAlwaysChanged(bool always);
     void incomingCall(RisipCall *call);
     void outgoingCall(RisipCall *call);
 
 private Q_SLOTS:
     void accountIncomingCall();
-    void updateDefaultAccount();
 
 private:
     explicit RisipCallManager(QObject *parent = 0);
     static RisipCallManager *m_callManagerInstance;
 
-    RisipAccount *m_defaultAccount;
+    RisipAccount *m_activeAccount;
     RisipCall *m_activeCall;
-    QList<RisipCall *> m_callHistory;
+    QAbstractItemModel *m_activeCallHistoryModel;
+    QHash<QString, QAbstractItemModel *> m_callHistoryModels;
 };
 
 #endif // RISIPCALLMANAGER_H
