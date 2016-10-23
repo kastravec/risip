@@ -23,9 +23,9 @@ INCLUDEPATH += $$PWD/src \
 # it could be different directory names for different platform where you put the pjsip headers
 # e.g. Linux desktop -> pjsip/linux-desktop , Mac desktop -> pjsip/mac-desktop, Android-arm64 -> pjsip/android-arm64
 
-#INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
-INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
-#INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
+INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
+#INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
+INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
 
 ### SOURCE & HEADER FILES ###
 SOURCES += src/main.cpp \

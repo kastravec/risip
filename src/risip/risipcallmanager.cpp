@@ -150,7 +150,7 @@ void RisipCallManager::callContact(const QString contact)
     RisipBuddy *buddy = m_activeAccount->findBuddy(
                 RisipGlobals::formatToSip(contact, m_activeAccount->configuration()->uri()));
     if(buddy == NULL) {
-        buddy = new RisipBuddy;
+        buddy = new RisipBuddy(this);
         buddy->setAccount(activeAccount());
         buddy->setContact(contact);
     }

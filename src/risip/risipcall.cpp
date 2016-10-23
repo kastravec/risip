@@ -180,6 +180,7 @@ RisipCall::RisipCall(QObject *parent)
     ,m_risipMedia(NULL)
     ,m_pjsipCall(NULL)
     ,m_callType(RisipCall::Voip)
+    ,m_callDirection(Unknown)
 {
 }
 

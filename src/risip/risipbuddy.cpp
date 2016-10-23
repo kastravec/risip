@@ -56,6 +56,7 @@ RisipBuddy::RisipBuddy(QObject *parent)
     :QObject(parent)
     ,m_pjsipBuddy(NULL)
     ,m_account(NULL)
+    ,m_contact()
     ,m_type(Internal)
 {
     //always subscribe to the buddy presence
@@ -178,6 +179,7 @@ void RisipBuddy::create()
             return;
     } else {
         delete m_pjsipBuddy;
+        m_pjsipBuddy = NULL;
         m_pjsipBuddy = new PjsipBuddy;
         m_pjsipBuddy->setRisipInterface(this);
         try {
