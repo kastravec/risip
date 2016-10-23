@@ -65,7 +65,6 @@ Q_SIGNALS:
     void activeCallChanged(RisipCall *call);
     void activeCallHistoryModelChanged(QAbstractItemModel *model);
     void callHistoryModelsChanged(QQmlListProperty<QAbstractItemModel> models);
-    void defaultAccountAlwaysChanged(bool always);
     void incomingCall(RisipCall *call);
     void outgoingCall(RisipCall *call);
 

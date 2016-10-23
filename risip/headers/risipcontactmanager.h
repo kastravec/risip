@@ -60,7 +60,6 @@ Q_SIGNALS:
     void activeAccountChanged(RisipAccount *activeAccount);
     void activeBuddiesModelChanged(QAbstractItemModel *model);
     void activeContactHistoryChanged(QAbstractItemModel *model);
-    void defaultAccountAlwaysChanged(bool always);
     void buddyModelsChanged();
     void contactHistoryModelsChanged();
 

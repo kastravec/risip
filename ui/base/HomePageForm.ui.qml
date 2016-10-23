@@ -32,6 +32,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 20
 
         Pane {
             id: pane1
@@ -65,17 +66,30 @@ Item {
             }
         }// end of Pane
 
+        Label {
+            text: qsTr("Recent calls")
+        }
+
         ListView {
             id: callHistoryListview
             Layout.fillWidth: true
             Layout.fillHeight: true
+
             delegate: Item {
                 width: parent.width
                 height: 40
 
-                Label {
-                    text: contact
-                    font.bold: true
+                Row {
+                    spacing: 20
+                    Label {
+                        text: callContact
+                        font.bold: true
+                    }
+
+                    Label {
+                        text: callTimestamp
+                        font.bold: true
+                    }
                 }
             }
         }

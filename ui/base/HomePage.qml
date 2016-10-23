@@ -27,7 +27,6 @@ HomePageForm {
     signal signedOut
 
     callHistoryListview.model: RisipCallManager.activeCallHistoryModel
-
     statusLabel.text: sipAccount.statusText
     userNameLabel.text: sipAccount.configuration.userName
 
@@ -37,10 +36,8 @@ HomePageForm {
         target: sipAccount
 
         onStatusChanged: {
-            if(sipAccount.status === RisipAccount.SignedOut) {
-             console.log("Call history model count: " + callHistoryListview.model.count);
+            if(sipAccount.status === RisipAccount.SignedOut)
                 root.signedOut();
-            }
         }
     }
 }
