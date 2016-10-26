@@ -37,6 +37,7 @@ ApplicationWindow {
     Material.accent: Material.Purple
     Material.primary: "#fafafa" //Material.BlueGrey
     Material.foreground: Material.Red
+    Material.background: "#ffffff"
 
     property string uiBasePath: "qrc:/ui/base/"
     property RisipEndpoint sipEndpoint: Risip.sipEndpoint

@@ -133,18 +133,18 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
     case RisipAccountConfiguration::TCP:
         netType = PJSIP_TRANSPORT_TCP;
         break;
-    case RisipAccountConfiguration::UDP6:
-        netType = PJSIP_TRANSPORT_UDP6;
-        break;
-    case RisipAccountConfiguration::TCP6:
-        netType = PJSIP_TRANSPORT_TCP6;
-        break;
     case RisipAccountConfiguration::TLS:
         netType = PJSIP_TRANSPORT_TLS;
         break;
-    case RisipAccountConfiguration::TLS6:
-        netType = PJSIP_TRANSPORT_TLS6;
-        break;
+//    case RisipAccountConfiguration::UDP6:
+//        netType = PJSIP_TRANSPORT_UDP6;
+//        break;
+//    case RisipAccountConfiguration::TCP6:
+//        netType = PJSIP_TRANSPORT_TCP6;
+//        break;
+//    case RisipAccountConfiguration::TLS6:
+//        netType = PJSIP_TRANSPORT_TLS6;
+//        break;
     default:
         netType = PJSIP_TRANSPORT_UDP; //defaults to UDP always
         break;

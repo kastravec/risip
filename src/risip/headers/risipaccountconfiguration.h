@@ -37,14 +37,14 @@ public:
     };
 
     enum NetworkProtocol {
-        UDP = 1,
-        TCP,
-        UDP6,
-        TCP6,
-        SCTP,
-        TLS,
-        TLS6,
-        LOOP
+        UDP = 0,
+        TCP = 1,
+        TLS = 2
+//        UDP6,
+//        TCP6,
+//        SCTP,
+//        TLS6,
+//        LOOP
     };
 
     Q_ENUM(Codecs)
@@ -60,6 +60,7 @@ public:
     Q_PROPERTY(QString proxyServer READ proxyServer WRITE setProxyServer NOTIFY proxyServerChanged)
     Q_PROPERTY(int proxyPort READ proxyPort WRITE setProxyPort NOTIFY proxyPortChanged)
     Q_PROPERTY(int transportId READ transportId WRITE setTransportId NOTIFY transportIdChanged)
+    Q_PROPERTY(bool encryptCalls READ encryptCalls WRITE setEncryptCalls NOTIFY encryptCallsChanged)
     Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
 
     //user-defined
@@ -106,6 +107,9 @@ public:
     bool randomLocalPort() const;
     void setRandomLocalPort(bool random);
 
+    bool encryptCalls() const;
+    void setEncryptCalls(bool encrypt);
+
     bool valid();
 
     void setCodecPriority(Codecs codecId, int priority);
@@ -129,6 +133,7 @@ Q_SIGNALS:
     void networkProtocolChanged(int protocol);
     void localPortChanged(int port);
     void randomLocalPortChanged(bool randomPort);
+    void encryptCallsChanged(bool encrypt);
     void validChanged(bool valid);
 
 private:

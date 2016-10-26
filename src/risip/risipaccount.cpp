@@ -120,7 +120,6 @@ void PjsipAccount::onInstantMessage(OnInstantMessageParam &prm)
     QString contenttype = QString::fromStdString(prm.contentType);
     message->setMessageBody(msgBody);
     message->setContentType(contenttype);
-
     m_risipAccount->incomingMessage(message);
 }
 
@@ -340,6 +339,12 @@ RisipBuddy *RisipAccount::findBuddy(const QString &uri)
     return NULL;
 }
 
+/**
+ * @brief RisipAccount::addBuddy
+ * @param buddyUri uri of the new buddy to be added
+ *
+ * Use this function to add a new buddy to this account
+ */
 void RisipAccount::addBuddy(const QString &buddyUri)
 {
     if(!m_pjsipAccount)
@@ -353,6 +358,13 @@ void RisipAccount::addBuddy(const QString &buddyUri)
     addRisipBuddy(buddy);
 }
 
+/**
+ * @brief RisipAccount::addRisipBuddy
+ * @param buddy buddy to be added to this account
+ *
+ * Use this function to add this buddy to this account.
+ * NOTE: uri of the buddy should be valid before setting it otherwise it will fail
+ */
 void RisipAccount::addRisipBuddy(RisipBuddy *buddy)
 {
     if(!buddy)
@@ -369,11 +381,23 @@ void RisipAccount::addRisipBuddy(RisipBuddy *buddy)
     model->addBuddy(buddy);
 }
 
+/**
+ * @brief RisipAccount::pjsipAccount
+ * @return the pjsip object pointer
+ *
+ * Internal API.
+ */
 PjsipAccount *RisipAccount::pjsipAccount() const
 {
     return m_pjsipAccount;
 }
 
+/**
+ * @brief RisipAccount::setPjsipAccountInterface
+ * @param acc
+ *
+ * Internal API.
+ */
 void RisipAccount::setPjsipAccountInterface(PjsipAccount *acc)
 {
     m_pjsipAccount = acc;
@@ -477,6 +501,8 @@ void RisipAccount::setAutoSignIn(bool signin)
 /**
  * @brief RisipAccount::login
  * Creates a SIP Account and registers it with the SIP server. It updates the Account::status property accordinly.
+ *
+ * Use this function to login with this account.
  */
 void RisipAccount::login()
 {
@@ -516,6 +542,11 @@ void RisipAccount::login()
     }
 }
 
+/**
+ * @brief RisipAccount::logout
+ *
+ * Use this function to logout with this account.
+ */
 void RisipAccount::logout()
 {
     if(m_status == SignedIn) {
@@ -557,17 +588,11 @@ void RisipAccount::setStatus(int status)
             //deleting the internal pjsipAccount object
             delete m_pjsipAccount;
             m_pjsipAccount = NULL;
-
             break;
         }
-        default:
-            break;
         }
 
         emit statusChanged(m_status);
         emit statusTextChanged(statusText());
     }
 }
-
-
-

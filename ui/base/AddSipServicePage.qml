@@ -39,8 +39,8 @@ AddSipServicePageForm {
         password: passwordInput.text
         serverAddress: serverAddressInput.text
         proxyServer: proxyServerInput.text
-        localPort: parseInt(localPortInput)
-        randomLocalPort: parseInt(localPortInput)
+        localPort: parseInt(localPortInput.text)
+        randomLocalPort: parseInt(localPortInput.text)
         networkProtocol: networkTypeInput.currentIndex
     }
 

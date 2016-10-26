@@ -83,86 +83,104 @@ void PjsipCall::onCallMediaState(OnCallMediaStateParam &prm)
         m_risipCall->initializeMediaHandler();
 }
 
+//logging purpose
 void PjsipCall::onCallSdpCreated(OnCallSdpCreatedParam &prm)
 {
     Q_UNUSED(prm)
 }
+
+//logging purpose
 void PjsipCall::onStreamCreated(OnStreamCreatedParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onStreamDestroyed(OnStreamDestroyedParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onDtmfDigit(OnDtmfDigitParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCallTransferRequest(OnCallTransferRequestParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCallTransferStatus(OnCallTransferStatusParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCallReplaceRequest(OnCallReplaceRequestParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCallReplaced(OnCallReplacedParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCallRxOffer(OnCallRxOfferParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCallTxOffer(OnCallTxOfferParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onInstantMessage(OnInstantMessageParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onInstantMessageStatus(OnInstantMessageStatusParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onTypingIndication(OnTypingIndicationParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 pjsip_redirect_op PjsipCall::onCallRedirected(OnCallRedirectedParam &prm)
 {
     Q_UNUSED(prm)
     return PJSIP_REDIRECT_ACCEPT;
 }
 
+//logging purpose
 void PjsipCall::onCallMediaTransportState(OnCallMediaTransportStateParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCallMediaEvent(OnCallMediaEventParam &prm)
 {
     Q_UNUSED(prm)
 }
 
+//logging purpose
 void PjsipCall::onCreateMediaTransport(OnCreateMediaTransportParam &prm)
 {
     Q_UNUSED(prm)
@@ -266,6 +284,12 @@ void RisipCall::setPjsipCall(PjsipCall *call)
     emit statusChanged(status());
 }
 
+/**
+ * @brief RisipCall::pjsipCall
+ * @return pjsip object
+ *
+ * Internal API.
+ */
 PjsipCall *RisipCall::pjsipCall() const
 {
     return m_pjsipCall;
@@ -333,6 +357,12 @@ int RisipCall::callDirection() const
     return m_callDirection;
 }
 
+/**
+ * @brief RisipCall::setCallDirection
+ * @param direction
+ *
+ * Internal API.
+ */
 void RisipCall::setCallDirection(int direction)
 {
     if(m_callDirection != direction) {
@@ -341,18 +371,26 @@ void RisipCall::setCallDirection(int direction)
     }
 }
 
+/**
+ * @brief RisipCall::callDuration
+ * @return call duration in msec
+ *
+ * Retuns the duration of the call in milliseconds.
+ */
 int RisipCall::callDuration() const
 {
     if(!m_pjsipCall)
         return 0;
 
-    return (int)m_pjsipCall->getInfo().connectDuration.sec;
+    return (int)m_pjsipCall->getInfo().connectDuration.msec;
 }
 
 /**
  * @brief RisipCall::initializeMediaHandler
  *
  * Internal API.
+ *
+ * Initializes media objects for an active call that has been established and answered.
  */
 void RisipCall::initializeMediaHandler()
 {
@@ -362,6 +400,13 @@ void RisipCall::initializeMediaHandler()
     m_risipMedia->startCallMedia();
 }
 
+/**
+ * @brief RisipCall::answer
+ *
+ * Answers an incoming call.
+ *
+ * @see RisipCallManager how incoming are handled.
+ */
 void RisipCall::answer()
 {
     if(!m_account)
@@ -405,7 +450,8 @@ void RisipCall::hangup()
 /**
  * @brief RisipCall::call
  *
- * Internal API. Use with caution. @see RisipCallManager
+ * Internal API.
+ * Use may use it with caution. @see RisipCallManager
  */
 void RisipCall::call()
 {
@@ -428,6 +474,15 @@ void RisipCall::call()
     }
 }
 
+/**
+ * @brief RisipCall::initiateIncomingCall
+ *
+ * Internal API.
+ *
+ * Used for initiating/handling an incoming call from the account.
+ *
+ * @see RisipCallManager how it is used.
+ */
 void RisipCall::initiateIncomingCall()
 {
     if(!m_account)

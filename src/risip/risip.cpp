@@ -76,6 +76,7 @@ Risip::Risip(QObject *parent)
     ,m_defaultAccountUri()
     ,m_defaultAccountAlways(true)
 {
+
 }
 
 Risip::~Risip()

@@ -22,7 +22,6 @@
         <file>ui/base/DialPageForm.ui.qml</file>
         <file>ui/base/SettingsPageForm.ui.qml</file>
         <file>ui/base/SettingsPage.qml</file>
-        <file>ui/base/RisipApplication.qml</file>
         <file>ui/base/qtquickcontrols2.conf</file>
         <file>ui/base/CallPage.qml</file>
         <file>ui/base/CallPageForm.ui.qml</file>

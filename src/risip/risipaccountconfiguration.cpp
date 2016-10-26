@@ -30,6 +30,7 @@ RisipAccountConfiguration::RisipAccountConfiguration(QObject *parent)
 {
     setTransportId(-1);
     setLocalPort(0); //setting port to 0 means that any available random port will be used
+//    setEncryptCalls(true);
 }
 
 RisipAccountConfiguration::~RisipAccountConfiguration()
@@ -216,6 +217,26 @@ void RisipAccountConfiguration::setRandomLocalPort(bool random)
     }
 }
 
+bool RisipAccountConfiguration::encryptCalls() const
+{
+    if(m_accountConfig.mediaConfig.srtpUse == PJMEDIA_SRTP_DISABLED)
+        return false;
+    else if(m_accountConfig.mediaConfig.srtpUse == PJMEDIA_SRTP_OPTIONAL )
+        return true;
+}
+
+void RisipAccountConfiguration::setEncryptCalls(bool encrypt)
+{
+    if(m_accountConfig.mediaConfig.srtpUse != encrypt) {
+        if(encrypt)
+            m_accountConfig.mediaConfig.srtpUse = PJMEDIA_SRTP_OPTIONAL;
+        else
+            m_accountConfig.mediaConfig.srtpUse = PJMEDIA_SRTP_DISABLED;
+
+        emit encryptCallsChanged(encrypt);
+    }
+}
+
 bool RisipAccountConfiguration::valid()
 {
     if(serverAddress().isEmpty()
@@ -269,15 +290,15 @@ AccountConfig RisipAccountConfiguration::pjsipAccountConfig()
         case TCP:
             proxyUri = proxyUri + QString("tcp");
             break;
-        case UDP6:
-            proxyUri = proxyUri + QString("udp6");
-            break;
-        case TCP6:
-            proxyUri = proxyUri + QString("tcp6");
-            break;
         case TLS:
             proxyUri = proxyUri + QString("tls");
-        break;
+            break;
+//        case UDP6:
+//            proxyUri = proxyUri + QString("udp6");
+//            break;
+//        case TCP6:
+//            proxyUri = proxyUri + QString("tcp6");
+//            break;
         default:
             break;
         }
@@ -291,6 +312,7 @@ AccountConfig RisipAccountConfiguration::pjsipAccountConfig()
     m_accountConfig.callConfig.timerMinSESec = 1200;
     m_accountConfig.callConfig.timerSessExpiresSec = 22000;
 
+//    m_accountConfig.natConfig.iceAggressiveNomination
     return m_accountConfig;
 }
 
@@ -306,6 +328,7 @@ TransportConfig RisipAccountConfiguration::pjsipTransportConfig()
     else if(m_randomLocalPort)
         m_transportConfiguration.port = 0;
 
+//    m_accountConfig.natConfig.sipStunUse
     return m_transportConfiguration;
 }
 
