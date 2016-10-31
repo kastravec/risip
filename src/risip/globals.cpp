@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "risipglobals.h"
 
 #include <QString>
 

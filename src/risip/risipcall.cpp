@@ -177,6 +177,7 @@ void PjsipCall::onCallMediaTransportState(OnCallMediaTransportStateParam &prm)
 //logging purpose
 void PjsipCall::onCallMediaEvent(OnCallMediaEventParam &prm)
 {
+
     Q_UNUSED(prm)
 }
 
@@ -199,6 +200,7 @@ RisipCall::RisipCall(QObject *parent)
     ,m_pjsipCall(NULL)
     ,m_callType(RisipCall::Voip)
     ,m_callDirection(Unknown)
+    ,m_error()
 {
 }
 
@@ -252,6 +254,24 @@ void RisipCall::setMedia(RisipMedia *med)
         }
 
         emit mediaChanged(m_risipMedia);
+    }
+}
+
+void RisipCall::setError(const Error &error)
+{
+    qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
+
+    if(m_error.status != error.status) {
+
+        m_error.status = error.status;
+        m_error.reason = error.reason;
+        m_error.srcFile = error.srcFile;
+        m_error.srcLine = error.srcLine;
+        m_error.title = error.title;
+
+        emit errorCodeChanged(m_error.status);
+        emit errorMessageChanged(QString::fromStdString(m_error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
     }
 }
 
@@ -385,6 +405,21 @@ int RisipCall::callDuration() const
     return (int)m_pjsipCall->getInfo().connectDuration.msec;
 }
 
+int RisipCall::errorCode() const
+{
+    return m_error.status;
+}
+
+QString RisipCall::errorMessage()
+{
+    return QString::fromStdString(m_error.reason);
+}
+
+QString RisipCall::errorInfo() const
+{
+    return QString::fromStdString(m_error.info(true));
+}
+
 /**
  * @brief RisipCall::initializeMediaHandler
  *
@@ -419,9 +454,8 @@ void RisipCall::answer()
         try {
             m_pjsipCall->answer(prm);
         } catch (Error &err) {
-            qDebug()<<"error answering the call... " <<QString::fromStdString(err.reason) <<err.status;
+            setError(err);
         }
-
     } else {
         qDebug()<<"no account set or call id!";
     }
@@ -441,7 +475,7 @@ void RisipCall::hangup()
     try {
         m_pjsipCall->hangup(prm);
     } catch (Error &err) {
-        qDebug()<<"error hanging up the call... " <<QString::fromStdString(err.reason) <<err.status;
+        setError(err);
     }
 
     RisipCallManager::instance()->setActiveCall(NULL);
@@ -470,7 +504,7 @@ void RisipCall::call()
     try {
         m_pjsipCall->makeCall(m_buddy->uri().toStdString(), prm);
     } catch (Error err) {
-        qDebug()<<"making call failed: " <<QString::fromStdString(err.info());
+        setError(err);
     }
 }
 

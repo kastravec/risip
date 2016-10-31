@@ -84,6 +84,9 @@ public:
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusTextChanged)
     Q_PROPERTY(QQmlListProperty<RisipBuddy> buddies READ buddies NOTIFY buddiesChanged)
+    Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
+    Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
 
     RisipAccount(QObject *parent = 0);
     ~RisipAccount();
@@ -115,6 +118,10 @@ public:
     QQmlListProperty<RisipBuddy> buddies();
     int buddiesCount(QQmlListProperty<RisipBuddy>*list);
 
+    int errorCode() const;
+    QString errorMessage() const;
+    QString errorInfo() const;
+
     PjsipCall *incomingPjsipCall();
     void setIncomingPjsipCall(PjsipCall *call);
 
@@ -134,6 +141,9 @@ Q_SIGNALS:
     void buddiesChanged(QQmlListProperty<RisipBuddy> buddies);
     void incomingCall();
     void incomingMessage(RisipMessage *message);
+    void errorCodeChanged(int code);
+    void errorMessageChanged(const QString &message);
+    void errorInfoChanged(const QString &info);
 
 public Q_SLOTS:
     void login();
@@ -141,6 +151,7 @@ public Q_SLOTS:
 
 private:
     void setStatus(int status);
+    void setError(const Error &error);
 
     PjsipAccount *m_pjsipAccount;
     RisipAccountProfile *m_profile;
@@ -151,6 +162,7 @@ private:
     int m_status;
     PjsipCall *m_incomingPjsipCall;
     QList<RisipBuddy *> m_allBuddies;
+    Error m_error;
 };
 
 #endif // RISIPACCOUNT_H

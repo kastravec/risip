@@ -223,6 +223,8 @@ bool RisipAccountConfiguration::encryptCalls() const
         return false;
     else if(m_accountConfig.mediaConfig.srtpUse == PJMEDIA_SRTP_OPTIONAL )
         return true;
+
+    return false;
 }
 
 void RisipAccountConfiguration::setEncryptCalls(bool encrypt)
@@ -312,7 +314,8 @@ AccountConfig RisipAccountConfiguration::pjsipAccountConfig()
     m_accountConfig.callConfig.timerMinSESec = 1200;
     m_accountConfig.callConfig.timerSessExpiresSec = 22000;
 
-//    m_accountConfig.natConfig.iceAggressiveNomination
+//    m_accountConfig.natConfig.iceEnabled = true;
+
     return m_accountConfig;
 }
 

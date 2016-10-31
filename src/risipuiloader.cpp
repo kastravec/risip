@@ -17,7 +17,7 @@
 **
 ************************************************************************************/
 
-#include "uiloader.h"
+#include "risipuiloader.h"
 #include "applicationsettings.h"
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>

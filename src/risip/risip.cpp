@@ -20,7 +20,7 @@
 
 #include "risip.h"
 
-#include "globals.h"
+#include "risipglobals.h"
 #include "risipaccount.h"
 #include "risipbuddy.h"
 #include "risipcall.h"
@@ -31,7 +31,7 @@
 #include "risipcallmanager.h"
 #include "risipcontactmanager.h"
 
-#include <QtQml>
+#include <QQmlEngine>
 #include <QSettings>
 #include <QCoreApplication>
 #include <QDebug>

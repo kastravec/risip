@@ -1,2 +1,2 @@
 #!/bin/sh
-DYLD_FRAMEWORK_PATH="$PWD/qt" DYLD_LIBRARY_PATH="$PWD/pjsip" ./brimwen
+DYLD_FRAMEWORK_PATH="$PWD/qtlibs" DYLD_LIBRARY_PATH="$PWD/pjsip" ./risip

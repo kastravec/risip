@@ -22,7 +22,7 @@
 #define RISIPACCOUNTPROFILE_H
 
 #include <QObject>
-#include "globals.h"
+#include "risipglobals.h"
 
 class RisipAccountProfileData
 {

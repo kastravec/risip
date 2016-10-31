@@ -2,13 +2,9 @@ TARGET = risip
 TEMPLATE = app
 
 #CONFIG -= app_bundle
-CONFIG += exceptions c++11 static
+CONFIG += exceptions c++11
 
 QT = core network qml quick quickcontrols2
-QT -= gui widgets
-
-QT += svg
-QTPLUGIN += qtvirtualkeyboardplugin
 
 ### DEFINES ###
 DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
@@ -37,7 +33,6 @@ SOURCES += src/main.cpp \
     src/risip/risipendpoint.cpp \
     src/risip/risipmessage.cpp \
     src/risip/risipaccountconfiguration.cpp \
-    src/uiloader.cpp \
     src/applicationsettings.cpp \
     src/risip/globals.cpp \
     src/risip/risipaccountprofile.cpp \
@@ -46,7 +41,8 @@ SOURCES += src/main.cpp \
     src/sipregistrars/mor/morapi.cpp \
     src/risip/risipcallmanager.cpp \
     src/risip/risipcontactmanager.cpp \
-    src/risip/risipmodels.cpp
+    src/risip/risipmodels.cpp \
+    src/risipuiloader.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -54,23 +50,23 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipbuddy.h \
     src/risip/headers/risipmedia.h \
     src/risip/headers/risipendpoint.h \
-    src/risip/headers/globals.h \
     src/risip/headers/risipmessage.h \
     src/risip/headers/risipaccountconfiguration.h \
     src/risip/headers/risipaccountprofile.h \
-    src/uiloader.h \
     src/applicationsettings.h \
     src/sipregistrars/httpmanager.h \
     src/sipregistrars/httpresponse.h \
     src/sipregistrars/mor/morapi.h \
     src/risip/headers/risipcallmanager.h \
     src/risip/headers/risipcontactmanager.h \
-    src/risip/headers/risipmodels.h
+    src/risip/headers/risipmodels.h \
+    src/risip/headers/risipglobals.h \
+    src/risipuiloader.h
 
 ########## LIBS ##########
 
 macx {
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 }
 
 linux {

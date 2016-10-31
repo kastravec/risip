@@ -79,6 +79,7 @@ void PjsipEndpoint::setRisipEndpointInterface(RisipEndpoint *endpoint)
 RisipEndpoint::RisipEndpoint(QObject *parent)
     :QObject(parent)
     ,m_activeTransportId(-1)
+    ,m_error()
 {
 }
 
@@ -89,6 +90,13 @@ RisipEndpoint::~RisipEndpoint()
 
 }
 
+/**
+ * @brief RisipEndpoint::status
+ * @return status of the SIP endpoint / engine
+ *
+ * Use this property to see the status of the SIP library whether it has started, stoped or
+ * it has an error.
+ */
 int RisipEndpoint::status() const
 {
     if(!m_pjsipEndpoint)
@@ -108,10 +116,38 @@ int RisipEndpoint::status() const
     }
 }
 
-int RisipEndpoint::error() const
+/**
+ * @brief RisipEndpoint::errorCode
+ * @return the last error code if the status of SIP endpoint is EngineError
+ *
+ * If the status of this endpoint is EngineError @see RisipEndpoint::status then use this property
+ * to errorCode get the last error code.
+ */
+int RisipEndpoint::errorCode() const
 {
-    //FIXME
-    return 0;
+    return m_error.status;
+}
+
+/**
+ * @brief RisipEndpoint::errorMessage
+ * @return returns the last error message
+ *
+ * Use this property to retrieve the last error message.
+ */
+QString RisipEndpoint::errorMessage() const
+{
+    return QString::fromStdString(m_error.reason);
+}
+
+/**
+ * @brief RisipEndpoint::errorInfo
+ * @return returns the last error complete info message
+ *
+ * Use this property to see the complete error information
+ */
+QString RisipEndpoint::errorInfo() const
+{
+    return QString::fromStdString(m_error.info(true));
 }
 
 int RisipEndpoint::activeTransportId() const
@@ -153,7 +189,7 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
     try {
         m_activeTransportId = m_pjsipEndpoint->transportCreate(netType, accountConf->pjsipTransportConfig());
     } catch (Error& err) {
-        qDebug()<<"Error in creating network transport protocol. " <<QString::fromStdString( err.info());
+        setError(err);
         return false;
     }
 
@@ -176,7 +212,7 @@ bool RisipEndpoint::destroyActiveTransport()
     try {
         m_pjsipEndpoint->transportClose(m_activeTransportId);
     } catch(Error& err) {
-        qDebug()<<"Error closing the active transport for account: " <<QString::fromStdString( err.info() );
+        setError(err);
         return false;
     }
 
@@ -188,45 +224,62 @@ PjsipEndpoint *RisipEndpoint::endpointInstance()
     return PjsipEndpoint::instance();
 }
 
+/**
+ * @brief RisipEndpoint::start
+ *
+ * Use this function to start the SIP endpoint library/engine.
+ * MUST call this before any other operation with Risip objects.
+ */
 void RisipEndpoint::start()
 {
     m_pjsipEndpoint = PjsipEndpoint::instance();
     m_pjsipEndpoint->setRisipEndpointInterface(this);
 
+//    m_endpointConfig.uaConfig.userAgent
 //    m_endpointConfig.uaConfig.maxCalls = 4;
 
     try {
         m_pjsipEndpoint->libCreate();
     } catch (Error &err) {
-        qDebug()<<"Error creating the sip endpoint: " <<QString::fromStdString(err.info(true));
+        emit statusChanged(status());
+        setError(err);
+        return;
     }
 
     try {
         m_pjsipEndpoint->libInit(m_endpointConfig);
     } catch (Error &err) {
-        qDebug()<<"Error initializing the sip endpoint: " <<QString::fromStdString(err.info(true));
+        emit statusChanged(status());
+        setError(err);
+        return;
     }
 
     try {
         m_pjsipEndpoint->libStart();
     } catch (Error &err) {
-        qDebug()<<"Error starting the sip endpoint: " <<QString::fromStdString(err.info(true));
+        emit statusChanged(status());
+        setError(err);
+        return;
     }
 
     //FIXME do not call this here - better handling
     Risip::instance()->readSettings();
-
     emit statusChanged(status());
-
 
     //FIXME Codec priorities
     //TODO Codecs settings page
-    Endpoint::instance().codecSetPriority("iLBC/8000", 255);
+//    Endpoint::instance().codecSetPriority("g722/8000", 255);
+    Endpoint::instance().codecSetPriority("iLBC/8000", 200);
     Endpoint::instance().codecSetPriority("speex/16000", 0);
     Endpoint::instance().codecSetPriority("speex/8000", 0);
     Endpoint::instance().codecSetPriority("speex/32000", 0);
 }
 
+/**
+ * @brief RisipEndpoint::stop
+ *
+ * Call this function to stop the SIP endpoint / library
+ */
 void RisipEndpoint::stop()
 {
     if(m_pjsipEndpoint && m_pjsipEndpoint->libGetState() != PJSUA_STATE_NULL)
@@ -235,8 +288,20 @@ void RisipEndpoint::stop()
     emit statusChanged(status());
 }
 
-void RisipEndpoint::transportClosed()
+void RisipEndpoint::setError(const Error &error)
 {
-    m_activeTransportId = -1;
-}
+    qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
 
+    if(m_error.status != error.status) {
+
+        m_error.status = error.status;
+        m_error.reason = error.reason;
+        m_error.srcFile = error.srcFile;
+        m_error.srcLine = error.srcLine;
+        m_error.title = error.title;
+
+        emit errorCodeChanged(m_error.status);
+        emit errorMessageChanged(QString::fromStdString(m_error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
+    }
+}

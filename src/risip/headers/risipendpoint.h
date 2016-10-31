@@ -62,15 +62,19 @@ public:
 
     Q_ENUM(Status)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
-    Q_PROPERTY(int error READ error NOTIFY errorChanged)
-    Q_PROPERTY(int activeTransportId READ activeTransportId CONSTANT)
+    Q_PROPERTY(int activeTransportId READ activeTransportId NOTIFY activeTransportIdChanged)
+    Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
+    Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
 
     RisipEndpoint(QObject *parent = 0);
     ~RisipEndpoint();
 
     int status() const;
-    int error() const;
     int activeTransportId() const;
+    int errorCode() const;
+    QString errorMessage() const;
+    QString errorInfo() const;
 
     bool createTransportNetwork(RisipAccountConfiguration *accountConf);
     bool destroyActiveTransport();
@@ -83,15 +87,18 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void statusChanged(int status);
-    void errorChanged(int error);
-
-private slots:
-    void transportClosed();
+    void activeTransportIdChanged(int id);
+    void errorCodeChanged(int errorCode);
+    void errorMessageChanged(const QString &message);
+    void errorInfoChanged(const QString &info);
 
 private:
+    void setError(const Error &error);
+
     PjsipEndpoint *m_pjsipEndpoint;
     TransportId m_activeTransportId;
     EpConfig m_endpointConfig;
+    Error m_error;
 };
 
 #endif // RISIPENDPOINT_H

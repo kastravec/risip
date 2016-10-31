@@ -170,6 +170,7 @@ RisipAccount::RisipAccount(QObject *parent)
     ,m_status(NotCreated)
     ,m_incomingPjsipCall(NULL)
     ,m_allBuddies()
+    ,m_error()
 
 {
 }
@@ -293,6 +294,21 @@ QQmlListProperty<RisipBuddy> RisipAccount::buddies()
     return QQmlListProperty<RisipBuddy>(this, m_allBuddies);
 }
 
+int RisipAccount::errorCode() const
+{
+    return m_error.status;
+}
+
+QString RisipAccount::errorMessage() const
+{
+    return QString::fromStdString(m_error.reason);
+}
+
+QString RisipAccount::errorInfo() const
+{
+    return QString::fromStdString(m_error.info(true));
+}
+
 /**
  * @brief RisipAccount::incomingPjsipCall
  * @return
@@ -333,7 +349,7 @@ RisipBuddy *RisipAccount::findBuddy(const QString &uri)
             return pjsipBuddy->risipInterface();
         }
     } catch (Error &err) {
-        Q_UNUSED(err)
+        setError(err);
     }
 
     return NULL;
@@ -459,7 +475,7 @@ void RisipAccount::setPresence(int prs)
     try {
         m_pjsipAccount->setOnlineStatus(m_presence);
     } catch (Error &err) {
-        qDebug()<<"Error setting the presence for the account!" << QString::fromStdString( err.info(true) );
+        setError(err);
     }
 }
 
@@ -480,7 +496,7 @@ void RisipAccount::setPresenceNote(const QString &note)
         try {
             m_pjsipAccount->setOnlineStatus(m_presence);
         } catch (Error &err) {
-            qDebug()<<"Error setting presence notes for the account!" << QString::fromStdString( err.info(true) );
+            setError(err);
         }
     }
 }
@@ -532,9 +548,9 @@ void RisipAccount::login()
         m_pjsipAccount->setRisipInterface(this);
         try {
             m_pjsipAccount->create(m_configuration->pjsipAccountConfig());
-        } catch(Error& err) {
+        } catch (Error& err) {
             setStatus(AccountError);
-            qDebug() << "Account creation error: " << err.info().c_str() << endl;
+            setError(err);
             return;
         }
         //updating status
@@ -554,7 +570,7 @@ void RisipAccount::logout()
             m_pjsipAccount->setRegistration(false);
         } catch(Error& err) {
             setStatus(AccountError);
-            qDebug() << "Unregister error: " << err.info().c_str() << endl;
+            setError(err);
         }
     }
 }
@@ -594,5 +610,23 @@ void RisipAccount::setStatus(int status)
 
         emit statusChanged(m_status);
         emit statusTextChanged(statusText());
+    }
+}
+
+void RisipAccount::setError(const Error &error)
+{
+    qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
+
+    if(m_error.status != error.status) {
+
+        m_error.status = error.status;
+        m_error.reason = error.reason;
+        m_error.srcFile = error.srcFile;
+        m_error.srcLine = error.srcLine;
+        m_error.title = error.title;
+
+        emit errorCodeChanged(m_error.status);
+        emit errorMessageChanged(QString::fromStdString(m_error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
     }
 }

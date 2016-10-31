@@ -28,9 +28,12 @@ class RisipAccountConfiguration : public QObject
 public:
 
     enum Codecs {
-        iLBC = 1,
-        G711,
+        iLBC30 = 22,
+        iLBC20,
+        G711U,
+        G711A,
         G722,
+        G729,
         Speex20,
         Speex30,
         Opus
@@ -67,6 +70,7 @@ public:
     Q_PROPERTY(int networkProtocol READ networkProtocol WRITE setNetworkProtocol NOTIFY networkProtocolChanged)
     Q_PROPERTY(int localPort READ localPort WRITE setLocalPort NOTIFY localPortChanged)
     Q_PROPERTY(bool randomLocalPort READ randomLocalPort WRITE setRandomLocalPort NOTIFY randomLocalPortChanged)
+//    Q_PROPERTY(QList<int> availableCodecs READ availableCodecs WRITE setAvailableCodecs NOTIFY availableCodecsChanged)
 
     RisipAccountConfiguration(QObject *parent = 0);
     ~RisipAccountConfiguration();
@@ -112,7 +116,8 @@ public:
 
     bool valid();
 
-    void setCodecPriority(Codecs codecId, int priority);
+//    QList<int> availableCodecs() const;
+//    void setAvailableCodecs(const QList<int> &codecs);
 
     AccountConfig pjsipAccountConfig();
     void setPjsipAccountConfig(AccountConfig pjsipConfig);

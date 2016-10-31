@@ -34,8 +34,10 @@ Window {
 
     Image {
         id: splashImage
+        fillMode: Image.PreserveAspectCrop
         source: "qrc:/images/calling.jpeg"
         anchors.fill: parent
+
     }
 
     Timer {

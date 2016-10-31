@@ -33,6 +33,7 @@ RisipMedia::RisipMedia(QObject *parent)
     ,m_activeCall(NULL)
     ,m_sipEndpoint(NULL)
     ,m_keepMediaSettings(true)
+    ,m_error()
 {
 }
 
@@ -68,7 +69,14 @@ void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
 
         if(m_sipEndpoint) {
             m_pjsipAudioManager = &(m_sipEndpoint->endpointInstance()->audDevManager());
-            m_localAudioMedia = &m_pjsipAudioManager->getCaptureDevMedia();
+
+            try {
+                m_localAudioMedia = &m_pjsipAudioManager->getCaptureDevMedia();
+            } catch (Error &err) {
+                setError(err);
+            }
+
+
             m_audioDevice = &m_pjsipAudioManager->getPlaybackDevMedia();
 
             //TODO better place where to adjust these media device settings
@@ -171,6 +179,21 @@ void RisipMedia::setKeepMediaSettings(const bool keep)
     }
 }
 
+int RisipMedia::errorCode() const
+{
+    return m_error.status;
+}
+
+QString RisipMedia::errorMessage() const
+{
+    return QString::fromStdString(m_error.reason);
+}
+
+QString RisipMedia::errorInfo() const
+{
+    return QString::fromStdString(m_error.info(true));
+}
+
 /**
  * @brief RisipMedia::startCallMedia
  *
@@ -195,12 +218,38 @@ void RisipMedia::startCallMedia()
     }
 
     // Connect the call audio media to sound device
-    m_localAudioMedia->startTransmit(*m_callAudio);
-    m_callAudio->startTransmit(*m_audioDevice);
+    try {
+        m_localAudioMedia->startTransmit(*m_callAudio);
+    } catch (Error &err) {
+        setError(err);
+    }
+
+    try {
+        m_callAudio->startTransmit(*m_audioDevice);
+    } catch (Error &err) {
+        setError(err);
+    }
 
 //    m_callMedia->adjustRxLevel()
     m_callAudio->adjustRxLevel(1.0);
     m_callAudio->adjustTxLevel(1.0);
     m_localAudioMedia->adjustRxLevel(1.0);
     m_localAudioMedia->adjustTxLevel(1.0);
+}
+
+void RisipMedia::setError(Error &error)
+{
+    qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
+
+    if(m_error.status != error.status) {
+        m_error.status = error.status;
+        m_error.reason = error.reason;
+        m_error.srcFile = error.srcFile;
+        m_error.srcLine = error.srcLine;
+        m_error.title = error.title;
+
+        emit errorCodeChanged(m_error.status);
+        emit errorMessageChanged(QString::fromStdString(m_error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
+    }
 }

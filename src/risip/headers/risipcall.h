@@ -104,6 +104,9 @@ public:
     Q_PROPERTY(QDateTime timestamp READ timestamp NOTIFY timestampChanged)
     Q_PROPERTY(int callDirection READ callDirection NOTIFY callDirectionChanged)
     Q_PROPERTY(int callDuration READ callDuration NOTIFY callDurationChanged)
+    Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
+    Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
 
     RisipCall(QObject *parent = 0);
     ~RisipCall();
@@ -129,6 +132,10 @@ public:
 
     int callDuration() const;
 
+    int errorCode() const;
+    QString errorMessage();
+    QString errorInfo() const;
+
     void setPjsipCall(PjsipCall *call);
     PjsipCall *pjsipCall() const;
 
@@ -148,10 +155,14 @@ Q_SIGNALS:
     void timestampChanged(QDateTime timestamp);
     void callDirectionChanged(int direction);
     void callDurationChanged(int duration);
+    void errorCodeChanged(int code);
+    void errorMessageChanged(const QString &message);
+    void errorInfoChanged(const QString &info);
 
 private:
     void initializeMediaHandler();
     void setMedia(RisipMedia *med);
+    void setError(const Error &error);
 
     RisipAccount *m_account;
     RisipBuddy *m_buddy;
@@ -160,6 +171,7 @@ private:
     int m_callType;
     QDateTime m_timestamp;
     int m_callDirection;
+    Error m_error;
 };
 
 #endif // RISIPCALL_H

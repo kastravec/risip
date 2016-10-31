@@ -18,8 +18,8 @@
 **
 ************************************************************************************/
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#ifndef RISIPGLOBALS_H
+#define RISIPGLOBALS_H
 
 //#include <QtCore/qglobal.h>
 //#if defined(QSYNC_LIBRARY)
@@ -66,4 +66,4 @@ struct RisipSettingsParam {
     static const QString RandomLocalPort;
 };
 
-#endif // GLOBALS_H
+#endif // RISIPGLOBALS_H

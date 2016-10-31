@@ -19,7 +19,7 @@
 ************************************************************************************/
 #include "risipcallmanager.h"
 
-#include "globals.h"
+#include "risipglobals.h"
 #include "risip.h"
 #include "risipcall.h"
 #include "risipaccount.h"

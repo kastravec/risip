@@ -31,19 +31,13 @@ ApplicationWindow {
     height: 1280
 
     visibility: Window.AutomaticVisibility
-    visible: true
-
-    Material.theme: Material.Light
-    Material.accent: Material.Purple
-    Material.primary: "#fafafa" //Material.BlueGrey
-    Material.foreground: Material.Red
-    Material.background: "#ffffff"
+    visible: false
 
     property string uiBasePath: "qrc:/ui/base/"
     property RisipEndpoint sipEndpoint: Risip.sipEndpoint
     property RisipAccount sipAccount: Risip.defaultAccount
 
-    Component.onCompleted: { sipEndpoint.start(); }
+    Component.onCompleted: { /*Risip.resetSettings();*/ sipEndpoint.start();  }
     Component.onDestruction: { sipEndpoint.stop(); }
 
     header: ToolBar {
@@ -105,31 +99,11 @@ ApplicationWindow {
         active: false
     }
 
-    Loader {
-        id: splashScreenLoader
-        source: uiBasePath + "SplashScreen.qml"
-        active: true
-        width: mainWindow.width
-        height: mainWindow.height
-    }
-
     PageLoader {
         id: loginPageLoader
         source: uiBasePath + "LoginPage.qml"
         active: true
         visible: false
-    }
-
-    //welcome screen is unloaded once is first used.
-    // active only on first run.
-    Loader {
-        id: welcomeScreenLoader
-        source: uiBasePath + "WelcomeScreen.qml"
-        active: firstRun //firstRun is set in settings always true for testing
-        visible: true
-        width: mainWindow.width
-        height: mainWindow.height
-        z:1
     }
 
     CallPage {
@@ -147,6 +121,13 @@ ApplicationWindow {
         uri: "<sip:topatop@sip2sip.info>"
     }
 
+    onVisibleChanged: {
+        if(Risip.defaultAccount.status != RisipAccount.SignedIn) {
+            loginPageLoader.visible = true;
+            mainWindowLoader.item.footer.enabled = false;
+        }
+    }
+
     //connection on active SIP account to handle different account states
     Connections {
         target: sipAccount
@@ -156,40 +137,6 @@ ApplicationWindow {
             if(Risip.defaultAccount.status === RisipAccount.SignedIn) {
                 sipAccount.addRisipBuddy(buddy2);
                 sipAccount.addRisipBuddy(buddy);
-            }
-        }
-    }
-
-    //handle splaschreen signals - when it times out what comes first!
-    Connections {
-        target: splashScreenLoader.item
-        onTimeout: {
-            if(Risip.firstRun) {
-                welcomeScreenLoader.visible = true;
-            } else {
-                if(Risip.defaultAccount.status === RisipAccount.SignedIn)
-                    mainWindow.visible = true;
-                else
-                    loginPageLoader.visible = true;
-            }
-
-            splashScreenLoader.active = false;
-        }
-    }
-
-    //welcome screen singal handler, from which we go to either
-    //the Login page or if autologin is enabled then directly to
-    //the Home page.
-    Connections {
-        target: welcomeScreenLoader.item
-
-        onEnterClicked: {
-            welcomeScreenLoader.active = false;
-            if(Risip.defaultAccount.status === RisipAccount.SignedIn)
-                mainWindowLoader.item.visible = true;
-            else {
-                loginPageLoader.visible = true;
-                mainWindow.footer.enabled = false;
             }
         }
     }

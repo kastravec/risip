@@ -38,6 +38,9 @@ public:
     Q_PROPERTY(int micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
 //    Q_PROPERTY(bool loudSpeaker READ loudSpeaker WRITE setLoudSpeaker NOTIFY loudSpeakerChanged)
     Q_PROPERTY(bool keepMediaSettings READ keepMediaSettings WRITE setKeepMediaSettings NOTIFY keepMediaSettingsChanged)
+    Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
+    Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
 
     RisipMedia(QObject *parent = 0);
     ~RisipMedia();
@@ -56,6 +59,10 @@ public:
     bool keepMediaSettings() const;
     void setKeepMediaSettings(const bool keep);
 
+    int errorCode() const;
+    QString errorMessage() const;
+    QString errorInfo() const;
+
     void setActiveCall(RisipCall *call);
 
 public Q_SLOTS:
@@ -67,8 +74,13 @@ Q_SIGNALS:
     void speakerVolumeChanged(int volume);
     void micVolumeChanged(int volume);
     void keepMediaSettingsChanged(bool keep);
+    void errorCodeChanged(int code);
+    void errorMessageChanged(const QString &message);
+    void errorInfoChanged(const QString &info);
 
 private:
+    void setError(Error &error);
+
     VidDevManager *m_pjsipVideoManager;
     AudDevManager *m_pjsipAudioManager;
     AudioMedia *m_callAudio;
@@ -78,6 +90,7 @@ private:
     RisipEndpoint *m_sipEndpoint;
 
     bool m_keepMediaSettings;
+    Error m_error;
 };
 
 #endif // RISIPMEDIA_H

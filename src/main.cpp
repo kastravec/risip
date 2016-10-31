@@ -19,7 +19,7 @@
 
 #include <QGuiApplication>
 
-#include "uiloader.h"
+#include "risipuiloader.h"
 #include "applicationsettings.h"
 #include "risip.h"
 
