@@ -23,6 +23,7 @@
 #include "risipaccount.h"
 #include "risipbuddy.h"
 #include "risipcall.h"
+#include "risipphonecontact.h"
 
 #include <QSortFilterProxyModel>
 #include <QDebug>
@@ -254,4 +255,94 @@ void RisipCallHistoryModel::removeCallRecord(RisipCall *call)
         m_calls.removeAll(call);
         endRemoveRows();
     }
+}
+
+RisipPhoneContactsModel::RisipPhoneContactsModel(QObject *parent)
+    :QAbstractListModel(parent)
+    ,m_phoneContacts()
+    ,m_proxy(new QSortFilterProxyModel(this))
+{
+    m_proxy->setSourceModel(this);
+}
+
+RisipPhoneContactsModel::~RisipPhoneContactsModel()
+{
+}
+
+QSortFilterProxyModel *RisipPhoneContactsModel::proxy() const
+{
+    return m_proxy;
+}
+
+void RisipPhoneContactsModel::setProxy(QSortFilterProxyModel *proxy)
+{
+    if(m_proxy != proxy ) {
+        m_proxy = proxy;
+        emit proxyChanged(m_proxy);
+    }
+}
+
+QHash<int, QByteArray> RisipPhoneContactsModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[ContactId] = "contactId";
+    roles[FullName] = "fullName";
+    roles[PhoneNumbers] = "phoneNumbers";
+    return roles;
+}
+
+int RisipPhoneContactsModel::rowCount(const QModelIndex &parent) const
+{
+    // For list models only the root node (an invalid parent) should return the list's size. For all
+    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
+    if (parent.isValid())
+        return 0;
+
+    return m_phoneContacts.count();
+}
+
+QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid())
+        return QVariant();
+
+    RisipPhoneContact *contact = m_phoneContacts.at(index.row());
+    if(!contact) {
+        qDebug()<<"No contact found model!";
+        return QVariant();
+    }
+
+    switch (role) {
+    case ContactId:
+        return contact->contactId();
+    case FullName:
+        return contact->fullName();
+    case PhoneNumbers:
+        return contact->phoneNumbers();
+    default:
+        return QVariant();
+    }
+}
+
+void RisipPhoneContactsModel::addContact(RisipPhoneContact *contact)
+{
+    if(!contact)
+        return;
+
+    if(!m_phoneContacts.contains(contact)) {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_phoneContacts.append(contact);
+        endInsertRows();
+    }
+}
+
+void RisipPhoneContactsModel::removeContact(RisipPhoneContact *contact)
+{
+    if(!contact && !m_phoneContacts.contains(contact))
+        return;
+
+    beginRemoveRows(QModelIndex(), m_phoneContacts.indexOf(contact), 1);
+    m_phoneContacts.removeAll(contact);
+    contact->deleteLater();
+    endRemoveRows();
 }

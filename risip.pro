@@ -4,6 +4,7 @@ TEMPLATE = app
 #CONFIG -= app_bundle
 CONFIG += exceptions c++11
 
+android: QT += androidextras
 QT = core network qml quick quickcontrols2
 
 ### DEFINES ###
@@ -24,7 +25,7 @@ INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
 INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
 
 ### SOURCE & HEADER FILES ###
-SOURCES += src/main.cpp \
+SOURCES += src/app/main.cpp \
     src/risip/risip.cpp \
     src/risip/risipaccount.cpp \
     src/risip/risipcall.cpp \
@@ -33,7 +34,7 @@ SOURCES += src/main.cpp \
     src/risip/risipendpoint.cpp \
     src/risip/risipmessage.cpp \
     src/risip/risipaccountconfiguration.cpp \
-    src/applicationsettings.cpp \
+    src/app/applicationsettings.cpp \
     src/risip/globals.cpp \
     src/risip/risipaccountprofile.cpp \
     src/sipregistrars/httpmanager.cpp \
@@ -42,7 +43,8 @@ SOURCES += src/main.cpp \
     src/risip/risipcallmanager.cpp \
     src/risip/risipcontactmanager.cpp \
     src/risip/risipmodels.cpp \
-    src/risipuiloader.cpp
+    src/app/risipuiloader.cpp \
+    src/risip/risipphonecontact.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -53,7 +55,7 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipmessage.h \
     src/risip/headers/risipaccountconfiguration.h \
     src/risip/headers/risipaccountprofile.h \
-    src/applicationsettings.h \
+    src/app/applicationsettings.h \
     src/sipregistrars/httpmanager.h \
     src/sipregistrars/httpresponse.h \
     src/sipregistrars/mor/morapi.h \
@@ -61,12 +63,22 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipcontactmanager.h \
     src/risip/headers/risipmodels.h \
     src/risip/headers/risipglobals.h \
-    src/risipuiloader.h
+    src/app/risipuiloader.h \
+    src/risip/headers/risipphonecontact.h \
+    src/risip/ios/risipioscontacts.h
+
+ios {
+HEADERS += \
+    src/risip/ios/risipioscontacts.h
+
+OBJECTIVE_SOURCES += \
+    src/risip/ios/risipioscontacts.mm
+}
 
 ########## LIBS ##########
 
 macx {
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 }
 
 linux {
@@ -110,7 +122,8 @@ LIBS += -L$$PWD/pjsip/ios-64/lib \
     -lspeex-arm64-apple-darwin_ios \
     -lresample-arm64-apple-darwin_ios \
     -lsrtp-arm64-apple-darwin_ios \
-    -lpjlib-util-arm64-apple-darwin_ios
+    -lpjlib-util-arm64-apple-darwin_ios \
+    -framework CoreFoundation
 }
 
 macx {
@@ -224,7 +237,8 @@ android {
     DISTFILES += \
         android/AndroidManifest.xml \
         android/res/values/libs.xml \
-        android/build.gradle
+        android/build.gradle \
+        src/risip/android/com/risip/phonecontacts/RisipAndroidContacts.java
 }
 
 RESOURCES += qml.qrc \

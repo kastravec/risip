@@ -27,6 +27,7 @@ class QSortFilterProxyModel;
 class RisipAccount;
 class RisipBuddy;
 class RisipCall;
+class RisipPhoneContact;
 
 class RisipAbstractBuddyModel: public QAbstractListModel
 {
@@ -127,4 +128,39 @@ private:
     QList<RisipCall *> m_calls;
 };
 
+class RisipPhoneContactsModel : public QAbstractListModel
+{
+    Q_OBJECT
+public:
+
+    enum RisipPhoneContactDataRole {
+        ContactId = Qt::UserRole + 1,
+        FullName,
+        PhoneNumbers
+    };
+
+    Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
+
+    RisipPhoneContactsModel(QObject *parent = NULL);
+    ~RisipPhoneContactsModel();
+
+    QSortFilterProxyModel *proxy() const;
+    void setProxy(QSortFilterProxyModel *proxy);
+
+    QHash<int, QByteArray> roleNames() const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+public Q_SLOTS:
+    void addContact(RisipPhoneContact *contact);
+    void removeContact(RisipPhoneContact *contact);
+
+Q_SIGNALS:
+    void proxyChanged(QSortFilterProxyModel *proxy);
+
+private:
+    QList<RisipPhoneContact *> m_phoneContacts;
+    QSortFilterProxyModel *m_proxy;
+};
 #endif // RISIPBUDDYMODELS_H

@@ -20,7 +20,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.2
-import QtQuick.Controls.Material 2.0
 
 Window {
     id: root
@@ -45,7 +44,7 @@ Window {
                 id: image1
                 fillMode: Image.PreserveAspectCrop
                 anchors.fill: parent
-                source: "qrc:/images/hello.jpeg"
+                source: "qrc:/images/businessman-calling-phone.jpg"
 
                 Button {
                     id: nextButton1

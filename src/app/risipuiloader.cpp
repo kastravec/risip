@@ -51,10 +51,7 @@ void UiLoader::start()
     qmlRegisterSingletonType<ApplicationSettings>("Application", 1, 0, "ApplicationSettings", applicationSingletonProvider);
 
 //    TODO check platform before loading
-
     m_qmlEngine->load(QUrl(QLatin1String("qrc:/ui/base/Main.qml")));
-
-//    m_qmlEngine->load(QUrl(QLatin1String("qrc:/ui/simpledemo/SimpleDemo.qml")));
 }
 
 ApplicationSettings *UiLoader::applicationSettings()

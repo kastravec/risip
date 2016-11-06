@@ -16,7 +16,6 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
@@ -28,6 +27,7 @@ Page {
     property alias sipListView: sipListView
     property alias searchContactInput: searchContactInput
     property alias phoneListView: phoneListView
+    property alias contactsListLayout: contactsListLayout
 
     footer: TabBar {
         id: tabBar
@@ -50,16 +50,21 @@ Page {
         TextField {
             id: searchContactInput
             Layout.fillWidth: true
-            placeholderText: qsTr("Search a contact..");
+            placeholderText: qsTr("Search a contact..")
         }
 
         StackLayout {
-            id: stackLayout
+            id: contactsListLayout
+            x: 0
 
             currentIndex: tabBar.currentIndex
 
             ListView {
                 id: sipListView
+                snapMode: ListView.SnapToItem
+                Layout.fillHeight: true
+                Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+                clip: true
 
                 delegate: Item {
                     width: parent.width
@@ -75,20 +80,21 @@ Page {
 
             ListView {
                 id: phoneListView
+                snapMode: ListView.SnapToItem
+                Layout.fillHeight: true
+                Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+                clip: true
 
                 delegate: Item {
                     width: parent.width
                     height: 50
-
                     Text {
                         anchors.fill: parent
-                        text: uri
+                        text: fullName
                         font.bold: true
-                        anchors.verticalCenter: parent.verticalCenter
                     }
                 }
             }
-
         }
     }
 }

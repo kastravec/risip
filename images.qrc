@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>images/calling.jpeg</file>
-        <file>images/hello.jpeg</file>
         <file>images/businessman-calling-phone.jpg</file>
         <file>images/multiscreen.png</file>
     </qresource>

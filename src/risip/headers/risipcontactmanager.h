@@ -27,6 +27,9 @@
 class RisipAccount;
 class RisipBuddiesModel;
 class RisipContactHistoryModel;
+class RisipiOSContacts;
+class RisipPhoneContactsModel;
+class RisipPhoneContact;
 
 class RisipContactManager : public QObject
 {
@@ -35,6 +38,7 @@ public:
     Q_PROPERTY(RisipAccount * activeAccount READ activeAccount WRITE setActiveAccount NOTIFY activeAccountChanged)
     Q_PROPERTY(QAbstractItemModel * activeBuddiesModel READ activeBuddiesModel WRITE setActiveBuddiesModel NOTIFY activeBuddiesModelChanged)
     Q_PROPERTY(QAbstractItemModel * activeContactHistory READ activeContactHistory WRITE setActiveContactHistory NOTIFY activeContactHistoryChanged)
+    Q_PROPERTY(QAbstractItemModel * phoneContactsModel READ phoneContactsModel NOTIFY phoneContactsModelChanged)
     Q_PROPERTY(QQmlListProperty<QAbstractItemModel> buddyModels READ buddyModels NOTIFY buddyModelsChanged)
     Q_PROPERTY(QQmlListProperty<QAbstractItemModel> contactHistoryModels READ contactHistoryModels NOTIFY contactHistoryModelsChanged)
 
@@ -46,6 +50,7 @@ public:
 
     QAbstractItemModel *activeBuddiesModel() const;
     QAbstractItemModel *activeContactHistory() const;
+    QAbstractItemModel *phoneContactsModel() const;
 
     QQmlListProperty<QAbstractItemModel> buddyModels();
     QQmlListProperty<QAbstractItemModel> contactHistoryModels();
@@ -56,12 +61,15 @@ public:
     QAbstractItemModel *buddyModelForAccount(const QString &account) const;
     QAbstractItemModel *contactHistoryModelForAccount(const QString &account) const;
 
+    Q_INVOKABLE void fetchPhoneContacts();
+
 Q_SIGNALS:
     void activeAccountChanged(RisipAccount *activeAccount);
     void activeBuddiesModelChanged(QAbstractItemModel *model);
     void activeContactHistoryChanged(QAbstractItemModel *model);
     void buddyModelsChanged();
     void contactHistoryModelsChanged();
+    void phoneContactsModelChanged(QAbstractItemModel *model);
 
 private:
     explicit RisipContactManager(QObject *parent = 0);
@@ -74,6 +82,13 @@ private:
     QHash<QString, QAbstractItemModel *> m_accountContactHistoryModels;
     QAbstractItemModel *m_activeBuddiesModel;
     QAbstractItemModel *m_activeContactHistoryModel;
+    RisipPhoneContactsModel *m_phoneContactsModel;
+
+    //responsible for fetching contacts from the ios device.
+#ifdef Q_OS_IOS
+    RisipiOSContacts *m_iosContacts = NULL;
+#endif
+
 };
 
 #endif // RISIPCONTACTMANAGER_H

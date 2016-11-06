@@ -1,5 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
+**    http://risip.io
 **
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -16,24 +17,26 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#ifndef RISIPIOSCONTACTS_H
+#define RISIPIOSCONTACTS_H
 
-import QtQuick 2.7
+#include <QObject>
 
-import Risip 1.0
+class RisipiOSContactPrivate;
+class RisipPhoneContact;
 
-ContactsPageForm {
-    id: contactsPage
+class RisipiOSContacts : public QObject
+{
+    Q_OBJECT
+public:
+    explicit RisipiOSContacts(QObject *parent = 0);
 
-    buddyModel: RisipContactManager.activeBuddiesModel.proxy
-    phoneListView.model: RisipContactManager.phoneContactsModel.proxy
+    void fetchContactsFromDevice();
 
-    searchContactInput.onTextChanged: {
-        if(contactsListLayout.currentIndex === 0) {
-            buddyModel.filterRole = RisipBuddiesModel.ContactRole;
-            buddyModel.setFilterRegExp(searchContactInput.text);
-        } else if(contactsListLayout.currentIndex === 0) {
-            phoneListView.model.filterRole = RisipPhoneContactsModel.FullName
-            phoneListView.model.setFilterRegExp(searchContactInput.text);
-        }
-    }
-}
+Q_SIGNALS:
+    void phoneContactDiscovered(RisipPhoneContact *risipContact);
+
+private:
+    RisipiOSContactPrivate *m_d = nullptr;
+};
+#endif // RISIPIOSCONTACTS_H

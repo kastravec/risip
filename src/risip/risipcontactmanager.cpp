@@ -24,6 +24,8 @@
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
 #include "risipmodels.h"
+#include "ios/risipioscontacts.h"
+#include "risipphonecontact.h"
 
 #include <QSortFilterProxyModel>
 #include <QDebug>
@@ -44,7 +46,9 @@ RisipContactManager::RisipContactManager(QObject *parent)
     ,m_accountContactHistoryModels()
     ,m_activeBuddiesModel(NULL)
     ,m_activeContactHistoryModel(NULL)
+    ,m_phoneContactsModel(new RisipPhoneContactsModel(this))
 {
+    fetchPhoneContacts();
 }
 
 RisipContactManager::~RisipContactManager()
@@ -106,6 +110,14 @@ void RisipContactManager::setActiveBuddiesModel(QAbstractItemModel *model)
     }
 }
 
+/**
+ * @brief RisipContactManager::activeContactHistory
+ * @return contact history model
+ *
+ * This model has the contact history for the active account.
+ *
+ * @see RisipContactManger::activeAccount
+ */
 QAbstractItemModel *RisipContactManager::activeContactHistory() const
 {
     if(m_activeContactHistoryModel)
@@ -132,6 +144,20 @@ QQmlListProperty<QAbstractItemModel> RisipContactManager::contactHistoryModels()
 {
     QList<QAbstractItemModel *> models = m_accountContactHistoryModels.values();
     return QQmlListProperty<QAbstractItemModel>(this, models);
+}
+
+/**
+ * @brief RisipContactManager::phoneContactsModel
+ * @return the phone contacts model
+ *
+ * The model containing the phone contacts. Initially the model is empty and it is only populated
+ * after calling RisipContactManger::fetchPhoneContacts()
+ *
+ * @see RisipContactManager::fetchContacts
+ */
+QAbstractItemModel *RisipContactManager::phoneContactsModel() const
+{
+    return m_phoneContactsModel;
 }
 
 /**
@@ -196,4 +222,27 @@ QAbstractItemModel *RisipContactManager::contactHistoryModelForAccount(const QSt
         return qobject_cast<RisipContactHistoryModel *>(m_accountContactHistoryModels[account]);
 
     return NULL;
+}
+
+/**
+ * @brief RisipContactManager::fetchPhoneContacts
+ *
+ * Call this function to retrieve the phone contacts from the mobile device.
+ * It will retrieve all contacts and populate a contact phone model that can be used
+ * from the phoneContactsModel property.
+ *
+ * @see RisipContactManger::phoneContactsModel
+ */
+void RisipContactManager::fetchPhoneContacts()
+{
+#ifdef Q_OS_IOS
+    if(!m_iosContacts) {
+        m_iosContacts = new RisipiOSContacts(this);
+
+        connect(m_iosContacts, &RisipiOSContacts::phoneContactDiscovered,
+                m_phoneContactsModel, &RisipPhoneContactsModel::addContact, Qt::QueuedConnection);
+
+        m_iosContacts->fetchContactsFromDevice();
+    }
+#endif
 }
