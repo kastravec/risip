@@ -55,6 +55,12 @@ RisipContactManager::~RisipContactManager()
 {
 }
 
+/**
+ * @brief RisipContactManager::activeAccount
+ * @return the current active SIP account
+ *
+ * This property holds the current active account.
+ */
 RisipAccount *RisipContactManager::activeAccount() const
 {
     return m_activeAccount;

@@ -21,6 +21,7 @@
 #include "applicationsettings.h"
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
+#include <QDebug>
 
 static QObject *applicationSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {

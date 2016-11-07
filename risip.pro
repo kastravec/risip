@@ -14,12 +14,12 @@ DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
 
 ### INCLUDES ###
 INCLUDEPATH += $$PWD/src \
-               $$PWD/src/risip/headers
+               $$PWD/src/risip/headers \
+               $$PWD/src/utils
 
 # this include path depends on the directory of your pjsip headers/libs
 # it could be different directory names for different platform where you put the pjsip headers
 # e.g. Linux desktop -> pjsip/linux-desktop , Mac desktop -> pjsip/mac-desktop, Android-arm64 -> pjsip/android-arm64
-
 #INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
 INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
 INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
@@ -34,17 +34,16 @@ SOURCES += src/app/main.cpp \
     src/risip/risipendpoint.cpp \
     src/risip/risipmessage.cpp \
     src/risip/risipaccountconfiguration.cpp \
-    src/app/applicationsettings.cpp \
     src/risip/globals.cpp \
     src/risip/risipaccountprofile.cpp \
-    src/sipregistrars/httpmanager.cpp \
-    src/sipregistrars/httpresponse.cpp \
-    src/sipregistrars/mor/morapi.cpp \
     src/risip/risipcallmanager.cpp \
     src/risip/risipcontactmanager.cpp \
     src/risip/risipmodels.cpp \
+    src/risip/risipphonecontact.cpp \
     src/app/risipuiloader.cpp \
-    src/risip/risipphonecontact.cpp
+    src/app/applicationsettings.cpp \
+    src/sipregistrars/mor/morapi.cpp \
+    src/utils/httpnetworkrequest.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -55,17 +54,17 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipmessage.h \
     src/risip/headers/risipaccountconfiguration.h \
     src/risip/headers/risipaccountprofile.h \
-    src/app/applicationsettings.h \
-    src/sipregistrars/httpmanager.h \
-    src/sipregistrars/httpresponse.h \
-    src/sipregistrars/mor/morapi.h \
     src/risip/headers/risipcallmanager.h \
     src/risip/headers/risipcontactmanager.h \
     src/risip/headers/risipmodels.h \
     src/risip/headers/risipglobals.h \
-    src/app/risipuiloader.h \
     src/risip/headers/risipphonecontact.h \
-    src/risip/ios/risipioscontacts.h
+    src/risip/ios/risipioscontacts.h \
+    src/risip/ios/risipcallkprovider.h \
+    src/app/risipuiloader.h \
+    src/app/applicationsettings.h \
+    src/sipregistrars/mor/morapi.h \
+    src/utils/httpnetworkrequest.h
 
 ios {
 HEADERS += \
@@ -253,3 +252,6 @@ DISTFILES += \
     LICENSE.GPLv3 \
     LICENSE.HEADER.GPLv3 \
     ui/base/qtquickcontrols2.conf
+
+OBJECTIVE_SOURCES += \
+    src/risip/ios/risipcallkitprovider.mm
