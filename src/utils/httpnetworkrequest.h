@@ -33,6 +33,14 @@ class HttpNetworkRequest : public QObject
 {
     Q_OBJECT
 public:
+    enum RequestType {
+        Json = 11,
+        XML,
+        PlainText,
+        Html,
+        Unknown = -1
+    };
+
     enum Status {
         RequestReady = 101,
         RequestRunning,
@@ -42,7 +50,9 @@ public:
         Null = -1
     };
 
+    Q_ENUM(RequestType)
     Q_ENUM(Status)
+    Q_PROPERTY(int requestType READ requestType WRITE setRequestType NOTIFY requestTypeChanged)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QUrl baseUrl READ baseUrl WRITE setBaseUrl NOTIFY baseUrlChanged)
     Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
@@ -51,6 +61,9 @@ public:
 
     explicit HttpNetworkRequest(QObject *parent = 0);
     ~HttpNetworkRequest();
+
+    int requestType() const;
+    void setRequestType(int type);
 
     int status() const;
 
@@ -78,6 +91,7 @@ public:
     Q_INVOKABLE void deleteData();
 
 Q_SIGNALS:
+    void requestTypeChanged(int type);
     void statusChanged(int status);
     void baseUrlChanged(const QUrl &url);
     void urlPrefixChanged(const QString &prefix);
@@ -99,6 +113,7 @@ private:
     void sendHttpRequest(const QString &httpVerb, const QByteArray &data = QByteArray());
     void sendMultipartRequest(const QString &httpVerb, QHttpMultiPart *httpParts);
 
+    int m_type;
     int m_status;
     QUrl m_baseUrl;
     QJsonObject m_urlParameters;

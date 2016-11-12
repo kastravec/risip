@@ -21,6 +21,58 @@
 #define RISIPPHONECONTACT_H
 
 #include <QObject>
+#include <QQmlListProperty>
+
+class RisipPhoneNumber : public QObject
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(QString rawNumber READ rawNumber WRITE setRawNumber NOTIFY rawNumberChanged)
+    Q_PROPERTY(QString countryPrefix READ countryPrefix NOTIFY countryPrefixChanged)
+    Q_PROPERTY(QString nationalPrefix READ nationalPrefix NOTIFY nationalPrefixChanged)
+    Q_PROPERTY(QString number READ number NOTIFY numberChanged)
+    Q_PROPERTY(QString fullNumber READ fullNumber NOTIFY fullNumberChanged)
+    Q_PROPERTY(QString countryCode READ countryCode NOTIFY countryCodeChanged)
+    Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
+    Q_PROPERTY(QString label READ label WRITE setLabel NOTIFY labelChanged)
+
+    explicit RisipPhoneNumber(const QString &rawNumber = QString(), QObject *parent = 0);
+    ~RisipPhoneNumber();
+
+    QString rawNumber() const;
+    void setRawNumber(const QString &number);
+
+    QString label() const;
+    void setLabel(const QString &label);
+
+    QString countryPrefix() const;
+    QString nationalPrefix() const;
+    QString number() const;
+    QString fullNumber() const;
+    QString countryCode() const;
+    bool valid() const;
+
+Q_SIGNALS:
+    void rawNumberChanged(const QString &number);
+    void countryPrefixChanged(const QString &prefix);
+    void nationalPrefixChanged(const QString &prefix);
+    void numberChanged(const QString &number);
+    void fullNumberChanged(const QString &number);
+    void countryCodeChanged(const QString &code);
+    void validChanged(bool valid);
+    void labelChanged(const QString &label);
+
+private:
+    void validate();
+    void reset();
+
+    QString m_rawNumber;
+    QString m_countryPrefix;
+    QString m_nationalPrefix;
+    QString m_number;
+    QString m_countryCode;
+    QString m_label;
+};
 
 class RisipPhoneContact : public QObject
 {
@@ -29,7 +81,8 @@ public:
 
     Q_PROPERTY(int contactId READ contactId NOTIFY contactIdChanged)
     Q_PROPERTY(QString fullName READ fullName NOTIFY fullNameChanged)
-    Q_PROPERTY(QStringList phoneNumbers READ phoneNumbers NOTIFY phoneNumbersChanged)
+    Q_PROPERTY(QString email READ email NOTIFY emailChanged)
+    Q_PROPERTY(QQmlListProperty<RisipPhoneNumber> phoneNumbers READ phoneNumbers NOTIFY phoneNumbersChanged)
 
     explicit RisipPhoneContact(QObject *parent = 0);
     ~RisipPhoneContact();
@@ -40,18 +93,26 @@ public:
     QString fullName() const;
     void setFullName(const QString &name);
 
-    QStringList phoneNumbers() const;
-    void setPhoneNumbers(const QStringList &numbers);
+    QString email() const;
+    void setEmail(const QString &email);
+
+    QQmlListProperty<RisipPhoneNumber> phoneNumbers();
+    QList<RisipPhoneNumber *> phoneNumberList() const;
+    void addPhoneNumber(const QString &number, const QString &label = QString());
+    void addPhoneNumber(RisipPhoneNumber *number);
+    void removePhoneNumber(RisipPhoneNumber *number);
 
 Q_SIGNALS:
     void contactIdChanged(int id);
     void fullNameChanged(const QString &name);
+    void emailChanged(const QString &email);
     void phoneNumbersChanged(const QStringList &numbers);
 
 private:
     int m_id;
     QString m_fullName;
-    QStringList m_phoneNumbers;
+    QString m_email;
+    QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
 };
 
 #endif // RISIPPHONECONTACT_H

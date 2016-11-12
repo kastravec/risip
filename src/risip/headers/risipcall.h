@@ -64,9 +64,8 @@ private:
 
 class RisipCall : public QObject
 {
-    friend PjsipCall;
-
     Q_OBJECT
+
 public:
 
     enum CallType {
@@ -123,27 +122,18 @@ public:
     RisipMedia *media() const;
     int callId() const;
     int status() const;
-
     QDateTime timestamp() const;
-    void createTimestamp();
-
     int callDirection() const;
-    void setCallDirection(int direction);
-
     int callDuration() const;
-
     int errorCode() const;
     QString errorMessage();
     QString errorInfo() const;
-
-    void setPjsipCall(PjsipCall *call);
-    PjsipCall *pjsipCall() const;
 
 public Q_SLOTS:
     void answer();
     void hangup();
     void call();
-    void initiateIncomingCall();
+    void hold(bool hold);
 
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);
@@ -160,6 +150,11 @@ Q_SIGNALS:
     void errorInfoChanged(const QString &info);
 
 private:
+    PjsipCall *pjsipCall() const;
+    void setPjsipCall(PjsipCall *call);
+    void createTimestamp();
+    void setCallDirection(int direction);
+    void initiateIncomingCall();
     void initializeMediaHandler();
     void setMedia(RisipMedia *med);
     void setError(const Error &error);
@@ -172,6 +167,10 @@ private:
     QDateTime m_timestamp;
     int m_callDirection;
     Error m_error;
+
+    friend class RisipCallManager;
+    friend class RisipMedia;
+    friend class PjsipCall;
 };
 
 #endif // RISIPCALL_H

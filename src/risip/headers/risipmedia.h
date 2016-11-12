@@ -35,7 +35,7 @@ public:
     Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint WRITE setSipEndpoint NOTIFY sipEndpointChanged)
     Q_PROPERTY(RisipCall * activeCall READ activeCall NOTIFY activeCallChanged)
     Q_PROPERTY(int speakerVolume READ speakerVolume WRITE setSpeakerVolume NOTIFY speakerVolumeChanged)
-    Q_PROPERTY(int micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
+    Q_PROPERTY(qlonglong micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
 //    Q_PROPERTY(bool loudSpeaker READ loudSpeaker WRITE setLoudSpeaker NOTIFY loudSpeakerChanged)
     Q_PROPERTY(bool keepMediaSettings READ keepMediaSettings WRITE setKeepMediaSettings NOTIFY keepMediaSettingsChanged)
     Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
@@ -53,8 +53,8 @@ public:
     int speakerVolume() const;
     void setSpeakerVolume(int volume);
 
-    int micVolume() const;
-    void setMicVolume(int volume);
+    qlonglong micVolume() const;
+    void setMicVolume(qlonglong volume);
 
     bool keepMediaSettings() const;
     void setKeepMediaSettings(const bool keep);

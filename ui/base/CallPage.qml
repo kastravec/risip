@@ -26,6 +26,14 @@ CallPageForm {
     visible: false
 
     property RisipCall activeCall
+
+    micButton.onCheckedChanged: {
+        if(micButton.checked)
+            activeCall.media.micVolume = 0.0;
+        else
+            activeCall.media.micVolume = 1.0;
+    }
+
     usernameLabel.text: activeCall.buddy.uri;
 
     Connections {
@@ -60,6 +68,7 @@ CallPageForm {
                 statusLabel.text = "Call connected, enjoy!";
                 callPage.state = "incall";
                 callPage.visible = true;
+                console.log("MIC LEVEL : " + activeCall.media.micVolume);
                 break;
             case RisipCall.CallDisconnected:
                 statusLabel.text = "Call disconnected, good bye!";

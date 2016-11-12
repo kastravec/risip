@@ -24,7 +24,7 @@
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
 #include "risipmodels.h"
-#include "ios/risipioscontacts.h"
+#include "ios/risipioscontactaccessmanager.h"
 #include "risipphonecontact.h"
 
 #include <QSortFilterProxyModel>
@@ -163,7 +163,7 @@ QQmlListProperty<QAbstractItemModel> RisipContactManager::contactHistoryModels()
  */
 QAbstractItemModel *RisipContactManager::phoneContactsModel() const
 {
-    return m_phoneContactsModel;
+     return m_phoneContactsModel;
 }
 
 /**
@@ -243,9 +243,9 @@ void RisipContactManager::fetchPhoneContacts()
 {
 #ifdef Q_OS_IOS
     if(!m_iosContacts) {
-        m_iosContacts = new RisipiOSContacts(this);
+        m_iosContacts = new RisipiOSContactAcessManager(this);
 
-        connect(m_iosContacts, &RisipiOSContacts::phoneContactDiscovered,
+        connect(m_iosContacts, &RisipiOSContactAcessManager::phoneContactDiscovered,
                 m_phoneContactsModel, &RisipPhoneContactsModel::addContact, Qt::QueuedConnection);
 
         m_iosContacts->fetchContactsFromDevice();

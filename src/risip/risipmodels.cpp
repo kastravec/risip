@@ -282,6 +282,16 @@ void RisipPhoneContactsModel::setProxy(QSortFilterProxyModel *proxy)
     }
 }
 
+QQmlListProperty<RisipPhoneContact> RisipPhoneContactsModel::phoneContacts()
+{
+    return QQmlListProperty<RisipPhoneContact>(this, m_phoneContacts);
+}
+
+QList<RisipPhoneContact *> RisipPhoneContactsModel::phoneContactList() const
+{
+    return m_phoneContacts;
+}
+
 QHash<int, QByteArray> RisipPhoneContactsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -318,10 +328,10 @@ QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
     case FullName:
         return contact->fullName();
     case PhoneNumbers:
-        return contact->phoneNumbers();
-    default:
-        return QVariant();
+        return QVariant::fromValue(contact->phoneNumberList());
     }
+
+    return QVariant();
 }
 
 void RisipPhoneContactsModel::addContact(RisipPhoneContact *contact)

@@ -206,7 +206,7 @@ RisipCall::RisipCall(QObject *parent)
 
 RisipCall::~RisipCall()
 {
-   setPjsipCall(NULL);
+    setPjsipCall(NULL);
 }
 
 RisipAccount *RisipCall::account() const
@@ -463,13 +463,11 @@ void RisipCall::answer()
 
 void RisipCall::hangup()
 {
-    if(m_pjsipCall == NULL) {
-        qDebug()<<"no call exists!";
+    if(m_pjsipCall == NULL
+            || !m_pjsipCall->isActive()) {
+        qDebug()<<"no call exists/active";
         return;
     }
-
-    if(!m_pjsipCall->isActive())
-        return;
 
     CallOpParam prm;
     try {
@@ -505,6 +503,39 @@ void RisipCall::call()
         m_pjsipCall->makeCall(m_buddy->uri().toStdString(), prm);
     } catch (Error err) {
         setError(err);
+    }
+}
+
+/**
+ * @brief RisipCall::hold
+ * @param hold
+ *
+ * Use this function to hold/unhold an active call.
+ */
+void RisipCall::hold(bool hold)
+{
+    if(m_pjsipCall == NULL
+            || !m_pjsipCall->isActive()) {
+        qDebug()<<"no call exists nor is active";
+        return;
+    }
+
+    if(hold) {
+        CallOpParam prm;
+        prm.options = PJSUA_CALL_UPDATE_CONTACT;
+        try {
+            m_pjsipCall->setHold(prm);
+        } catch (Error &err) {
+            setError(err);
+        }
+    } else {
+        CallOpParam prm;
+        prm.opt.flag = PJSUA_CALL_UNHOLD;
+        try {
+            m_pjsipCall->reinvite(prm);
+        } catch (Error &err) {
+            setError(err);
+        }
     }
 }
 

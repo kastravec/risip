@@ -17,19 +17,19 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#ifndef RISIPIOSCONTACTS_H
-#define RISIPIOSCONTACTS_H
+#ifndef RISIPIOSCONTACTACCESSMANAGER_H
+#define RISIPIOSCONTACTACCESSMANAGER_H
 
 #include <QObject>
 
 class RisipiOSContactPrivate;
 class RisipPhoneContact;
 
-class RisipiOSContacts : public QObject
+class RisipiOSContactAcessManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit RisipiOSContacts(QObject *parent = 0);
+    explicit RisipiOSContactAcessManager(QObject *parent = 0);
 
     void fetchContactsFromDevice();
 
@@ -37,6 +37,10 @@ Q_SIGNALS:
     void phoneContactDiscovered(RisipPhoneContact *risipContact);
 
 private:
+
+#ifdef Q_OS_IOS
     RisipiOSContactPrivate *m_d = nullptr;
+#endif
+
 };
-#endif // RISIPIOSCONTACTS_H
+#endif // RISIPIOSCONTACTACCESSMANAGER_H

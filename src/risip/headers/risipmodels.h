@@ -86,7 +86,6 @@ public:
     ~RisipContactHistoryModel();
 };
 
-
 class RisipCallHistoryModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -140,12 +139,16 @@ public:
     };
 
     Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
+    Q_PROPERTY(QQmlListProperty<RisipPhoneContact> phoneContacts READ phoneContacts)
 
     RisipPhoneContactsModel(QObject *parent = NULL);
     ~RisipPhoneContactsModel();
 
     QSortFilterProxyModel *proxy() const;
     void setProxy(QSortFilterProxyModel *proxy);
+
+    QQmlListProperty<RisipPhoneContact> phoneContacts();
+    QList<RisipPhoneContact *> phoneContactList() const;
 
     QHash<int, QByteArray> roleNames() const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

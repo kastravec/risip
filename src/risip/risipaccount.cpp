@@ -32,8 +32,8 @@
 #include <QDebug>
 
 /**
+ * @class PjsipAccount class
  * @brief The PjsipAccount class
- *
  * This is an internal class. It inherits the Account class from Pjsip and implements the respective
  * callbacks, see Pjsip Account C++ API reference.
  *
@@ -155,9 +155,8 @@ void PjsipAccount::setRisipInterface(RisipAccount *acc)
 }
 
 /**
- * @brief The RisipAccount class
- *
- * RisipAccount represents the Account class of Pjsip C++ API. It creates instances of Account classes (PjsipAccount)
+ * @class RisipAccount
+ * @brief RisipAccount represents the Account class of Pjsip C++ API. It creates instances of Account classes (PjsipAccount)
  * and manages these instances.
  */
 RisipAccount::RisipAccount(QObject *parent)

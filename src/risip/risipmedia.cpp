@@ -144,25 +144,32 @@ void RisipMedia::setSpeakerVolume(int volume)
     }
 }
 
-int RisipMedia::micVolume() const
+qlonglong RisipMedia::micVolume() const
 {
-    if(m_pjsipAudioManager)
-        return m_pjsipAudioManager->getInputVolume();
+    if(!m_activeCall || !m_sipEndpoint)
+        return -1.0;
 
-    return -1;
+    return m_callAudio->getTxLevel();
 }
 
 /**
  * @brief RisipMedia::setMicVolume
- * @param volume in percentage 0-100 %
+ * @param volume in betweeb 0 and 1 floating numbers
  */
-void RisipMedia::setMicVolume(int volume)
+void RisipMedia::setMicVolume(qlonglong volume)
 {
-    if(m_pjsipAudioManager) {
-        if(m_pjsipAudioManager->getInputVolume() != volume) {
-            m_pjsipAudioManager->setInputVolume(volume, m_keepMediaSettings);
-            emit micVolumeChanged(volume);
-        }
+    if((!m_activeCall || !m_sipEndpoint)
+            && (0.0 <= volume >= 1.0) )
+        return;
+
+    qDebug() <<" MIC VOLUME: " << m_localAudioMedia->getTxLevel() <<m_callAudio->getTxLevel()
+            <<m_callAudio->getRxLevel();
+
+    if(m_activeCall->pjsipCall()->isActive()
+            && m_localAudioMedia->getTxLevel() != volume) {
+        qDebug() <<"SETTING MIC VOLUME: " << volume;
+        m_callAudio->adjustTxLevel(volume);
+        emit micVolumeChanged(volume);
     }
 }
 
@@ -216,7 +223,6 @@ void RisipMedia::startCallMedia()
             break;
         }
     }
-
     // Connect the call audio media to sound device
     try {
         m_localAudioMedia->startTransmit(*m_callAudio);
@@ -229,12 +235,6 @@ void RisipMedia::startCallMedia()
     } catch (Error &err) {
         setError(err);
     }
-
-//    m_callMedia->adjustRxLevel()
-    m_callAudio->adjustRxLevel(1.0);
-    m_callAudio->adjustTxLevel(1.0);
-    m_localAudioMedia->adjustRxLevel(1.0);
-    m_localAudioMedia->adjustTxLevel(1.0);
 }
 
 void RisipMedia::setError(Error &error)

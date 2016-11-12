@@ -30,6 +30,7 @@
 #include "risipmodels.h"
 #include "risipcallmanager.h"
 #include "risipcontactmanager.h"
+#include "risipphonecontact.h"
 
 #include <QQmlEngine>
 #include <QSettings>
@@ -37,6 +38,14 @@
 #include <QDebug>
 #include <QSortFilterProxyModel>
 
+/**
+ * @brief risipSingletonProvider
+ * @param engine
+ * @param scriptEngine
+ * @return
+ *
+ * Risip singleton object provider for the QML engine.
+ */
 static QObject *risipSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
@@ -45,6 +54,14 @@ static QObject *risipSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngi
     return Risip::instance();
 }
 
+/**
+ * @brief risipCallManagerSingletonProvider
+ * @param engine
+ * @param scriptEngine
+ * @return
+ *
+ * RisipCallManager singleton object provider for the QML engine.
+ */
 static QObject *risipCallManagerSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
@@ -53,6 +70,14 @@ static QObject *risipCallManagerSingletonProvider(QQmlEngine *engine, QJSEngine 
     return RisipCallManager::instance();
 }
 
+/**
+ * @brief risipContactManagerSingletonProvider
+ * @param engine
+ * @param scriptEngine
+ * @return
+ *
+ * RisipContactManager singleton object provider for the QML engine.
+ */
 static QObject *risipContactManagerSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
@@ -184,7 +209,9 @@ void Risip::registerToQml()
     qmlRegisterType<RisipCallHistoryModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipCallHistoryModel");
     qmlRegisterType<RisipBuddiesModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipBuddiesModel");
     qmlRegisterType<RisipContactHistoryModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipContactHistoryModel");
-
+    qmlRegisterType<RisipPhoneContactsModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneContactsModel");
+    qmlRegisterType<RisipPhoneContact>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneContact");
+    qmlRegisterType<RisipPhoneNumber>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneNumber");
     qmlRegisterType<QSortFilterProxyModel>(RisipSettingsParam::QmlUri, 1, 0, "QSortFilterProxyModel");
 }
 

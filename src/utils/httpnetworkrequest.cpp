@@ -27,6 +27,7 @@ QNetworkAccessManager *HttpNetworkRequest::m_networkAccessManager = new QNetwork
 
 HttpNetworkRequest::HttpNetworkRequest(QObject *parent)
     :QObject(parent)
+    ,m_type(Unknown)
     ,m_status(Null)
     ,m_baseUrl()
     ,m_urlParameters()
@@ -39,6 +40,31 @@ HttpNetworkRequest::HttpNetworkRequest(QObject *parent)
 
 HttpNetworkRequest::~HttpNetworkRequest()
 {
+}
+
+int HttpNetworkRequest::requestType() const
+{
+    return m_type;
+}
+
+void HttpNetworkRequest::setRequestType(int type)
+{
+    if(m_type != type) {
+        m_type = type;
+
+        switch (m_type) {
+        case Json:
+            m_httpHeaders.insert(QString("Content-type"), QJsonValue(QString("application/json")));
+            m_httpHeaders.insert(QString("Accept"), QJsonValue(QString("application/json")));
+            break;
+        case XML:
+            m_httpHeaders.insert(QString("Content-type"), QJsonValue(QString("application/xml")));
+            m_httpHeaders.insert(QString("Accept"), QJsonValue(QString("application/json")));
+        default:
+            break;
+        }
+        emit requestTypeChanged(m_type);
+    }
 }
 
 int HttpNetworkRequest::status() const

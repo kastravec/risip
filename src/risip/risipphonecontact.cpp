@@ -19,10 +19,146 @@
 ************************************************************************************/
 #include "risipphonecontact.h"
 
+RisipPhoneNumber::RisipPhoneNumber(const QString &rawNumber, QObject *parent)
+    :QObject(parent)
+    ,m_rawNumber()
+    ,m_countryPrefix()
+    ,m_nationalPrefix()
+    ,m_number()
+    ,m_countryCode()
+    ,m_label()
+{
+    setRawNumber(rawNumber);
+}
+
+RisipPhoneNumber::~RisipPhoneNumber()
+{
+}
+
+QString RisipPhoneNumber::rawNumber() const
+{
+    return m_rawNumber;
+}
+
+/**
+ * @brief RisipPhoneNumber::setRawNumber
+ * @param number a raw format number
+ *
+ * Initiating this number with a raw number as input. The raw input will be validated
+ * and parsed. Check for validity of this number by using the @see RisipPhoneNumber::valid property.
+ */
+void RisipPhoneNumber::setRawNumber(const QString &number)
+{
+    if(m_rawNumber != number) {
+        m_rawNumber = number;
+        emit rawNumberChanged(m_rawNumber);
+        validate();
+    }
+}
+
+/**
+ * @brief RisipPhoneNumber::label
+ * @return label for this phone number
+ *
+ * A label represents a tag, a category if you like, something like e.g. "home" number , or "mobile" , etc
+ */
+QString RisipPhoneNumber::label() const
+{
+    return m_label;
+}
+
+void RisipPhoneNumber::setLabel(const QString &label)
+{
+    if(m_label != label) {
+        m_label = label;
+        emit labelChanged(m_label);
+    }
+}
+
+QString RisipPhoneNumber::countryPrefix() const
+{
+    return m_countryPrefix;
+}
+
+QString RisipPhoneNumber::nationalPrefix() const
+{
+    return m_nationalPrefix;
+}
+
+QString RisipPhoneNumber::number() const
+{
+    return m_number;
+}
+
+QString RisipPhoneNumber::fullNumber() const
+{
+    return m_countryPrefix + m_nationalPrefix + m_number;
+}
+
+QString RisipPhoneNumber::countryCode() const
+{
+    return m_countryCode;
+}
+
+/**
+ * @brief RisipPhoneNumber::valid
+ * @return
+ *
+ * A valid phone number is ready to be called.
+ * The country code must not be NULL for a phone number to be valid.
+ * Use @see RisipPhoneNumber::validate to validate the phone number or
+ * simply call @see RisipPhoneNumber::setRawNumber
+ */
+bool RisipPhoneNumber::valid() const
+{
+    return !m_countryCode.isNull();
+}
+
+/**
+ * @brief RisipPhoneNumber::validate
+ *
+ * Internal API.
+ *
+ * Validates the raw number that has been set.
+ */
+void RisipPhoneNumber::validate()
+{
+    emit countryPrefixChanged(m_countryPrefix);
+    emit nationalPrefixChanged(m_nationalPrefix);
+    emit numberChanged(m_number);
+    emit countryCodeChanged(m_countryCode);
+    emit fullNumberChanged(m_countryPrefix + m_nationalPrefix + m_number);
+}
+
+/**
+ * @brief RisipPhoneNumber::reset
+ *
+ * It wipes out all the number details. It simply leaves an empty shell object.
+ * Use @see RisipPhoneNumber::setRawNumber to initiate it with a number.
+ */
+void RisipPhoneNumber::reset()
+{
+    m_countryCode.clear();
+    m_countryPrefix.clear();
+    m_nationalPrefix.clear();
+    m_label.clear();
+    m_number.clear();
+    m_rawNumber.clear();
+
+    emit countryCodeChanged(m_countryCode);
+    emit countryPrefixChanged(m_countryPrefix);
+    emit nationalPrefixChanged(m_nationalPrefix);
+    emit labelChanged(m_label);
+    emit numberChanged(m_number);
+    emit rawNumberChanged(m_rawNumber);
+}
+
+
 RisipPhoneContact::RisipPhoneContact(QObject *parent)
     :QObject(parent)
     ,m_id(-1)
     ,m_fullName()
+    ,m_email()
     ,m_phoneNumbers()
 {
 
@@ -58,15 +194,51 @@ void RisipPhoneContact::setFullName(const QString &name)
     }
 }
 
-QStringList RisipPhoneContact::phoneNumbers() const
+QString RisipPhoneContact::email() const
 {
-    return m_phoneNumbers;
+    return m_email;
 }
 
-void RisipPhoneContact::setPhoneNumbers(const QStringList &numbers)
+void RisipPhoneContact::setEmail(const QString &email)
 {
-    if(m_phoneNumbers != numbers ) {
-        m_phoneNumbers = numbers;
-        emit phoneNumbersChanged(m_phoneNumbers);
+    if(m_email != email) {
+        m_email = email;
+        emit emailChanged(email);
     }
 }
+
+QQmlListProperty<RisipPhoneNumber> RisipPhoneContact::phoneNumbers()
+{
+    QList<RisipPhoneNumber *> numbers = m_phoneNumbers.values();
+    return QQmlListProperty<RisipPhoneNumber>(this, numbers);
+}
+
+QList<RisipPhoneNumber *> RisipPhoneContact::phoneNumberList() const
+{
+    return m_phoneNumbers.values();
+}
+
+void RisipPhoneContact::addPhoneNumber(const QString &number, const QString &label)
+{
+    RisipPhoneNumber *phoneNumber = new RisipPhoneNumber(number, this);
+    phoneNumber->setLabel(label);
+    if(!m_phoneNumbers.contains(phoneNumber->fullNumber()))
+        m_phoneNumbers[phoneNumber->fullNumber()] = phoneNumber;
+}
+
+void RisipPhoneContact::addPhoneNumber(RisipPhoneNumber *number)
+{
+    if(number) {
+    if(!m_phoneNumbers.contains(number->fullNumber()))
+        m_phoneNumbers[number->fullNumber()] = number;
+    }
+}
+
+void RisipPhoneContact::removePhoneNumber(RisipPhoneNumber *number)
+{
+    if(number) {
+        if(m_phoneNumbers.contains(number->fullNumber()))
+            m_phoneNumbers.take(number->fullNumber())->deleteLater();
+    }
+}
+

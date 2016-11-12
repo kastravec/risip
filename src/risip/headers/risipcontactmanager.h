@@ -27,7 +27,7 @@
 class RisipAccount;
 class RisipBuddiesModel;
 class RisipContactHistoryModel;
-class RisipiOSContacts;
+class RisipiOSContactAcessManager;
 class RisipPhoneContactsModel;
 class RisipPhoneContact;
 
@@ -86,7 +86,7 @@ private:
 
     //responsible for fetching contacts from the ios device.
 #ifdef Q_OS_IOS
-    RisipiOSContacts *m_iosContacts = NULL;
+    RisipiOSContactAcessManager *m_iosContacts = NULL;
 #endif
 
 };

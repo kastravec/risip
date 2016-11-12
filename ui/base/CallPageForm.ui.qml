@@ -17,7 +17,6 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
@@ -29,6 +28,7 @@ Page {
     property alias answerCallButton: answerCallButton
     property alias usernameLabel: usernameLabel
     property alias statusLabel: statusLabel
+    property alias micButton: micButton
     hoverEnabled: true
 
     Label {
@@ -51,6 +51,7 @@ Page {
     }
 
     RowLayout {
+        id: callButtonLayout
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 25
         anchors.horizontalCenter: parent.horizontalCenter
@@ -64,6 +65,28 @@ Page {
         Button {
             id: endCallButton
             text: qsTr("End")
+        }
+    }
+
+    RowLayout {
+        id: callMediaButtonLayout
+        x: 210
+        y: 309
+        anchors.bottom: callButtonLayout.top
+        anchors.bottomMargin: 60
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 20
+
+        Button {
+            id: micButton
+            text: qsTr("Mic")
+            checkable: true
+        }
+
+        Button {
+            id: speakerButton
+            text: qsTr("Speaker")
+            checkable: true
         }
     }
 

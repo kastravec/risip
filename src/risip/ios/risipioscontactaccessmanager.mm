@@ -1,4 +1,4 @@
-#include "risipioscontacts.h"
+#include "risipioscontactaccessmanager.h"
 #include "risipphonecontact.h"
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
@@ -14,9 +14,9 @@
 //from an ios device
 @interface ContactsScan:NSObject
 {
-                            RisipiOSContacts *m_handler;
+    RisipiOSContactAcessManager *m_handler;
 }
-- (ContactsScan*) init: ( RisipiOSContacts *)handler;
+- (ContactsScan*) init: ( RisipiOSContactAcessManager *)handler;
 - (void) contactScan;
 - (void) getAllContact;
 - (void) parseContactWithContact :(CNContact* )contact;
@@ -25,7 +25,7 @@
 
 @implementation ContactsScan
 
-- (ContactsScan*) init: ( RisipiOSContacts*)handler
+- (ContactsScan*) init: ( RisipiOSContactAcessManager*)handler
 {
     m_handler = handler;
     return self;
@@ -38,14 +38,14 @@
         //ios9 or later
         CNEntityType entityType = CNEntityTypeContacts;
         if( [CNContactStore authorizationStatusForEntityType:entityType] == CNAuthorizationStatusNotDetermined)
-         {
-             CNContactStore * contactStore = [[CNContactStore alloc] init];
-             [contactStore requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                 if (granted == YES){
-                     [self getAllContact];
-                 }
-             }];
-         }
+        {
+            CNContactStore * contactStore = [[CNContactStore alloc] init];
+            [contactStore requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                if (granted == YES){
+                    [self getAllContact];
+                }
+            }];
+        }
         else if( [CNContactStore authorizationStatusForEntityType:entityType]== CNAuthorizationStatusAuthorized)
         {
             [self getAllContact];
@@ -64,8 +64,8 @@
         CNContactStore* addressBook = [[CNContactStore alloc]init];
         [addressBook containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers: @[addressBook.defaultContainerIdentifier]] error:&contactError];
         NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey];
-        CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
-        BOOL success = [addressBook enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){
+                CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
+                BOOL success = [addressBook enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){
             [self parseContactWithContact:contact];
         }];
         if (contactError) {
@@ -78,33 +78,28 @@
 //function is called for each contact that is retrieved in the getAllContact function
 - (void)parseContactWithContact :(CNContact* )contact
 {
-    NSString *identifier = contact.identifier;
-    NSString *firstName =  contact.givenName;
-    NSString *lastName =  contact.familyName;
+    RisipPhoneContact *risipPhoneContact = new RisipPhoneContact;
+    risipPhoneContact->setContactId(QString::fromNSString(contact.identifier).toInt());
+
+    NSString * email = [contact.emailAddresses valueForKey:@"value"];
+    risipPhoneContact->setEmail(QString::fromNSString(email));
+
+    //NSArray * addrArr = [self parseAddressWithContac:contact];
+
+    QString name = QString("%1 %2")
+            .arg(QString::fromNSString(contact.givenName))
+            .arg(QString::fromNSString(contact.familyName));
+    risipPhoneContact->setFullName(name);
 
     NSArray<CNLabeledValue<CNPhoneNumber *> *> *phNos= contact.phoneNumbers;
-    QStringList phoneNumbers;
     for (id object in phNos) {
         NSString* label = [object label];
         label = [CNLabeledValue localizedStringForLabel:label];
         NSString* number = [[object value] stringValue];
-        if (label && number) {
-            phoneNumbers<<QString::fromNSString(label)<<QString::fromNSString(number);
-        }
+
+        if (label && number)
+            risipPhoneContact->addPhoneNumber(QString::fromNSString(number), QString::fromNSString(label));
     }
-
-    //NSString * phone = [[contact.phoneNumbers valueForKey:@"value"] valueForKey:@"digits"];
-    //NSString * email = [contact.emailAddresses valueForKey:@"value"];
-    //NSArray * addrArr = [self parseAddressWithContac:contact];
-
-    QString name = QString("%1 %2")
-            .arg(QString::fromNSString(firstName))
-            .arg(QString::fromNSString(lastName));
-
-    RisipPhoneContact *risipPhoneContact = new RisipPhoneContact;
-    risipPhoneContact->setFullName(name);
-    risipPhoneContact->setContactId(QString::fromNSString(identifier).toInt());
-    risipPhoneContact->setPhoneNumbers(phoneNumbers);
 
     //NOTE Emit contact data to recieve it on the Qt thread.
     m_handler->phoneContactDiscovered(risipPhoneContact);
@@ -120,9 +115,9 @@
             [addrArr addObject:[formatter stringFromPostalAddress:address]];
         }
     }
+
     return addrArr;
 }
-
 @end
 
 /**
@@ -133,18 +128,18 @@
 class RisipiOSContactPrivate
 {
 private:
-     RisipiOSContactPrivate(RisipiOSContacts *parentInstance);
+    RisipiOSContactPrivate(RisipiOSContactAcessManager *parentInstance);
     ~RisipiOSContactPrivate();
 
-     void fetchContacts();
+    void fetchContacts();
 
 private:
-     RisipiOSContacts* parent;
-     ContactsScan *scanner;
-     friend class RisipiOSContacts;
+    RisipiOSContactAcessManager* parent;
+    ContactsScan *scanner;
+    friend class RisipiOSContactAcessManager;
 };
 
-RisipiOSContactPrivate::RisipiOSContactPrivate(RisipiOSContacts *parentInstance)
+RisipiOSContactPrivate::RisipiOSContactPrivate(RisipiOSContactAcessManager *parentInstance)
     :parent(parentInstance)
 {
     scanner = [[ContactsScan alloc] init:parent];
@@ -160,13 +155,21 @@ void RisipiOSContactPrivate::fetchContacts()
     [scanner contactScan];
 }
 
-RisipiOSContacts::RisipiOSContacts(QObject *parent)
+RisipiOSContactAcessManager::RisipiOSContactAcessManager(QObject *parent)
     :QObject(parent)
 {
+
+#ifdef Q_OS_IOS
     m_d = new RisipiOSContactPrivate(this);
+#endif
+
 }
 
-void RisipiOSContacts::fetchContactsFromDevice()
+void RisipiOSContactAcessManager::fetchContactsFromDevice()
 {
+
+#ifdef Q_OS_IOS
     m_d->fetchContacts();
+#endif
+
 }

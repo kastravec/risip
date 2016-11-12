@@ -59,22 +59,24 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipmodels.h \
     src/risip/headers/risipglobals.h \
     src/risip/headers/risipphonecontact.h \
-    src/risip/ios/risipioscontacts.h \
     src/risip/ios/risipcallkprovider.h \
     src/app/risipuiloader.h \
     src/app/applicationsettings.h \
     src/sipregistrars/mor/morapi.h \
-    src/utils/httpnetworkrequest.h
+    src/utils/httpnetworkrequest.h \
 
+
+#iOS headers and source files where ios specific functionality is implemented.
 ios {
-HEADERS += \
-    src/risip/ios/risipioscontacts.h
+HEADERS += src/risip/ios/risipioscontactaccessmanager.h
 
 OBJECTIVE_SOURCES += \
-    src/risip/ios/risipioscontacts.mm
+    src/risip/ios/risipcallkitprovider.mm \
+    src/risip/ios/risipioscontactaccessmanager.mm
 }
 
-########## LIBS ##########
+
+########## LIBS -- linking with PJSIP libraries different platforms could be dynamic or static ##########
 
 macx {
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
@@ -253,5 +255,3 @@ DISTFILES += \
     LICENSE.HEADER.GPLv3 \
     ui/base/qtquickcontrols2.conf
 
-OBJECTIVE_SOURCES += \
-    src/risip/ios/risipcallkitprovider.mm

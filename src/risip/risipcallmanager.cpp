@@ -145,7 +145,7 @@ RisipCall *RisipCallManager::activeCall()
     return m_activeCall;
 }
 
-void RisipCallManager::callContact(const QString contact)
+void RisipCallManager::callSIPContact(const QString contact)
 {
     RisipBuddy *buddy = m_activeAccount->findBuddy(
                 RisipGlobals::formatToSip(contact, m_activeAccount->configuration()->uri()));
@@ -158,6 +158,11 @@ void RisipCallManager::callContact(const QString contact)
     callBuddy(buddy);
 }
 
+/**
+ * @brief RisipCallManager::callBuddy
+ * @param buddy
+ *
+ */
 void RisipCallManager::callBuddy(RisipBuddy *buddy)
 {
     RisipCall *call = new RisipCall(this);

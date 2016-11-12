@@ -60,7 +60,6 @@ private:
 
 class RisipAccount: public QObject
 {
-    friend PjsipAccount;
     Q_OBJECT
 
 public:
@@ -100,9 +99,6 @@ public:
     RisipEndpoint *sipEndPoint() const;
     void setSipEndPoint(RisipEndpoint *endpoint);
 
-    PjsipAccount *pjsipAccount() const;
-    void setPjsipAccountInterface(PjsipAccount *acc);
-
     int presence() const;
     void setPresence(int prs);
 
@@ -122,9 +118,6 @@ public:
     QString errorMessage() const;
     QString errorInfo() const;
 
-    PjsipCall *incomingPjsipCall();
-    void setIncomingPjsipCall(PjsipCall *call);
-
     Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
     Q_INVOKABLE void addBuddy(const QString &buddyUri);
     Q_INVOKABLE void addRisipBuddy(RisipBuddy *buddy);
@@ -134,10 +127,10 @@ Q_SIGNALS:
     void configurationChanged(RisipAccountConfiguration *config);
     void sipEndPointChanged(RisipEndpoint *sipendpoint);
     void presenceChanged(int presence);
-    void presenceNoteChanged(QString note);
+    void presenceNoteChanged(const QString &note);
     void statusChanged(int status);
     void autoSignInChanged(bool signin);
-    void statusTextChanged(QString);
+    void statusTextChanged(const QString &statusText);
     void buddiesChanged(QQmlListProperty<RisipBuddy> buddies);
     void incomingCall();
     void incomingMessage(RisipMessage *message);
@@ -150,6 +143,10 @@ public Q_SLOTS:
     void logout();
 
 private:
+    PjsipAccount *pjsipAccount() const;
+    void setPjsipAccountInterface(PjsipAccount *acc);
+    PjsipCall *incomingPjsipCall();
+    void setIncomingPjsipCall(PjsipCall *call);
     void setStatus(int status);
     void setError(const Error &error);
 
@@ -163,6 +160,10 @@ private:
     PjsipCall *m_incomingPjsipCall;
     QList<RisipBuddy *> m_allBuddies;
     Error m_error;
+
+    friend class RisipBuddy;
+    friend class RisipCall;
+    friend class PjsipAccount;
 };
 
 #endif // RISIPACCOUNT_H

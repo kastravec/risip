@@ -93,9 +93,6 @@ public:
     int type() const;
     void setType(int type);
 
-    PjsipBuddy *pjsipBuddy() const;
-    void setPjsipBuddy(PjsipBuddy *buddy);
-
     bool valid() const;
 
 public Q_SLOTS:
@@ -113,11 +110,16 @@ Q_SIGNALS:
     void validChanged(bool valid);
 
 private:
+    PjsipBuddy *pjsipBuddy() const;
+    void setPjsipBuddy(PjsipBuddy *buddy);
+
     PjsipBuddy *m_pjsipBuddy;
     RisipAccount *m_account;
     BuddyConfig m_buddyConfig;
     QString m_contact;
     int m_type;
+
+    friend class RisipAccount;
 };
 
 #endif // RISIPBUDDY_H
