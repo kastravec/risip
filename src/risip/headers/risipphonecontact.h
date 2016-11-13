@@ -22,11 +22,13 @@
 
 #include <QObject>
 #include <QQmlListProperty>
+class RisipPhoneContact;
 
 class RisipPhoneNumber : public QObject
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(RisipPhoneContact *phoneContact READ phoneContact WRITE setPhoneContact NOTIFY phoneContactChanged)
     Q_PROPERTY(QString rawNumber READ rawNumber WRITE setRawNumber NOTIFY rawNumberChanged)
     Q_PROPERTY(QString countryPrefix READ countryPrefix NOTIFY countryPrefixChanged)
     Q_PROPERTY(QString nationalPrefix READ nationalPrefix NOTIFY nationalPrefixChanged)
@@ -38,6 +40,9 @@ public:
 
     explicit RisipPhoneNumber(const QString &rawNumber = QString(), QObject *parent = 0);
     ~RisipPhoneNumber();
+
+    RisipPhoneContact *phoneContact() const;
+    void setPhoneContact(RisipPhoneContact *contact);
 
     QString rawNumber() const;
     void setRawNumber(const QString &number);
@@ -53,6 +58,7 @@ public:
     bool valid() const;
 
 Q_SIGNALS:
+    void phoneContactChanged(RisipPhoneContact *contact);
     void rawNumberChanged(const QString &number);
     void countryPrefixChanged(const QString &prefix);
     void nationalPrefixChanged(const QString &prefix);
@@ -66,6 +72,7 @@ private:
     void validate();
     void reset();
 
+    RisipPhoneContact *m_phoneContact;
     QString m_rawNumber;
     QString m_countryPrefix;
     QString m_nationalPrefix;

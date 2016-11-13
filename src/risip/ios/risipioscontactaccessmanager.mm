@@ -81,8 +81,8 @@
     RisipPhoneContact *risipPhoneContact = new RisipPhoneContact;
     risipPhoneContact->setContactId(QString::fromNSString(contact.identifier).toInt());
 
-    NSString * email = [contact.emailAddresses valueForKey:@"value"];
-    risipPhoneContact->setEmail(QString::fromNSString(email));
+//    NSString * email = [contact.emailAddresses valueForKey:@"value"];
+//    risipPhoneContact->setEmail(QString::fromNSString(email));
 
     //NSArray * addrArr = [self parseAddressWithContac:contact];
 

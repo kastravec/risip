@@ -27,6 +27,7 @@
 #include "risipaccountconfiguration.h"
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
+#include "risipphonecontact.h"
 
 #include <QSortFilterProxyModel>
 #include <QDebug>
@@ -145,7 +146,7 @@ RisipCall *RisipCallManager::activeCall()
     return m_activeCall;
 }
 
-void RisipCallManager::callSIPContact(const QString contact)
+RisipCall *RisipCallManager::callSIPContact(const QString contact)
 {
     RisipBuddy *buddy = m_activeAccount->findBuddy(
                 RisipGlobals::formatToSip(contact, m_activeAccount->configuration()->uri()));
@@ -155,7 +156,7 @@ void RisipCallManager::callSIPContact(const QString contact)
         buddy->setContact(contact);
     }
 
-    callBuddy(buddy);
+    return callBuddy(buddy);
 }
 
 /**
@@ -163,7 +164,7 @@ void RisipCallManager::callSIPContact(const QString contact)
  * @param buddy
  *
  */
-void RisipCallManager::callBuddy(RisipBuddy *buddy)
+RisipCall *RisipCallManager::callBuddy(RisipBuddy *buddy)
 {
     RisipCall *call = new RisipCall(this);
     call->setBuddy(buddy);
@@ -174,11 +175,18 @@ void RisipCallManager::callBuddy(RisipBuddy *buddy)
     //adding call record for the active account.
     qobject_cast<RisipCallHistoryModel *>(m_activeCallHistoryModel)->addCallRecord(call);
     setActiveCall(call);
+
+    return call;
 }
 
-void RisipCallManager::callPhone(const QString &number)
+RisipCall *RisipCallManager::callPhone(const QString &number)
 {
-    Q_UNUSED(number)
+    if(!number.isNull())
+        return callRisipPhoneNumber(new RisipPhoneNumber(number, this));
+}
+
+RisipCall *RisipCallManager::callRisipPhoneNumber(RisipPhoneNumber *number)
+{
     qDebug()<<"calling phones is not implemented";
 }
 

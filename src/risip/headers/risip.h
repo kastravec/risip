@@ -31,6 +31,8 @@ class RisipCall;
 class RisipBuddy;
 class RisipContactManager;
 class RisipCallManager;
+class RisipAccountProfile;
+class RisipMorApi;
 
 class Risip: public QObject
 {
@@ -40,6 +42,7 @@ public:
     Q_PROPERTY(QQmlListProperty<RisipAccount> accounts READ accounts NOTIFY accountsChanged)
     Q_PROPERTY(RisipContactManager * contactManager READ contactManager CONSTANT)
     Q_PROPERTY(RisipCallManager * callManager READ callManager CONSTANT)
+    Q_PROPERTY(RisipMorApi * morApi READ morApi CONSTANT)
     Q_PROPERTY(QStringList accountNames READ accountNames NOTIFY accountNamesChanged)
     Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint CONSTANT)
     Q_PROPERTY(RisipAccount * defaultAccount READ defaultAccount NOTIFY defaultAccountChanged)
@@ -54,6 +57,7 @@ public:
     QStringList accountNames() const;
     RisipContactManager *contactManager() const;
     RisipCallManager *callManager() const;
+    RisipMorApi *morApi() const;
     RisipEndpoint *sipEndpoint();
     RisipAccount *defaultAccount();
     bool firstRun() const;
@@ -61,6 +65,7 @@ public:
     bool defaultAccountAlways() const;
     void setDefaultAccountAlways(bool always = true);
 
+    Q_INVOKABLE void registerAccount(RisipAccountProfile *profile);
     Q_INVOKABLE RisipAccount *accountForUri(const QString &accountUri);
     Q_INVOKABLE RisipAccount *accountForConfiguration(RisipAccountConfiguration *configuration);
     Q_INVOKABLE RisipAccount *createAccount(RisipAccountConfiguration *configuration);

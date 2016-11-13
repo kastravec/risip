@@ -90,6 +90,9 @@ public:
     Q_INVOKABLE void patchMultipart(QHttpMultiPart *parts);
     Q_INVOKABLE void deleteData();
 
+    void setCustomData(void *dt);
+    void *customData();
+
 Q_SIGNALS:
     void requestTypeChanged(int type);
     void statusChanged(int status);
@@ -99,6 +102,8 @@ Q_SIGNALS:
     void urlParametersChanged(QJsonObject &parameters);
     void httpHeadersChanged(QJsonObject &headers);
     void replyReady(const QByteArray &data);
+    void error(int errorCode);
+    void sslErrors(const QList<QSslError> &errors);
 
 private Q_SLOTS:
     void networkResponseHandler();
@@ -123,6 +128,7 @@ private:
     QNetworkRequest m_httpRequest;
     QNetworkReply *m_httpResponse;
     static QNetworkAccessManager *m_networkAccessManager;
+    void *m_customData;
 };
 
 #endif // HTTPNETWORKREQUEST_H

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>configs/countries</file>
+    </qresource>
+</RCC>

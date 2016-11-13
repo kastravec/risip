@@ -5,7 +5,7 @@ TEMPLATE = app
 CONFIG += exceptions c++11
 
 android: QT += androidextras
-QT = core network qml quick quickcontrols2
+QT = core network qml quick quickcontrols2 positioning location
 
 ### DEFINES ###
 DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
@@ -34,7 +34,6 @@ SOURCES += src/app/main.cpp \
     src/risip/risipendpoint.cpp \
     src/risip/risipmessage.cpp \
     src/risip/risipaccountconfiguration.cpp \
-    src/risip/globals.cpp \
     src/risip/risipaccountprofile.cpp \
     src/risip/risipcallmanager.cpp \
     src/risip/risipcontactmanager.cpp \
@@ -42,8 +41,10 @@ SOURCES += src/app/main.cpp \
     src/risip/risipphonecontact.cpp \
     src/app/risipuiloader.cpp \
     src/app/applicationsettings.cpp \
-    src/sipregistrars/mor/morapi.cpp \
-    src/utils/httpnetworkrequest.cpp
+    src/utils/httpnetworkrequest.cpp \
+    src/risip/risipgeopositionprovider.cpp \
+    src/risip/risipglobals.cpp \
+    src/sipregistrars/mor/risipmorapi.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -62,9 +63,9 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/ios/risipcallkprovider.h \
     src/app/risipuiloader.h \
     src/app/applicationsettings.h \
-    src/sipregistrars/mor/morapi.h \
     src/utils/httpnetworkrequest.h \
-
+    src/risip/headers/risipgeopositionprovider.h \
+    src/sipregistrars/mor/risipmorapi.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {
@@ -124,7 +125,10 @@ LIBS += -L$$PWD/pjsip/ios-64/lib \
     -lresample-arm64-apple-darwin_ios \
     -lsrtp-arm64-apple-darwin_ios \
     -lpjlib-util-arm64-apple-darwin_ios \
-    -framework CoreFoundation
+    -framework CoreFoundation \
+    -framework CFNetwork \
+    -framework Contacts \
+    -framework AVFoundation
 }
 
 macx {
@@ -243,7 +247,8 @@ android {
 }
 
 RESOURCES += qml.qrc \
-    images.qrc
+    images.qrc \
+    risipconfigs.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = risip/
@@ -252,6 +257,4 @@ DISTFILES += \
     README \
     utils/runOnMac.sh \
     LICENSE.GPLv3 \
-    LICENSE.HEADER.GPLv3 \
-    ui/base/qtquickcontrols2.conf
-
+    LICENSE.HEADER.GPLv3

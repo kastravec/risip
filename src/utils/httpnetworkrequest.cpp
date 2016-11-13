@@ -219,6 +219,16 @@ void HttpNetworkRequest::deleteData()
     sendHttpRequest(QString("DELETE"));
 }
 
+void HttpNetworkRequest::setCustomData(void *dt)
+{
+    m_customData = dt;
+}
+
+void *HttpNetworkRequest::customData()
+{
+    return m_customData;
+}
+
 /**
  * @brief HttpNetworkRequest::sendHttpRequest
  * @param httpVerb the HTTP verb for the request, i.e. GET, POST, etc
@@ -320,7 +330,7 @@ void HttpNetworkRequest::networkResponseMetadataHandler()
 
 void HttpNetworkRequest::networkResponseErrorHandler(int code)
 {
-
+    emit error(code);
 }
 
 void HttpNetworkRequest::networkResponseDownloadHandler(qint64 bytesReceived, qint64 bytesTotal)
@@ -335,5 +345,5 @@ void HttpNetworkRequest::networkResponseUploadHandler(qint64 bytesSent, qint64 b
 
 void HttpNetworkRequest::networkResponseSslErrorsHandler(const QList<QSslError> &errors)
 {
-
+    emit sslErrors(errors);
 }

@@ -36,7 +36,7 @@ public:
     Q_PROPERTY(RisipCall * activeCall READ activeCall NOTIFY activeCallChanged)
     Q_PROPERTY(int speakerVolume READ speakerVolume WRITE setSpeakerVolume NOTIFY speakerVolumeChanged)
     Q_PROPERTY(qlonglong micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
-//    Q_PROPERTY(bool loudSpeaker READ loudSpeaker WRITE setLoudSpeaker NOTIFY loudSpeakerChanged)
+    Q_PROPERTY(bool loudSpeaker READ loudSpeaker WRITE setLoudSpeaker NOTIFY loudSpeakerChanged)
     Q_PROPERTY(bool keepMediaSettings READ keepMediaSettings WRITE setKeepMediaSettings NOTIFY keepMediaSettingsChanged)
     Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
@@ -56,6 +56,9 @@ public:
     qlonglong micVolume() const;
     void setMicVolume(qlonglong volume);
 
+    bool loudSpeaker() const;
+    void setLoudSpeaker(bool loudspeaker);
+
     bool keepMediaSettings() const;
     void setKeepMediaSettings(const bool keep);
 
@@ -73,6 +76,7 @@ Q_SIGNALS:
     void activeCallChanged(RisipCall *call);
     void speakerVolumeChanged(int volume);
     void micVolumeChanged(int volume);
+    void loudSpeakerChanged(bool loudspeaker);
     void keepMediaSettingsChanged(bool keep);
     void errorCodeChanged(int code);
     void errorMessageChanged(const QString &message);
@@ -91,6 +95,7 @@ private:
 
     bool m_keepMediaSettings;
     Error m_error;
+    bool m_loudSpeaker;
 };
 
 #endif // RISIPMEDIA_H

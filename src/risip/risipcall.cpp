@@ -25,8 +25,8 @@
 #include "risipbuddy.h"
 #include "risipmodels.h"
 #include "risipcallmanager.h"
+#include "risipphonecontact.h"
 
-#include <QObject>
 #include <QDebug>
 
 PjsipCall::PjsipCall(PjsipAccount &account, int callId)
@@ -196,6 +196,7 @@ RisipCall::RisipCall(QObject *parent)
     :QObject(parent)
     ,m_account(NULL)
     ,m_buddy(NULL)
+    ,m_phoneNumber(NULL)
     ,m_risipMedia(NULL)
     ,m_pjsipCall(NULL)
     ,m_callType(RisipCall::Voip)
@@ -232,6 +233,19 @@ void RisipCall::setBuddy(RisipBuddy *buddy)
     if(m_buddy != buddy) {
         m_buddy = buddy;
         emit buddyChanged(m_buddy);
+    }
+}
+
+RisipPhoneNumber *RisipCall::phoneNumber() const
+{
+    return m_phoneNumber;
+}
+
+void RisipCall::setPhoneNumber(RisipPhoneNumber *number)
+{
+    if(m_phoneNumber != number) {
+        m_phoneNumber = number;
+        emit phoneNumberChanged(m_phoneNumber);
     }
 }
 
@@ -489,7 +503,7 @@ void RisipCall::call()
 {
     if(m_callType == Undefined
             || !m_account
-            || !m_buddy)
+            || (!m_buddy && !m_phoneNumber))
         return;
 
     if(m_account->status() != RisipAccount::SignedIn)
@@ -499,10 +513,19 @@ void RisipCall::call()
     createTimestamp();
     setPjsipCall(new PjsipCall(*m_account->pjsipAccount()));
     CallOpParam prm(true);
-    try {
-        m_pjsipCall->makeCall(m_buddy->uri().toStdString(), prm);
-    } catch (Error err) {
-        setError(err);
+
+    QString callee;
+    if(m_callType == Gsm && m_phoneNumber)
+        callee = m_phoneNumber->fullNumber();
+    else if(m_callType == Voip && m_buddy)
+        callee = m_buddy->uri();
+
+    if(!callee.isNull()) {
+        try {
+            m_pjsipCall->makeCall(callee.toStdString(), prm);
+        } catch (Error err) {
+            setError(err);
+        }
     }
 }
 

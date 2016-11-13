@@ -28,6 +28,7 @@ using namespace pj;
 class RisipMedia;
 class RisipCall;
 class RisipBuddy;
+class RisipPhoneNumber;
 
 class PjsipCall: public Call
 {
@@ -77,7 +78,6 @@ public:
     enum CallDirection {
         Incoming = 1,
         Outgoing,
-        Missed,
         Unknown = -1
     };
 
@@ -97,6 +97,7 @@ public:
     Q_PROPERTY(int callType READ callType WRITE setCallType NOTIFY callTypeChanged)
     Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
     Q_PROPERTY(RisipBuddy * buddy READ buddy WRITE setBuddy NOTIFY buddyChanged)
+    Q_PROPERTY(RisipPhoneNumber * phoneNumber READ phoneNumber WRITE setPhoneNumber NOTIFY phoneNumberChanged)
     Q_PROPERTY(RisipMedia * media READ media NOTIFY mediaChanged)
     Q_PROPERTY(int callId READ callId NOTIFY callIdChanged)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
@@ -115,6 +116,9 @@ public:
 
     RisipBuddy *buddy() const;
     void setBuddy(RisipBuddy *buddy);
+
+    RisipPhoneNumber *phoneNumber() const;
+    void setPhoneNumber(RisipPhoneNumber *number);
 
     int callType() const;
     void setCallType(int type);
@@ -138,6 +142,7 @@ public Q_SLOTS:
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);
     void buddyChanged(RisipBuddy *buddy);
+    void phoneNumberChanged(RisipPhoneNumber *number);
     void mediaChanged(RisipMedia *media);
     void callIdChanged(int callId);
     void callTypeChanged(int type);
@@ -161,6 +166,7 @@ private:
 
     RisipAccount *m_account;
     RisipBuddy *m_buddy;
+    RisipPhoneNumber *m_phoneNumber;
     RisipMedia *m_risipMedia;
     PjsipCall *m_pjsipCall;
     int m_callType;

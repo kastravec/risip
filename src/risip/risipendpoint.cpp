@@ -268,8 +268,8 @@ void RisipEndpoint::start()
 
     //FIXME Codec priorities
     //TODO Codecs settings page
-//    Endpoint::instance().codecSetPriority("g722/8000", 255);
-    Endpoint::instance().codecSetPriority("iLBC/8000", 200);
+    Endpoint::instance().codecSetPriority("g722/16000", 255);
+    Endpoint::instance().codecSetPriority("iLBC/8000", 50);
     Endpoint::instance().codecSetPriority("speex/16000", 0);
     Endpoint::instance().codecSetPriority("speex/8000", 0);
     Endpoint::instance().codecSetPriority("speex/32000", 0);

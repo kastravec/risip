@@ -29,6 +29,8 @@ class RisipAccountProfileData
 public:
     int m_userId = -1;
     QString m_userName;
+    QString m_password;
+    QString m_balance;
     QString m_email;
     QString m_firstName;
     QString m_lastName;
@@ -40,7 +42,12 @@ public:
     int m_currency;
     QString m_phoneNumber;
     QString m_mobileNumber;
+    int m_deviceType;
     bool m_valid = false;
+
+    int m_tariffId;
+    int m_lcrId;
+
 };
 
 class RisipAccountProfile : public QObject
@@ -48,17 +55,27 @@ class RisipAccountProfile : public QObject
     Q_OBJECT
 
 public:
-
     enum Status {
         Ready = 1,
+        Registering,
         Updating,
         Empty,
         NotCreated,
         Error = -1
     };
 
+    enum DeviceType {
+        SIP = 11,
+        IAX2,
+        Virtual
+    };
+
+    Q_ENUM(Status)
+    Q_ENUM(DeviceType)
     Q_PROPERTY(int userId READ userId NOTIFY userIdChanged)
     Q_PROPERTY(QString username READ username WRITE setUsername NOTIFY usernameChanged)
+    Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
+    Q_PROPERTY(QString creditBalance READ creditBalance NOTIFY creditBalanceChanged)
     Q_PROPERTY(QString email READ email WRITE setEmail NOTIFY emailChanged)
     Q_PROPERTY(QString firstName READ firstName WRITE setFirstName NOTIFY firstNameChanged)
     Q_PROPERTY(QString lastName READ lastName WRITE setLastName NOTIFY lastNameChanged)
@@ -70,9 +87,9 @@ public:
     Q_PROPERTY(int currency READ currency WRITE setCurrency NOTIFY currencyChanged)
     Q_PROPERTY(QString phoneNumber READ phoneNumber WRITE setPhoneNumber NOTIFY phoneNumberChanged)
     Q_PROPERTY(QString mobileNumber READ mobileNumber WRITE setMobileNumber NOTIFY mobileNumberChanged)
+    Q_PROPERTY(int deviceType READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
     Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
-
 
     explicit RisipAccountProfile(QObject *parent = 0);
     ~RisipAccountProfile();
@@ -82,6 +99,11 @@ public:
 
     QString username() const;
     void setUsername(const QString & username);
+
+    QString password() const;
+    void setPassword(const QString &password);
+
+    QString creditBalance() const;
 
     QString email() const;
     void setEmail(const QString &email);
@@ -116,6 +138,9 @@ public:
     QString mobileNumber() const;
     void setMobileNumber(const QString &mobile);
 
+    int deviceType() const;
+    void setDeviceType(int type);
+
     int status() const;
     void setStatus(int status);
 
@@ -124,6 +149,8 @@ public:
 Q_SIGNALS:
     void userIdChanged(int id);
     void usernameChanged(const QString &username);
+    void passwordChanged(const QString &password);
+    void creditBalanceChanged(const QString &balance);
     void emailChanged(const QString &email);
     void firstNameChanged(const QString &firstname);
     void lastNameChanged(const QString &lastname);
@@ -136,6 +163,7 @@ Q_SIGNALS:
     void phoneNumberChanged(const QString &phonenumber);
     void mobileNumberChanged(const QString &mobile);
     void validChanged(bool valid);
+    void deviceTypeChanged(int type);
     void statusChanged(int status);
 
 private:

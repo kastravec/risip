@@ -57,6 +57,24 @@ void RisipAccountProfile::setUsername(const QString &username)
     }
 }
 
+QString RisipAccountProfile::password() const
+{
+    return m_data->m_password;
+}
+
+void RisipAccountProfile::setPassword(const QString &password)
+{
+    if(m_data->m_password != password) {
+        m_data->m_password = password;
+        emit passwordChanged(password);
+    }
+}
+
+QString RisipAccountProfile::creditBalance() const
+{
+    return m_data->m_balance;
+}
+
 QString RisipAccountProfile::email() const
 {
     return m_data->m_email;
@@ -197,6 +215,19 @@ void RisipAccountProfile::setMobileNumber(const QString &mobile)
     if(m_data->m_mobileNumber != mobile) {
         m_data->m_mobileNumber = mobile;
         emit mobileNumberChanged(mobile);
+    }
+}
+
+int RisipAccountProfile::deviceType() const
+{
+    return m_data->m_deviceType;
+}
+
+void RisipAccountProfile::setDeviceType(int type)
+{
+    if(m_data->m_deviceType != type) {
+        m_data->m_deviceType = type;
+        emit deviceTypeChanged(type);
     }
 }
 

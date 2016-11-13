@@ -37,7 +37,7 @@ ApplicationWindow {
     property RisipEndpoint sipEndpoint: Risip.sipEndpoint
     property RisipAccount sipAccount: Risip.defaultAccount
 
-    Component.onCompleted: { /*Risip.resetSettings();*/ sipEndpoint.start();  }
+    Component.onCompleted: { sipEndpoint.start(); RisipGeoPositionProvider.start();  }
     Component.onDestruction: { sipEndpoint.stop(); }
 
     header: ToolBar {
@@ -177,6 +177,14 @@ ApplicationWindow {
         onCanceled: {
             addSipServicePageLoader.active = false;
             loginPageLoader.visible = true;
+        }
+    }
+
+    Connections {
+        target: RisipGeoPositionProvider
+
+        onCountryCodeChanged: {
+            console.log("COUNTRY CODE: " + RisipGeoPositionProvider.countryCode);
         }
     }
 }

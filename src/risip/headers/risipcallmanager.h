@@ -28,6 +28,7 @@ class RisipAccount;
 class RisipBuddy;
 class RisipCall;
 class RisipCallHistoryModel;
+class RisipPhoneNumber;
 
 class RisipCallManager : public QObject
 {
@@ -53,9 +54,10 @@ public:
     QQmlListProperty<QAbstractItemModel> callHistoryModels();
 
     Q_INVOKABLE QAbstractItemModel *callHistoryModelForAccount(const QString &account) const;
-    Q_INVOKABLE void callSIPContact(const QString uri);
-    Q_INVOKABLE void callBuddy(RisipBuddy *buddy);
-    Q_INVOKABLE void callPhone(const QString &number);
+    Q_INVOKABLE RisipCall *callSIPContact(const QString uri);
+    Q_INVOKABLE RisipCall *callBuddy(RisipBuddy *buddy);
+    Q_INVOKABLE RisipCall *callPhone(const QString &number);
+    Q_INVOKABLE RisipCall *callRisipPhoneNumber(RisipPhoneNumber *number);
 
     void createModelsForAccount(RisipAccount *account);
     void removeModelsForAccount(const RisipAccount *account);

@@ -24,27 +24,49 @@
 #include <QObject>
 
 class RisipAccountProfile;
+class RisipAccount;
 
-class MorApi : public QObject
+class RisipMorApi : public QObject
 {
     Q_OBJECT
 public:
+    enum Status {
+        Ready = 202,
+        Error = 504
+    };
 
     enum ApiError {
         ErrorResponse
     };
 
     Q_ENUM(ApiError)
+    Q_PROPERTY(int status READ status NOTIFY statusChanged)
 
-    explicit MorApi(QObject *parent = 0);
-    ~MorApi();
+    static RisipMorApi *instance();
+    ~RisipMorApi();
+
+    int status() const;
 
     Q_INVOKABLE RisipAccountProfile *getUserProfile(const QString &username);
+    Q_INVOKABLE void registerAccount(RisipAccountProfile *profile);
+    Q_INVOKABLE void getUserBalance(const QString &username);
+    Q_INVOKABLE void getUserBalance(RisipAccountProfile *profile);
 
 Q_SIGNALS:
+    void statusChanged(int status);
+    void accountRegistered(RisipAccount *account);
+
+private Q_SLOTS:
+    void accountRegstrationHandler(const QByteArray &data);
+    void accountRegistrationError(int errorCode);
+    void userBalanceUpdateHandler(const QByteArray &data);
+    void userBalanceUpdateError(int errorCode);
 
 private:
+    explicit RisipMorApi(QObject *parent = 0);
 
+    static RisipMorApi *m_instance;
+    int m_status;
 };
 
 #endif // MORAPI_H

@@ -25,6 +25,6 @@ DialPageForm {
     id: dialPage
 
     callButton.onClicked: {
-        RisipCallManager.callContact(contactInput.text);
+        RisipCallManager.callSIPContact(contactInput.text);
     }
 }

@@ -34,6 +34,7 @@ RisipMedia::RisipMedia(QObject *parent)
     ,m_sipEndpoint(NULL)
     ,m_keepMediaSettings(true)
     ,m_error()
+    ,m_loudSpeaker(false)
 {
 }
 
@@ -162,14 +163,22 @@ void RisipMedia::setMicVolume(qlonglong volume)
             && (0.0 <= volume >= 1.0) )
         return;
 
-    qDebug() <<" MIC VOLUME: " << m_localAudioMedia->getTxLevel() <<m_callAudio->getTxLevel()
-            <<m_callAudio->getRxLevel();
-
-    if(m_activeCall->pjsipCall()->isActive()
-            && m_localAudioMedia->getTxLevel() != volume) {
-        qDebug() <<"SETTING MIC VOLUME: " << volume;
-        m_callAudio->adjustTxLevel(volume);
+    if(m_activeCall->pjsipCall()->isActive()) {
+        m_localAudioMedia->adjustTxLevel(volume);
         emit micVolumeChanged(volume);
+    }
+}
+
+bool RisipMedia::loudSpeaker() const
+{
+    return m_loudSpeaker;
+}
+
+void RisipMedia::setLoudSpeaker(bool loudspeaker)
+{
+    if(m_loudSpeaker != loudspeaker) {
+        m_loudSpeaker = loudspeaker;
+        emit loudSpeakerChanged(m_loudSpeaker);
     }
 }
 

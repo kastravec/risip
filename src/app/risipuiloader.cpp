@@ -47,7 +47,7 @@ void UiLoader::start()
     if(!m_qmlEngine)
         m_qmlEngine = new QQmlApplicationEngine(this);
 
-    QQuickStyle::setStyle("Material");
+//    QQuickStyle::setStyle("Material");
 
     qmlRegisterSingletonType<ApplicationSettings>("Application", 1, 0, "ApplicationSettings", applicationSingletonProvider);
 

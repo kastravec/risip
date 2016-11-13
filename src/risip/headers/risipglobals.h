@@ -21,38 +21,17 @@
 #ifndef RISIPGLOBALS_H
 #define RISIPGLOBALS_H
 
-//#include <QtCore/qglobal.h>
-//#if defined(QSYNC_LIBRARY)
-//#  define QSYNC_EXPORT Q_DECL_EXPORT
-//#else
-//#  define QSYNC_EXPORT Q_DECL_IMPORT
-//#endif
-
 #include <QString>
-
-struct RisipGlobals {
-
-    enum Currencies {
-        EUR = 1,
-        USD,
-        LEK,
-        Unknown = 1
-    };
-
-    static QString formatToSip(const QString &contact, const QString &server);
-};
+#include <QRunnable>
 
 struct RisipCurrencies {
 };
 
 struct RisipSettingsParam {
-
     static const char *QmlUri;
-
     static const QString FirstRun;
     static const QString DefaultAccount;
     static const QString AutoSignIn;
-
     static const QString AccountGroup;
     static const QString TotalAccounts;
     static const QString Uri;
@@ -64,6 +43,38 @@ struct RisipSettingsParam {
     static const QString ProxyServer;
     static const QString LocalPort;
     static const QString RandomLocalPort;
+};
+
+struct Country {
+    Country(const QString &id = QString(), const QString &name = QString(),
+            const QString &code = QString(), const QString &prefix = QString());
+    Country(const Country &country);
+
+    Country &operator=(const Country &country);
+    bool operator!=(const Country &country);
+    bool operator==(const Country &country);
+
+    QString countryId;
+    QString name;
+    QString code;
+    QString prefix;
+};
+
+struct RisipGlobals {
+    RisipGlobals();
+
+    static QString formatToSip(const QString &contact, const QString &server);
+    static QList<Country> countries();
+    static const Country &country(const QString &code);
+    static void initializeCountries();
+    static bool countriesInitialized();
+
+private:
+    static QHash<QString, Country> m_allCountries;
+    static bool m_countriesIntialized;
+    static void setCountryList(QHash<QString, Country> countryList);
+
+    friend class RisipConfigisLoader;
 };
 
 #endif // RISIPGLOBALS_H

@@ -21,6 +21,7 @@
 
 RisipPhoneNumber::RisipPhoneNumber(const QString &rawNumber, QObject *parent)
     :QObject(parent)
+    ,m_phoneContact(NULL)
     ,m_rawNumber()
     ,m_countryPrefix()
     ,m_nationalPrefix()
@@ -33,6 +34,23 @@ RisipPhoneNumber::RisipPhoneNumber(const QString &rawNumber, QObject *parent)
 
 RisipPhoneNumber::~RisipPhoneNumber()
 {
+}
+
+RisipPhoneContact *RisipPhoneNumber::phoneContact() const
+{
+    return m_phoneContact;
+}
+
+void RisipPhoneNumber::setPhoneContact(RisipPhoneContact *contact)
+{
+    if(m_phoneContact != contact) {
+        m_phoneContact = contact;
+
+        if(m_phoneContact)
+            m_phoneContact->addPhoneNumber(this);
+
+        emit phoneContactChanged(m_phoneContact);
+    }
 }
 
 QString RisipPhoneNumber::rawNumber() const
