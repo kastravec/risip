@@ -27,6 +27,8 @@
 #include "risipcallmanager.h"
 #include "risipphonecontact.h"
 
+#include <QCoreApplication>
+
 #include <QDebug>
 
 PjsipCall::PjsipCall(PjsipAccount &account, int callId)
@@ -271,24 +273,6 @@ void RisipCall::setMedia(RisipMedia *med)
     }
 }
 
-void RisipCall::setError(const Error &error)
-{
-    qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
-
-    if(m_error.status != error.status) {
-
-        m_error.status = error.status;
-        m_error.reason = error.reason;
-        m_error.srcFile = error.srcFile;
-        m_error.srcLine = error.srcLine;
-        m_error.title = error.title;
-
-        emit errorCodeChanged(m_error.status);
-        emit errorMessageChanged(QString::fromStdString(m_error.reason));
-        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
-    }
-}
-
 int RisipCall::callId() const
 {
     if(m_pjsipCall)
@@ -480,6 +464,8 @@ void RisipCall::hangup()
     if(m_pjsipCall == NULL
             || !m_pjsipCall->isActive()) {
         qDebug()<<"no call exists/active";
+
+        emit statusChanged(status());
         return;
     }
 
@@ -490,6 +476,7 @@ void RisipCall::hangup()
         setError(err);
     }
 
+    emit statusChanged(status());
     RisipCallManager::instance()->setActiveCall(NULL);
 }
 
@@ -515,7 +502,7 @@ void RisipCall::call()
     CallOpParam prm(true);
 
     QString callee;
-    if(m_callType == Gsm && m_phoneNumber)
+    if(m_callType == Pstn && m_phoneNumber)
         callee = m_phoneNumber->fullNumber();
     else if(m_callType == Voip && m_buddy)
         callee = m_buddy->uri();
@@ -580,5 +567,23 @@ void RisipCall::initiateIncomingCall()
         setPjsipCall(m_account->incomingPjsipCall());
         createTimestamp();
         setCallDirection(RisipCall::Incoming);
+    }
+}
+
+void RisipCall::setError(const Error &error)
+{
+    if(m_error.status != error.status) {
+        qWarning()<<" ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
+
+        m_error.status = error.status;
+        m_error.reason = error.reason;
+        m_error.srcFile = error.srcFile;
+        m_error.srcLine = error.srcLine;
+        m_error.title = error.title;
+
+        emit errorCodeChanged(m_error.status);
+        emit errorMessageChanged(QString::fromStdString(m_error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
+        QCoreApplication::processEvents();
     }
 }

@@ -3,5 +3,23 @@
         <file>images/calling.jpeg</file>
         <file>images/businessman-calling-phone.jpg</file>
         <file>images/multiscreen.png</file>
+        <file>images/icons/24/Conference.png</file>
+        <file>images/icons/32/Conference.png</file>
+        <file>images/icons/32/Message.png</file>
+        <file>images/icons/32/Phone.png</file>
+        <file>images/icons/32/Settings.png</file>
+        <file>images/icons/32/PhoneBook.png</file>
+        <file>images/icons/16/ArrowLeftRedx4.png</file>
+        <file>images/icons/16/ArrowRightRedx4.png</file>
+        <file>images/icons/24/SettingsBlack.png</file>
+        <file>images/icons/24/PhoneBookBlack.png</file>
+        <file>images/icons/24/PhoneBlack.png</file>
+        <file>images/icons/24/MessageBlack.png</file>
+        <file>images/icons/24/MessageRed.png</file>
+        <file>images/icons/24/SettingsRed.png</file>
+        <file>images/icons/24/PhoneBookRed.png</file>
+        <file>images/icons/24/PhoneRed.png</file>
+        <file>images/icons/32/MicrophoneBlack.png</file>
+        <file>images/icons/32/MicrophoneRed.png</file>
     </qresource>
 </RCC>

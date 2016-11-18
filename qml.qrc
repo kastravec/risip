@@ -5,26 +5,33 @@
         <file>ui/base/MainWindow.qml</file>
         <file>ui/base/Main.qml</file>
         <file>ui/desktop/Main.qml</file>
-        <file>ui/base/CallHistoryListView.qml</file>
-        <file>ui/base/CallHistoryListViewDelegate.qml</file>
-        <file>ui/base/LoginPage.qml</file>
-        <file>ui/base/LoginPageForm.ui.qml</file>
-        <file>ui/base/AddSipServicePage.qml</file>
-        <file>ui/base/AddSipServicePageForm.ui.qml</file>
         <file>ui/base/TechnicalProblemPage.qml</file>
         <file>ui/base/TechnicalProblemPageForm.ui.qml</file>
         <file>ui/base/HomePage.qml</file>
-        <file>ui/base/HomePageForm.ui.qml</file>
-        <file>ui/base/ContactsPage.qml</file>
-        <file>ui/base/ContactsPageForm.ui.qml</file>
         <file>ui/base/WelcomeScreen.qml</file>
-        <file>ui/base/DialPage.qml</file>
-        <file>ui/base/DialPageForm.ui.qml</file>
-        <file>ui/base/SettingsPageForm.ui.qml</file>
-        <file>ui/base/SettingsPage.qml</file>
-        <file>ui/base/CallPage.qml</file>
-        <file>ui/base/CallPageForm.ui.qml</file>
         <file>ui/base/PageLoader.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>ui/base/MainTabBar.qml</file>
+        <file>ui/base/MainToolBar.qml</file>
+        <file>ui/base/settingspages/ProfileSettingsPage.qml</file>
+        <file>ui/base/settingspages/SettingsPage.qml</file>
+        <file>ui/base/settingspages/BalanceSettingsPage.qml</file>
+        <file>ui/base/settingspages/GenericSettingsPage.qml</file>
+        <file>ui/base/settingspages/LanguageSettingsPage.qml</file>
+        <file>ui/base/contactpages/ContactsPageForm.ui.qml</file>
+        <file>ui/base/contactpages/ContactsPage.qml</file>
+        <file>ui/base/callpages/DialPage.qml</file>
+        <file>ui/base/callpages/CallPageForm.ui.qml</file>
+        <file>ui/base/callpages/CallPage.qml</file>
+        <file>ui/base/callpages/DialPageForm.ui.qml</file>
+        <file>ui/base/accountpages/LoginPageForm.ui.qml</file>
+        <file>ui/base/accountpages/AddSipServicePage.qml</file>
+        <file>ui/base/accountpages/LoginPage.qml</file>
+        <file>ui/base/callpages/CallHistoryListView.qml</file>
+        <file>ui/base/callpages/CallHistoryListViewDelegate.qml</file>
+        <file>ui/base/risipcomponents/RisipButton.qml</file>
+        <file>ui/base/contactpages/PhoneContactListView.qml</file>
+        <file>ui/base/contactpages/ContactPage.qml</file>
+        <file>ui/base/accountpages/AddSipServicePageForm.qml</file>
     </qresource>
 </RCC>

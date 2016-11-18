@@ -110,6 +110,7 @@ Q_SIGNALS:
     void validChanged(bool valid);
 
 private:
+    void setError(const Error &error);
     PjsipBuddy *pjsipBuddy() const;
     void setPjsipBuddy(PjsipBuddy *buddy);
 
@@ -118,6 +119,7 @@ private:
     BuddyConfig m_buddyConfig;
     QString m_contact;
     int m_type;
+    Error m_error;
 
     friend class RisipAccount;
 };

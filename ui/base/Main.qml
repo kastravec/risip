@@ -80,14 +80,9 @@ Item {
     //the Home page.
     Connections {
         target: welcomeScreenLoader.item
-
         onEnterClicked: {
             welcomeScreenLoader.active = false;
-            if(Risip.defaultAccount.status === RisipAccount.SignedIn)
-                mainWindowLoader.item.visible = true;
-            else {
-                mainWindowLoader.item.visible = true;
-            }
+            mainWindowLoader.item.visible = true;
         }
     }
 }

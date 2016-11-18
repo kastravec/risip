@@ -18,6 +18,9 @@
 **
 ************************************************************************************/
 #include "risipphonecontact.h"
+#include "risipmodels.h"
+
+#include <QDebug>
 
 RisipPhoneNumber::RisipPhoneNumber(const QString &rawNumber, QObject *parent)
     :QObject(parent)
@@ -110,7 +113,7 @@ QString RisipPhoneNumber::number() const
 
 QString RisipPhoneNumber::fullNumber() const
 {
-    return m_countryPrefix + m_nationalPrefix + m_number;
+    return m_rawNumber; //m_countryPrefix + m_nationalPrefix + m_number;
 }
 
 QString RisipPhoneNumber::countryCode() const
@@ -178,8 +181,9 @@ RisipPhoneContact::RisipPhoneContact(QObject *parent)
     ,m_fullName()
     ,m_email()
     ,m_phoneNumbers()
+    ,m_phoneNumbersModel(new RisipPhoneNumbersModel(this))
 {
-
+    m_phoneNumbersModel->setPhoneContact(this);
 }
 
 RisipPhoneContact::~RisipPhoneContact()
@@ -225,6 +229,11 @@ void RisipPhoneContact::setEmail(const QString &email)
     }
 }
 
+RisipPhoneNumbersModel *RisipPhoneContact::phoneNumbersModel() const
+{
+    return m_phoneNumbersModel;
+}
+
 QQmlListProperty<RisipPhoneNumber> RisipPhoneContact::phoneNumbers()
 {
     QList<RisipPhoneNumber *> numbers = m_phoneNumbers.values();
@@ -247,8 +256,8 @@ void RisipPhoneContact::addPhoneNumber(const QString &number, const QString &lab
 void RisipPhoneContact::addPhoneNumber(RisipPhoneNumber *number)
 {
     if(number) {
-    if(!m_phoneNumbers.contains(number->fullNumber()))
-        m_phoneNumbers[number->fullNumber()] = number;
+        if(!m_phoneNumbers.contains(number->fullNumber()))
+            m_phoneNumbers[number->fullNumber()] = number;
     }
 }
 

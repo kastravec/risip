@@ -65,7 +65,8 @@ HEADERS += src/risip/headers/risip.h \
     src/app/applicationsettings.h \
     src/utils/httpnetworkrequest.h \
     src/risip/headers/risipgeopositionprovider.h \
-    src/sipregistrars/mor/risipmorapi.h
+    src/sipregistrars/mor/risipmorapi.h \
+    src/risip/ios/risipioswifiprovider.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {
@@ -257,4 +258,8 @@ DISTFILES += \
     README \
     utils/runOnMac.sh \
     LICENSE.GPLv3 \
-    LICENSE.HEADER.GPLv3
+    LICENSE.HEADER.GPLv3 \
+    risip_backlog
+
+OBJECTIVE_SOURCES += \
+    src/risip/ios/risipioswifiprovider.mm

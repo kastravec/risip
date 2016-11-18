@@ -28,6 +28,7 @@ class RisipAccount;
 class RisipBuddy;
 class RisipCall;
 class RisipPhoneContact;
+class RisipPhoneNumber;
 
 class RisipAbstractBuddyModel: public QAbstractListModel
 {
@@ -53,10 +54,10 @@ public:
     void setProxy(QSortFilterProxyModel *proxy);
 
     // Basic functionality:
-    QHash<int, QByteArray> roleNames() const override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual void addBuddy(RisipBuddy *buddy);
     virtual void removeBuddy(RisipBuddy *buddy);
 
@@ -110,9 +111,9 @@ public:
     void setProxy(QSortFilterProxyModel *proxy);
 
     // Basic functionality:
-    QHash<int, QByteArray> roleNames() const override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     void addCallRecord(RisipCall *call);
     void removeCallRecord(RisipCall *call);
@@ -131,15 +132,14 @@ class RisipPhoneContactsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-
     enum RisipPhoneContactDataRole {
         ContactId = Qt::UserRole + 1,
         FullName,
-        PhoneNumbers
+        Initials,
+        PhoneNumberList
     };
 
     Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
-    Q_PROPERTY(QQmlListProperty<RisipPhoneContact> phoneContacts READ phoneContacts)
 
     RisipPhoneContactsModel(QObject *parent = NULL);
     ~RisipPhoneContactsModel();
@@ -147,13 +147,9 @@ public:
     QSortFilterProxyModel *proxy() const;
     void setProxy(QSortFilterProxyModel *proxy);
 
-    QQmlListProperty<RisipPhoneContact> phoneContacts();
-    QList<RisipPhoneContact *> phoneContactList() const;
-
-    QHash<int, QByteArray> roleNames() const override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
 public Q_SLOTS:
     void addContact(RisipPhoneContact *contact);
@@ -165,5 +161,36 @@ Q_SIGNALS:
 private:
     QList<RisipPhoneContact *> m_phoneContacts;
     QSortFilterProxyModel *m_proxy;
+};
+
+class RisipPhoneNumbersModel : public QAbstractListModel
+{
+    Q_OBJECT
+public:
+    enum RisipPhoneNumbersModelDataRole {
+        FullNumber = Qt::UserRole + 1,
+        CountryPrefix,
+        RegionPrefix,
+        Number,
+        RawNumber
+    };
+
+    Q_PROPERTY(RisipPhoneContact * phoneContact READ phoneContact WRITE setPhoneContact NOTIFY phoneContactChanged)
+
+    RisipPhoneNumbersModel(QObject *parent = 0);
+    ~RisipPhoneNumbersModel();
+
+    RisipPhoneContact *phoneContact() const;
+    void setPhoneContact(RisipPhoneContact *contact);
+
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+Q_SIGNALS:
+    void phoneContactChanged(RisipPhoneContact *contact);
+
+private:
+    RisipPhoneContact *m_phoneContact;
 };
 #endif // RISIPBUDDYMODELS_H

@@ -97,8 +97,12 @@
         label = [CNLabeledValue localizedStringForLabel:label];
         NSString* number = [[object value] stringValue];
 
-        if (label && number)
-            risipPhoneContact->addPhoneNumber(QString::fromNSString(number), QString::fromNSString(label));
+        if (number) {
+            if(label)
+                risipPhoneContact->addPhoneNumber(QString::fromNSString(number), QString::fromNSString(label));
+            else
+                risipPhoneContact->addPhoneNumber(QString::fromNSString(number));
+        }
     }
 
     //NOTE Emit contact data to recieve it on the Qt thread.

@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QQmlListProperty>
 class RisipPhoneContact;
+class RisipPhoneNumbersModel;
 
 class RisipPhoneNumber : public QObject
 {
@@ -89,7 +90,8 @@ public:
     Q_PROPERTY(int contactId READ contactId NOTIFY contactIdChanged)
     Q_PROPERTY(QString fullName READ fullName NOTIFY fullNameChanged)
     Q_PROPERTY(QString email READ email NOTIFY emailChanged)
-    Q_PROPERTY(QQmlListProperty<RisipPhoneNumber> phoneNumbers READ phoneNumbers NOTIFY phoneNumbersChanged)
+    Q_PROPERTY(RisipPhoneNumbersModel * phoneNumbersModel READ phoneNumbersModel NOTIFY phoneNumbersModelChanged)
+    Q_PROPERTY(QQmlListProperty<RisipPhoneNumber> phoneNumbers READ phoneNumbers CONSTANT)
 
     explicit RisipPhoneContact(QObject *parent = 0);
     ~RisipPhoneContact();
@@ -103,6 +105,8 @@ public:
     QString email() const;
     void setEmail(const QString &email);
 
+    RisipPhoneNumbersModel *phoneNumbersModel() const;
+
     QQmlListProperty<RisipPhoneNumber> phoneNumbers();
     QList<RisipPhoneNumber *> phoneNumberList() const;
     void addPhoneNumber(const QString &number, const QString &label = QString());
@@ -113,6 +117,7 @@ Q_SIGNALS:
     void contactIdChanged(int id);
     void fullNameChanged(const QString &name);
     void emailChanged(const QString &email);
+    void phoneNumbersModelChanged(RisipPhoneNumbersModel *phoneNumbersModel);
     void phoneNumbersChanged(const QStringList &numbers);
 
 private:
@@ -120,6 +125,7 @@ private:
     QString m_fullName;
     QString m_email;
     QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
+    RisipPhoneNumbersModel *m_phoneNumbersModel;
 };
 
 #endif // RISIPPHONECONTACT_H

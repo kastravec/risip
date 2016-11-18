@@ -76,25 +76,7 @@ void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
             } catch (Error &err) {
                 setError(err);
             }
-
-
             m_audioDevice = &m_pjsipAudioManager->getPlaybackDevMedia();
-
-            //TODO better place where to adjust these media device settings
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_VOLUME_SETTING, 0, true);
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_OUTPUT_VOLUME_SETTING, 0, true);
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_ROUTE, 0, true);
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_OUTPUT_ROUTE, 0, true);
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_ROUTE, 0, true);
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_INPUT_SIGNAL_METER, 0, true);
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_OUTPUT_SIGNAL_METER, 0, true);
-//            pjsua_snd_set_setting(PJMEDIA_AUD_DEV_CAP_EC, 0, true);
-
-//            AudioDevInfoVector audioInfos = m_pjsipMediaManager->enumDev();
-//            for(int i=0; i<audioInfos.size(); ++i) {
-//                qDebug()<<"Audio device info" << QString::fromStdString(audioInfos[i]->name)
-//                       << "Audio caps: " << audioInfos[i]->caps;
-//            }
         }
     }
 }
@@ -178,6 +160,18 @@ void RisipMedia::setLoudSpeaker(bool loudspeaker)
 {
     if(m_loudSpeaker != loudspeaker) {
         m_loudSpeaker = loudspeaker;
+
+        if(m_sipEndpoint && m_activeCall->pjsipCall()->isActive()) {
+            try {
+                if(loudspeaker)
+                    m_pjsipAudioManager->setOutputRoute(PJMEDIA_AUD_DEV_ROUTE_LOUDSPEAKER);
+                else
+                    m_pjsipAudioManager->setOutputRoute(PJMEDIA_AUD_DEV_ROUTE_DEFAULT);
+            } catch (Error &err) {
+                setError(err);
+            }
+        }
+
         emit loudSpeakerChanged(m_loudSpeaker);
     }
 }

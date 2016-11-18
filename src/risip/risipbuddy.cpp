@@ -58,6 +58,7 @@ RisipBuddy::RisipBuddy(QObject *parent)
     ,m_account(NULL)
     ,m_contact()
     ,m_type(Internal)
+    ,m_error()
 {
     //always subscribe to the buddy presence
     m_buddyConfig.subscribe = true;
@@ -185,7 +186,7 @@ void RisipBuddy::create()
         try {
             m_pjsipBuddy->create(*m_account->pjsipAccount(), m_buddyConfig);
         } catch (Error &err) {
-            qDebug()<<"Error creating/adding this buddy: " <<uri() << QString::fromStdString(err.info(true));
+            setError(err);
         }
     }
 }
@@ -241,6 +242,24 @@ void RisipBuddy::sendInstantMessage(RisipMessage *message)
         } catch (Error &err) {
             qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
         }
+    }
+}
+
+void RisipBuddy::setError(const Error &error)
+{
+    qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
+
+    if(m_error.status != error.status) {
+
+        m_error.status = error.status;
+        m_error.reason = error.reason;
+        m_error.srcFile = error.srcFile;
+        m_error.srcLine = error.srcLine;
+        m_error.title = error.title;
+
+//        emit errorCodeChanged(m_error.status);
+//        emit errorMessageChanged(QString::fromStdString(m_error.reason));
+//        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
     }
 }
 

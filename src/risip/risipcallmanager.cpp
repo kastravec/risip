@@ -146,10 +146,10 @@ RisipCall *RisipCallManager::activeCall()
     return m_activeCall;
 }
 
-RisipCall *RisipCallManager::callSIPContact(const QString contact)
+RisipCall *RisipCallManager::callSIPContact(const QString &contact)
 {
     RisipBuddy *buddy = m_activeAccount->findBuddy(
-                RisipGlobals::formatToSip(contact, m_activeAccount->configuration()->uri()));
+                RisipGlobals::formatToSip(contact, m_activeAccount->configuration()->serverAddress()));
     if(buddy == NULL) {
         buddy = new RisipBuddy(this);
         buddy->setAccount(activeAccount());
@@ -166,6 +166,9 @@ RisipCall *RisipCallManager::callSIPContact(const QString contact)
  */
 RisipCall *RisipCallManager::callBuddy(RisipBuddy *buddy)
 {
+    if(!buddy)
+        return NULL;
+
     RisipCall *call = new RisipCall(this);
     call->setBuddy(buddy);
     call->setAccount(m_activeAccount);
@@ -187,7 +190,16 @@ RisipCall *RisipCallManager::callPhone(const QString &number)
 
 RisipCall *RisipCallManager::callRisipPhoneNumber(RisipPhoneNumber *number)
 {
-    qDebug()<<"calling phones is not implemented";
+    if(!number)
+        return NULL;
+
+    QString numberString = number->rawNumber().simplified();
+    numberString.replace(" ", "");
+
+    qDebug()<<"CALLING PHONE : number is valid? :" <<number->valid()
+           << "NUMBER: " << numberString.remove("+");
+
+    return callSIPContact(numberString.remove("+"));
 }
 
 /**

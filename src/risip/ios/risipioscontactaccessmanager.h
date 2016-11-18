@@ -30,7 +30,6 @@ class RisipiOSContactAcessManager : public QObject
     Q_OBJECT
 public:
     explicit RisipiOSContactAcessManager(QObject *parent = 0);
-
     void fetchContactsFromDevice();
 
 Q_SIGNALS:

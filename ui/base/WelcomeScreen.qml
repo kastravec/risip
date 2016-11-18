@@ -20,9 +20,18 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.2
+import QtQuick.Controls.Material 2.0
+
+import "risipcomponents"
 
 Window {
     id: root
+
+    Material.theme: Material.Light
+    Material.background: "#FFFFFF"
+    Material.accent: "#DB0000"
+    Material.foreground: "#000000"
+    Material.primary: "#FFFFFF"
 
     width: 720
     height: 1280
@@ -45,17 +54,6 @@ Window {
                 fillMode: Image.PreserveAspectCrop
                 anchors.fill: parent
                 source: "qrc:/images/businessman-calling-phone.jpg"
-
-                Button {
-                    id: nextButton1
-                    text: qsTr("Next")
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 15
-                    anchors.right: parent.right
-                    anchors.rightMargin: 15
-
-                    onClicked: swipeView.currentIndex = swipeView.currentIndex +1
-                }
             }
         }
 
@@ -67,17 +65,6 @@ Window {
                 fillMode: Image.PreserveAspectCrop
                 anchors.fill: parent
                 source: "qrc:/images/multiscreen.png"
-
-                Button {
-                    id: nextButton2
-                    text: qsTr("Next")
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 15
-                    anchors.right: parent.right
-                    anchors.rightMargin: 15
-
-                    onClicked: swipeView.currentIndex = swipeView.currentIndex +1
-                }
             }
         }
 
@@ -92,24 +79,13 @@ Window {
                 fillMode: Image.PreserveAspectCrop
                 anchors.fill: parent
                 source: "qrc:/images/calling.jpeg"
-
-                Button {
-                    id: nextButton3
-                    text: qsTr("Next")
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 15
-                    anchors.right: parent.right
-                    anchors.rightMargin: 15
-
-                    onClicked: swipeView.currentIndex = swipeView.currentIndex -2
-                }
             }
         }
     }
 
     PageIndicator {
         id: pageIndicator
-        anchors.topMargin: 5
+        anchors.topMargin: 10
         anchors.top: swipeView.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         currentIndex: swipeView.currentIndex
@@ -118,15 +94,14 @@ Window {
         interactive: true
     }
 
-    Button {
+    RisipButton {
         id: enterButton
-        text: qsTr("Enter")
+        labelText.text: qsTr("Let's start")
+
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: 50
         anchors.bottom: parent.bottom
 
-        onClicked: {
-            root.enterClicked();
-        }
+        onClicked: { root.enterClicked(); }
     }
 }

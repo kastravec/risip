@@ -18,26 +18,28 @@
 ************************************************************************************/
 
 import QtQuick 2.7
-import Risip 1.0
+import QtQuick.Controls 2.0
 
-HomePageForm {
+Page {
     id: root
-
-    property RisipAccount sipAccount: Risip.defaultAccount
-    signal signedOut
-
-    callHistoryListview.model: RisipCallManager.activeCallHistoryModel
-    statusLabel.text: sipAccount.statusText
-    userNameLabel.text: sipAccount.configuration.userName
-
-    signOutButton.onClicked: { sipAccount.logout(); }
-
-    Connections {
-        target: sipAccount
-
-        onStatusChanged: {
-            if(sipAccount.status === RisipAccount.SignedOut)
-                root.signedOut();
-        }
-    }
 }
+
+//- Account
+//  - View customer type (there will be different types)
+//  -username / password
+//  -email
+//  -picture
+
+//- Balance
+//        - Balance page
+//          -View/refresh balance
+//          -Add credits - provide list of options
+
+//- Language
+//- Rates
+//- Earn Credits
+
+//- Help
+//- About
+
+//-Sign out

@@ -23,6 +23,11 @@ import QtQuick.Window 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.0
 
+import "settingspages"
+import "callpages"
+import "contactpages"
+import "accountpages"
+
 import Risip 1.0
 
 ApplicationWindow {
@@ -33,6 +38,12 @@ ApplicationWindow {
     visibility: Window.AutomaticVisibility
     visible: false
 
+    Material.theme: Material.Light
+    Material.background: "#FFFFFF"
+    Material.accent: "#db0000" //"#DB5AB9"
+    Material.foreground: "#000000"
+    Material.primary: "#FFFFFF"
+
     property string uiBasePath: "qrc:/ui/base/"
     property RisipEndpoint sipEndpoint: Risip.sipEndpoint
     property RisipAccount sipAccount: Risip.defaultAccount
@@ -40,27 +51,8 @@ ApplicationWindow {
     Component.onCompleted: { sipEndpoint.start(); RisipGeoPositionProvider.start();  }
     Component.onDestruction: { sipEndpoint.stop(); }
 
-    header: ToolBar {
-        id: mainToolBar
-
-        RowLayout {
-            anchors.fill: parent
-
-            Label {
-                text: qsTr(" Risip")
-                Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
-            }
-        }
-    }
-
-    footer: TabBar {
-        id: mainTabBar
-        currentIndex: 1
-        TabButton { text: qsTr("Contacts") }
-        TabButton { text: qsTr("Home") }
-        TabButton { text: qsTr("Dial") }
-        TabButton { text: qsTr("Settings") }
-    }
+    header: MainToolBar { id: mainToolBar }
+    footer: MainTabBar { id: mainTabBar }
 
     StackLayout {
         id: stackLayout
@@ -69,7 +61,13 @@ ApplicationWindow {
 
         PageLoader {
             id: contactsPageLoader
-            source: uiBasePath + "ContactsPage.qml"
+            source: uiBasePath + "/contactpages/" + "ContactsPage.qml"
+            active: true
+        }
+
+        PageLoader {
+            id: dialPageLoader
+            source: uiBasePath + "/callpages/" + "DialPage.qml"
             active: true
         }
 
@@ -80,28 +78,15 @@ ApplicationWindow {
         }
 
         PageLoader {
-            id: dialPageLoader
-            source: uiBasePath + "DialPage.qml"
-            active: true
-        }
-
-        PageLoader {
             id: settingsPageLoader
-            source: uiBasePath + "SettingsPage.qml"
+            source: uiBasePath + "/settingspages/" + "SettingsPage.qml"
             active: true
         }
-    }
-
-    //TODO ?
-    PageLoader {
-        id: addSipServicePageLoader
-        source: uiBasePath + "AddSipServicePage.qml"
-        active: false
     }
 
     PageLoader {
         id: loginPageLoader
-        source: uiBasePath + "LoginPage.qml"
+        source: uiBasePath + "/accountpages/" + "LoginPage.qml"
         active: true
         visible: false
     }
@@ -114,17 +99,23 @@ ApplicationWindow {
     RisipBuddy {
         id: buddy
         uri: "<sip:toptop@sip2sip.info>"
+        onPresenceChanged: {
+            console.log("BUDDY TOPTOP PRESENCE: " + presence);
+        }
     }
 
     RisipBuddy {
         id: buddy2
         uri: "<sip:topatop@sip2sip.info>"
+        onPresenceChanged: {
+            console.log("BUDDY TOPATOP PRESENCE: " + presence);
+        }
     }
 
     onVisibleChanged: {
-        if(Risip.defaultAccount.status != RisipAccount.SignedIn) {
+        if(Risip.defaultAccount.status !== RisipAccount.SignedIn) {
             loginPageLoader.visible = true;
-            mainWindowLoader.item.footer.enabled = false;
+            mainTabBar.enabled = false;
         }
     }
 
@@ -135,48 +126,14 @@ ApplicationWindow {
         //handle signed in/out and errors
         onStatusChanged: {
             if(Risip.defaultAccount.status === RisipAccount.SignedIn) {
+                loginPageLoader.active = false;
+                mainWindow.footer.enabled = true;
                 sipAccount.addRisipBuddy(buddy2);
                 sipAccount.addRisipBuddy(buddy);
+            } else if(Risip.defaultAccount.status === RisipAccount.SignedOut) {
+                loginPageLoader.active = true;
+                mainWindow.footer.enabled = false;
             }
-        }
-    }
-
-    //Signal handler for Home page.
-    Connections {
-        target: homePageLoader.item
-
-        onSignedOut: {
-            loginPageLoader.active = true;
-            mainWindow.footer.enabled = false;
-        }
-    }
-
-    //Handling all signals from the Login Page
-    Connections {
-        target: loginPageLoader.item
-
-        onSignedIn: {
-            loginPageLoader.active = false;
-            mainWindow.footer.enabled = true;
-        }
-
-        onAddSipService: {
-            addSipServicePageLoader.active = true;
-            loginPageLoader.visible = false;
-        }
-    }
-
-    Connections {
-        target: addSipServicePageLoader.item
-
-        onSipAccountAdded: {
-            addSipServicePageLoader.active = false;
-            loginPageLoader.visible = true;
-        }
-
-        onCanceled: {
-            addSipServicePageLoader.active = false;
-            loginPageLoader.visible = true;
         }
     }
 

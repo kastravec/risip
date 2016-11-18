@@ -70,7 +70,7 @@ class RisipCall : public QObject
 public:
 
     enum CallType {
-        Gsm = 1,
+        Pstn = 1,
         Voip,
         Undefined = -1
     };

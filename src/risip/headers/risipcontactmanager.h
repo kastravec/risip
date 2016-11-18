@@ -21,7 +21,6 @@
 #define RISIPCONTACTMANAGER_H
 
 #include <QObject>
-#include <QAbstractItemModel>
 #include <QQmlListProperty>
 
 class RisipAccount;
@@ -36,11 +35,12 @@ class RisipContactManager : public QObject
     Q_OBJECT
 public:
     Q_PROPERTY(RisipAccount * activeAccount READ activeAccount WRITE setActiveAccount NOTIFY activeAccountChanged)
-    Q_PROPERTY(QAbstractItemModel * activeBuddiesModel READ activeBuddiesModel WRITE setActiveBuddiesModel NOTIFY activeBuddiesModelChanged)
-    Q_PROPERTY(QAbstractItemModel * activeContactHistory READ activeContactHistory WRITE setActiveContactHistory NOTIFY activeContactHistoryChanged)
-    Q_PROPERTY(QAbstractItemModel * phoneContactsModel READ phoneContactsModel NOTIFY phoneContactsModelChanged)
-    Q_PROPERTY(QQmlListProperty<QAbstractItemModel> buddyModels READ buddyModels NOTIFY buddyModelsChanged)
-    Q_PROPERTY(QQmlListProperty<QAbstractItemModel> contactHistoryModels READ contactHistoryModels NOTIFY contactHistoryModelsChanged)
+    Q_PROPERTY(RisipBuddiesModel * activeBuddiesModel READ activeBuddiesModel WRITE setActiveBuddiesModel NOTIFY activeBuddiesModelChanged)
+    Q_PROPERTY(RisipContactHistoryModel * activeContactHistory READ activeContactHistory WRITE setActiveContactHistory NOTIFY activeContactHistoryChanged)
+    Q_PROPERTY(RisipPhoneContactsModel * phoneContactsModel READ phoneContactsModel NOTIFY phoneContactsModelChanged)
+    Q_PROPERTY(QQmlListProperty<RisipBuddiesModel> buddyModels READ buddyModels NOTIFY buddyModelsChanged)
+    Q_PROPERTY(QQmlListProperty<RisipContactHistoryModel> contactHistoryModels READ contactHistoryModels NOTIFY contactHistoryModelsChanged)
+    Q_PROPERTY(QQmlListProperty<RisipPhoneContact> phoneContacts READ phoneContacts)
 
     static RisipContactManager *instance();
     ~RisipContactManager();
@@ -48,41 +48,50 @@ public:
     RisipAccount *activeAccount() const;
     void setActiveAccount(RisipAccount *activeAccount);
 
-    QAbstractItemModel *activeBuddiesModel() const;
-    QAbstractItemModel *activeContactHistory() const;
-    QAbstractItemModel *phoneContactsModel() const;
+    RisipBuddiesModel *activeBuddiesModel() const;
+    RisipContactHistoryModel *activeContactHistory() const;
+    RisipPhoneContactsModel *phoneContactsModel() const;
 
-    QQmlListProperty<QAbstractItemModel> buddyModels();
-    QQmlListProperty<QAbstractItemModel> contactHistoryModels();
+    QQmlListProperty<RisipBuddiesModel> buddyModels();
+    QQmlListProperty<RisipContactHistoryModel> contactHistoryModels();
+
+    QQmlListProperty<RisipPhoneContact> phoneContacts();
+    QList<RisipPhoneContact *> phoneContactList() const;
 
     void createModelsForAccount(RisipAccount *account);
     void removeModelsForAccount(const RisipAccount *account);
 
-    QAbstractItemModel *buddyModelForAccount(const QString &account) const;
-    QAbstractItemModel *contactHistoryModelForAccount(const QString &account) const;
+    RisipBuddiesModel *buddyModelForAccount(const QString &account) const;
+    RisipContactHistoryModel *contactHistoryModelForAccount(const QString &account) const;
 
     Q_INVOKABLE void fetchPhoneContacts();
+    Q_INVOKABLE RisipPhoneContact *contactForName(const QString &name);
 
 Q_SIGNALS:
     void activeAccountChanged(RisipAccount *activeAccount);
-    void activeBuddiesModelChanged(QAbstractItemModel *model);
-    void activeContactHistoryChanged(QAbstractItemModel *model);
+    void activeBuddiesModelChanged(RisipBuddiesModel *model);
+    void activeContactHistoryChanged(RisipContactHistoryModel *model);
     void buddyModelsChanged();
     void contactHistoryModelsChanged();
-    void phoneContactsModelChanged(QAbstractItemModel *model);
+    void phoneContactsModelChanged(RisipPhoneContactsModel *model);
+
+private Q_SLOTS:
+    void phoneContactDiscovered(RisipPhoneContact *contact);
 
 private:
     explicit RisipContactManager(QObject *parent = 0);
     static RisipContactManager *m_instance;
-    void setActiveBuddiesModel(QAbstractItemModel *model);
-    void setActiveContactHistory(QAbstractItemModel *history);
+    void setActiveBuddiesModel(RisipBuddiesModel *model);
+    void setActiveContactHistory(RisipContactHistoryModel *history);
 
     RisipAccount *m_activeAccount;
-    QHash<QString, QAbstractItemModel *> m_accountBuddyModels;
-    QHash<QString, QAbstractItemModel *> m_accountContactHistoryModels;
-    QAbstractItemModel *m_activeBuddiesModel;
-    QAbstractItemModel *m_activeContactHistoryModel;
+    QHash<QString, RisipBuddiesModel *> m_accountBuddyModels;
+    QHash<QString, RisipContactHistoryModel *> m_accountContactHistoryModels;
+    RisipBuddiesModel *m_activeBuddiesModel;
+    RisipContactHistoryModel *m_activeContactHistoryModel;
     RisipPhoneContactsModel *m_phoneContactsModel;
+
+    QHash<QString, RisipPhoneContact *> m_phoneContacts;
 
     //responsible for fetching contacts from the ios device.
 #ifdef Q_OS_IOS

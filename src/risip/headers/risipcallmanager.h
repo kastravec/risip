@@ -54,7 +54,7 @@ public:
     QQmlListProperty<QAbstractItemModel> callHistoryModels();
 
     Q_INVOKABLE QAbstractItemModel *callHistoryModelForAccount(const QString &account) const;
-    Q_INVOKABLE RisipCall *callSIPContact(const QString uri);
+    Q_INVOKABLE RisipCall *callSIPContact(const QString &contact);
     Q_INVOKABLE RisipCall *callBuddy(RisipBuddy *buddy);
     Q_INVOKABLE RisipCall *callPhone(const QString &number);
     Q_INVOKABLE RisipCall *callRisipPhoneNumber(RisipPhoneNumber *number);

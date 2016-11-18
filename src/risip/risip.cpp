@@ -248,6 +248,7 @@ void Risip::registerToQml()
     qmlRegisterType<RisipPhoneNumber>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneNumber");
     qmlRegisterType<HttpNetworkRequest>(RisipSettingsParam::QmlUri, 1, 0, "HttpNetworkRequest");
     qmlRegisterType<QSortFilterProxyModel>(RisipSettingsParam::QmlUri, 1, 0, "QSortFilterProxyModel");
+    qmlRegisterType<RisipPhoneNumbersModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneNumbersModel");
 }
 
 RisipAccount *Risip::accountForUri(const QString &accountUri)

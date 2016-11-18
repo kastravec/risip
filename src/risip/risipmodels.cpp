@@ -34,6 +34,7 @@ RisipAbstractBuddyModel::RisipAbstractBuddyModel(QObject *parent)
     ,m_proxy(new QSortFilterProxyModel(this))
 {
     m_proxy->setSourceModel(this);
+    m_proxy->setDynamicSortFilter(true);
 }
 
 RisipAbstractBuddyModel::~RisipAbstractBuddyModel()
@@ -263,6 +264,8 @@ RisipPhoneContactsModel::RisipPhoneContactsModel(QObject *parent)
     ,m_proxy(new QSortFilterProxyModel(this))
 {
     m_proxy->setSourceModel(this);
+    m_proxy->setSortRole(FullName);
+    m_proxy->setFilterRole(FullName);
 }
 
 RisipPhoneContactsModel::~RisipPhoneContactsModel()
@@ -282,22 +285,14 @@ void RisipPhoneContactsModel::setProxy(QSortFilterProxyModel *proxy)
     }
 }
 
-QQmlListProperty<RisipPhoneContact> RisipPhoneContactsModel::phoneContacts()
-{
-    return QQmlListProperty<RisipPhoneContact>(this, m_phoneContacts);
-}
-
-QList<RisipPhoneContact *> RisipPhoneContactsModel::phoneContactList() const
-{
-    return m_phoneContacts;
-}
 
 QHash<int, QByteArray> RisipPhoneContactsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[ContactId] = "contactId";
     roles[FullName] = "fullName";
-    roles[PhoneNumbers] = "phoneNumbers";
+    roles[Initials] = "initials";
+    roles[PhoneNumberList] = "phoneNumberList";
     return roles;
 }
 
@@ -327,7 +322,15 @@ QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
         return contact->contactId();
     case FullName:
         return contact->fullName();
-    case PhoneNumbers:
+    case Initials: {
+        QStringList firstLast = contact->fullName().split(" ");
+        if(firstLast.count() == 0)
+            return QString(".");
+        if(firstLast.count() == 1)
+            return firstLast.at(0).left(1).toUpper();
+        return firstLast.at(0).left(1) + QString(".") + firstLast.at(1).left(1);
+    }
+    case PhoneNumberList:
         return QVariant::fromValue(contact->phoneNumberList());
     }
 
@@ -342,6 +345,7 @@ void RisipPhoneContactsModel::addContact(RisipPhoneContact *contact)
     if(!m_phoneContacts.contains(contact)) {
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
         m_phoneContacts.append(contact);
+        m_proxy->sort(0);
         endInsertRows();
     }
 }
@@ -355,4 +359,75 @@ void RisipPhoneContactsModel::removeContact(RisipPhoneContact *contact)
     m_phoneContacts.removeAll(contact);
     contact->deleteLater();
     endRemoveRows();
+}
+
+RisipPhoneNumbersModel::RisipPhoneNumbersModel(QObject *parent)
+    :QAbstractListModel(parent)
+    ,m_phoneContact(NULL)
+{
+}
+
+RisipPhoneNumbersModel::~RisipPhoneNumbersModel()
+{
+}
+
+RisipPhoneContact *RisipPhoneNumbersModel::phoneContact() const
+{
+    return m_phoneContact;
+}
+
+void RisipPhoneNumbersModel::setPhoneContact(RisipPhoneContact *contact)
+{
+    if(m_phoneContact != contact) {
+//        beginResetModel();
+        m_phoneContact = contact;
+//        endResetModel();
+        emit phoneContactChanged(m_phoneContact);
+
+    }
+}
+
+QHash<int, QByteArray> RisipPhoneNumbersModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[FullNumber] = "fullNumber";
+    roles[CountryPrefix] = "countryPrefix";
+    roles[RegionPrefix] = "regionPrefix";
+    roles[Number] = "number";
+    roles[RawNumber] = "rawNumber";
+    return roles;
+}
+
+int RisipPhoneNumbersModel::rowCount(const QModelIndex &parent) const
+{
+    if (parent.isValid())
+        return 0;
+
+    if(m_phoneContact)
+        return m_phoneContact->phoneNumberList().count();
+
+    return 0;
+}
+
+QVariant RisipPhoneNumbersModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid() || !m_phoneContact)
+        return QVariant();
+
+    switch (role) {
+    case FullNumber:
+        return m_phoneContact->phoneNumberList()[index.row()]->fullNumber();
+    case CountryPrefix:
+        return m_phoneContact->phoneNumberList()[index.row()]->countryPrefix();
+    case RegionPrefix:
+        return QVariant();
+    case Number:
+        return m_phoneContact->phoneNumberList()[index.row()]->number();
+    case RawNumber:
+        return m_phoneContact->phoneNumberList()[index.row()]->rawNumber();
+    default:
+        return QVariant();
+    }
+
+    return QVariant();
 }

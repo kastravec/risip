@@ -471,6 +471,7 @@ void RisipAccount::setPresence(int prs)
         break;
     }
 
+    qDebug()<<"SETTING PRESENCE: " <<m_presence.status;
     try {
         m_pjsipAccount->setOnlineStatus(m_presence);
     } catch (Error &err) {
@@ -554,6 +555,7 @@ void RisipAccount::login()
         }
         //updating status
         setStatus(Registering);
+        setPresence(RisipBuddy::Online);
     }
 }
 
@@ -592,6 +594,9 @@ void RisipAccount::setStatus(int status)
         //delete internal pjsipaccount object when not needed.
         //update buddy list when account is ready
         switch (m_status) {
+        case SignedIn:
+            setPresence(RisipBuddy::Online);
+            break;
         case SignedOut:
         case NotCreated:
         case AccountError:

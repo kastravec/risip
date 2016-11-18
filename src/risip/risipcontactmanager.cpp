@@ -100,15 +100,12 @@ void RisipContactManager::setActiveAccount(RisipAccount *account)
     }
 }
 
-QAbstractItemModel *RisipContactManager::activeBuddiesModel() const
+RisipBuddiesModel *RisipContactManager::activeBuddiesModel() const
 {
-    if(m_activeBuddiesModel)
-        return qobject_cast<RisipBuddiesModel *>(m_activeBuddiesModel);
-
-    return NULL;
+    return m_activeBuddiesModel;
 }
 
-void RisipContactManager::setActiveBuddiesModel(QAbstractItemModel *model)
+void RisipContactManager::setActiveBuddiesModel(RisipBuddiesModel *model)
 {
     if(m_activeBuddiesModel != model) {
         m_activeBuddiesModel = model;
@@ -124,15 +121,12 @@ void RisipContactManager::setActiveBuddiesModel(QAbstractItemModel *model)
  *
  * @see RisipContactManger::activeAccount
  */
-QAbstractItemModel *RisipContactManager::activeContactHistory() const
+RisipContactHistoryModel *RisipContactManager::activeContactHistory() const
 {
-    if(m_activeContactHistoryModel)
-        return qobject_cast<RisipContactHistoryModel *>(m_activeContactHistoryModel);
-
-    return NULL;
+        return m_activeContactHistoryModel;
 }
 
-void RisipContactManager::setActiveContactHistory(QAbstractItemModel *history)
+void RisipContactManager::setActiveContactHistory(RisipContactHistoryModel *history)
 {
     if(m_activeContactHistoryModel != history) {
         m_activeContactHistoryModel = history;
@@ -140,16 +134,27 @@ void RisipContactManager::setActiveContactHistory(QAbstractItemModel *history)
     }
 }
 
-QQmlListProperty<QAbstractItemModel> RisipContactManager::buddyModels()
+QQmlListProperty<RisipBuddiesModel> RisipContactManager::buddyModels()
 {
-    QList<QAbstractItemModel *> models = m_accountBuddyModels.values();
-    return QQmlListProperty<QAbstractItemModel>(this, models);
+    QList<RisipBuddiesModel *> models = m_accountBuddyModels.values();
+    return QQmlListProperty<RisipBuddiesModel>(this, models);
 }
 
-QQmlListProperty<QAbstractItemModel> RisipContactManager::contactHistoryModels()
+QQmlListProperty<RisipContactHistoryModel> RisipContactManager::contactHistoryModels()
 {
-    QList<QAbstractItemModel *> models = m_accountContactHistoryModels.values();
-    return QQmlListProperty<QAbstractItemModel>(this, models);
+    QList<RisipContactHistoryModel *> models = m_accountContactHistoryModels.values();
+    return QQmlListProperty<RisipContactHistoryModel>(this, models);
+}
+
+QQmlListProperty<RisipPhoneContact> RisipContactManager::phoneContacts()
+{
+    QList<RisipPhoneContact *> contacts = m_phoneContacts.values();
+    return QQmlListProperty<RisipPhoneContact> (this, contacts);
+}
+
+QList<RisipPhoneContact *> RisipContactManager::phoneContactList() const
+{
+    return m_phoneContacts.values();
 }
 
 /**
@@ -161,7 +166,7 @@ QQmlListProperty<QAbstractItemModel> RisipContactManager::contactHistoryModels()
  *
  * @see RisipContactManager::fetchContacts
  */
-QAbstractItemModel *RisipContactManager::phoneContactsModel() const
+RisipPhoneContactsModel *RisipContactManager::phoneContactsModel() const
 {
      return m_phoneContactsModel;
 }
@@ -214,7 +219,7 @@ void RisipContactManager::removeModelsForAccount(const RisipAccount *account)
         delete m_accountContactHistoryModels.take(account->configuration()->uri());
 }
 
-QAbstractItemModel *RisipContactManager::buddyModelForAccount(const QString &account) const
+RisipBuddiesModel *RisipContactManager::buddyModelForAccount(const QString &account) const
 {
     if(!account.isEmpty() && m_accountBuddyModels.contains(account))
         return qobject_cast<RisipBuddiesModel *>(m_accountBuddyModels[account]);
@@ -222,7 +227,7 @@ QAbstractItemModel *RisipContactManager::buddyModelForAccount(const QString &acc
     return NULL;
 }
 
-QAbstractItemModel *RisipContactManager::contactHistoryModelForAccount(const QString &account) const
+RisipContactHistoryModel *RisipContactManager::contactHistoryModelForAccount(const QString &account) const
 {
     if(!account.isEmpty() && m_accountContactHistoryModels.contains(account))
         return qobject_cast<RisipContactHistoryModel *>(m_accountContactHistoryModels[account]);
@@ -246,9 +251,28 @@ void RisipContactManager::fetchPhoneContacts()
         m_iosContacts = new RisipiOSContactAcessManager(this);
 
         connect(m_iosContacts, &RisipiOSContactAcessManager::phoneContactDiscovered,
-                m_phoneContactsModel, &RisipPhoneContactsModel::addContact, Qt::QueuedConnection);
+                this, &RisipContactManager::phoneContactDiscovered, Qt::QueuedConnection);
 
         m_iosContacts->fetchContactsFromDevice();
     }
 #endif
+}
+
+RisipPhoneContact *RisipContactManager::contactForName(const QString &name)
+{
+    if(m_phoneContacts.contains(name)) {
+        return m_phoneContacts[name];
+    }
+
+    return NULL;
+}
+
+void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *contact)
+{
+    if(contact) {
+        if(!contact->fullName().trimmed().isEmpty()) {
+            m_phoneContacts.insert(contact->fullName(), contact);
+            m_phoneContactsModel->addContact(contact);
+        }
+    }
 }
