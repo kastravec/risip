@@ -90,8 +90,8 @@ public:
     Q_INVOKABLE void patchMultipart(QHttpMultiPart *parts);
     Q_INVOKABLE void deleteData();
 
-    void setCustomData(void *dt);
-    void *customData();
+    void setRisipData(void *dt);
+    void *risipData();
 
 Q_SIGNALS:
     void requestTypeChanged(int type);

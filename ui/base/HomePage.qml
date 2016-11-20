@@ -23,23 +23,3 @@ import QtQuick.Controls 2.0
 Page {
     id: root
 }
-
-//- Account
-//  - View customer type (there will be different types)
-//  -username / password
-//  -email
-//  -picture
-
-//- Balance
-//        - Balance page
-//          -View/refresh balance
-//          -Add credits - provide list of options
-
-//- Language
-//- Rates
-//- Earn Credits
-
-//- Help
-//- About
-
-//-Sign out

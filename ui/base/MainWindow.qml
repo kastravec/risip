@@ -16,84 +16,66 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-
 import QtQuick 2.7
-import QtQuick.Controls 2.0
 import QtQuick.Window 2.2
-import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.0
 import QtQuick.Controls.Material 2.0
-
-import "settingspages"
-import "callpages"
-import "contactpages"
-import "accountpages"
 
 import Risip 1.0
 
 ApplicationWindow {
-    id: mainWindow
+    id: root
     width: 720
     height: 1280
-
     visibility: Window.AutomaticVisibility
-    visible: false
+    visible: true
 
-    Material.theme: Material.Light
-    Material.background: "#FFFFFF"
-    Material.accent: "#db0000" //"#DB5AB9"
-    Material.foreground: "#000000"
-    Material.primary: "#FFFFFF"
+//    Material.theme: Material.Light
+//    Material.background: "#FFFFFF"
+//    Material.accent: "#db0000" //"#DB5AB9"
+//    Material.foreground: "#000000"
+//    Material.primary: "#FFFFFF"
 
     property string uiBasePath: "qrc:/ui/base/"
-    property RisipEndpoint sipEndpoint: Risip.sipEndpoint
+    property bool firstRun: Risip.firstRun
     property RisipAccount sipAccount: Risip.defaultAccount
 
-    Component.onCompleted: { sipEndpoint.start(); RisipGeoPositionProvider.start();  }
-    Component.onDestruction: { sipEndpoint.stop(); }
-
-    header: MainToolBar { id: mainToolBar }
-    footer: MainTabBar { id: mainTabBar }
-
-    StackLayout {
-        id: stackLayout
-        currentIndex: mainTabBar.currentIndex
-        anchors.fill: mainWindow.contentItem
-
-        PageLoader {
-            id: contactsPageLoader
-            source: uiBasePath + "/contactpages/" + "ContactsPage.qml"
-            active: true
-        }
-
-        PageLoader {
-            id: dialPageLoader
-            source: uiBasePath + "/callpages/" + "DialPage.qml"
-            active: true
-        }
-
-        PageLoader {
-            id: homePageLoader
-            source: uiBasePath + "HomePage.qml"
-            active: true
-        }
-
-        PageLoader {
-            id: settingsPageLoader
-            source: uiBasePath + "/settingspages/" + "SettingsPage.qml"
-            active: true
+    Component.onCompleted: {
+        if(firstRun) {
+            welcomeScreenLoader.active = true;
+        } else {
+            if(sipAccount.status === RisipAccount.SignedIn) {
+                loginPageLoader.active = false;
+                mainPageLoader.visible = true;
+            } else {
+                loginPageLoader.active = true;
+                mainPageLoader.visible = false;
+            }
         }
     }
 
-    PageLoader {
+    Loader {
+        id: mainPageLoader
+        source: uiBasePath + "MainPage.qml"
+        active: true
+        anchors.fill: parent
+    }
+
+    //welcome screen is unloaded once is first used.
+    // active only on first run.
+    Loader {
+        id: welcomeScreenLoader
+        source: uiBasePath + "WelcomeScreen.qml"
+        active: false
+        anchors.fill: parent
+    }
+
+    Loader {
         id: loginPageLoader
         source: uiBasePath + "/accountpages/" + "LoginPage.qml"
-        active: true
-        visible: false
-    }
-
-    CallPage {
-        id: callPage
-        anchors.fill: mainWindow.contentItem
+        active: false
+        asynchronous: true
+        anchors.fill: parent
     }
 
     RisipBuddy {
@@ -112,10 +94,36 @@ ApplicationWindow {
         }
     }
 
-    onVisibleChanged: {
-        if(Risip.defaultAccount.status !== RisipAccount.SignedIn) {
-            loginPageLoader.visible = true;
-            mainTabBar.enabled = false;
+    RisipBuddy {
+        id: buddy3
+        uri: "<sip:pasaatop@sip2sip.info>"
+        onPresenceChanged: {
+            console.log("BUDDY TOPATOP PRESENCE: " + presence);
+        }
+    }
+
+    RisipBuddy {
+        id: buddy4
+        uri: "<sip:opop@sip2sip.info>"
+        onPresenceChanged: {
+            console.log("BUDDY TOPATOP PRESENCE: " + presence);
+        }
+    }
+    //welcome screen singal handler, from which we go to either
+    //the Login page or if autologin is enabled then directly to
+    //the Home page.
+    Connections {
+        target: welcomeScreenLoader.item
+        onEnterClicked: {
+            if(sipAccount.status === RisipAccount.SignedIn) {
+                loginPageLoader.active = false;
+                mainPageLoader.item.visible = true;
+            } else {
+                loginPageLoader.active = true;
+                mainPageLoader.item.visible = false;
+            }
+
+            welcomeScreenLoader.active = false;
         }
     }
 
@@ -127,21 +135,18 @@ ApplicationWindow {
         onStatusChanged: {
             if(Risip.defaultAccount.status === RisipAccount.SignedIn) {
                 loginPageLoader.active = false;
-                mainWindow.footer.enabled = true;
-                sipAccount.addRisipBuddy(buddy2);
-                sipAccount.addRisipBuddy(buddy);
+                mainPageLoader.item.visible = true;
+                sipAccount.addBuddy(buddy);
+                sipAccount.addBuddy(buddy2);
+                sipAccount.addBuddy(buddy3);
+                sipAccount.addBuddy(buddy2);
+                sipAccount.addBuddy(buddy4);
+                sipAccount.addBuddy(buddy4);
+
             } else if(Risip.defaultAccount.status === RisipAccount.SignedOut) {
                 loginPageLoader.active = true;
-                mainWindow.footer.enabled = false;
+                mainPageLoader.item.visible = false;
             }
-        }
-    }
-
-    Connections {
-        target: RisipGeoPositionProvider
-
-        onCountryCodeChanged: {
-            console.log("COUNTRY CODE: " + RisipGeoPositionProvider.countryCode);
         }
     }
 }

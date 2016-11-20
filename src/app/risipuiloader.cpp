@@ -19,6 +19,9 @@
 
 #include "risipuiloader.h"
 #include "applicationsettings.h"
+#include "risipcontactimageprovider.h"
+#include "risipcountryflagimageprovider.h"
+
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QDebug>
@@ -50,6 +53,8 @@ void UiLoader::start()
 //    QQuickStyle::setStyle("Material");
 
     qmlRegisterSingletonType<ApplicationSettings>("Application", 1, 0, "ApplicationSettings", applicationSingletonProvider);
+    m_qmlEngine->addImageProvider("contactIcon", new RisipContactImageProvider);
+    m_qmlEngine->addImageProvider("countryFlags", new RisipCountryFlagImageProvider);
 
 //    TODO check platform before loading
     m_qmlEngine->load(QUrl(QLatin1String("qrc:/ui/base/Main.qml")));

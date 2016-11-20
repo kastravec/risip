@@ -22,7 +22,10 @@
 #define RISIPGLOBALS_H
 
 #include <QString>
+#include <QPixmap>
 #include <QRunnable>
+
+class RisipPhoneNumber;
 
 struct RisipCurrencies {
 };
@@ -58,6 +61,7 @@ struct Country {
     QString name;
     QString code;
     QString prefix;
+    QPixmap flag;
 };
 
 struct RisipGlobals {
@@ -65,9 +69,10 @@ struct RisipGlobals {
 
     static QString formatToSip(const QString &contact, const QString &server);
     static QList<Country> countries();
-    static const Country &country(const QString &code);
+    static const Country &countryForPrefix(const QString &prefix);
     static void initializeCountries();
     static bool countriesInitialized();
+    static void validateNumber(RisipPhoneNumber *number);
 
 private:
     static QHash<QString, Country> m_allCountries;

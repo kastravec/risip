@@ -1,4 +1,5 @@
 #include "risipglobals.h"
+#include "risipphonecontact.h"
 
 #include <QString>
 #include <QList>
@@ -6,6 +7,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QThreadPool>
+#include <QRegularExpression>
+#include <QChar>
 
 #include <QDebug>
 
@@ -98,7 +101,10 @@ private:
                 countryLine.remove(0, countryLine.indexOf(";") +1);
                 country.code = countryLine.left(countryLine.indexOf(";")).trimmed();
 
-                countries.insert(country.code, country);
+                if(!country.flag.load(QString(":/images/icons/flags/550/") + country.code.toLower() + QString(".png")))
+                    qDebug()<<"ERROR FLAG LOADED" << QString(":/images/icons/flags/550/") + country.code.toLower() + QString(".png");
+
+                countries.insert(country.prefix, country);
             }
 
             RisipGlobals::setCountryList(countries);
@@ -131,14 +137,20 @@ QList<Country> RisipGlobals::countries()
     return m_allCountries.values();
 }
 
-const Country &RisipGlobals::country(const QString &code)
+const Country &RisipGlobals::countryForPrefix(const QString &prefix)
 {
-    if(m_allCountries.contains(code))
-        return m_allCountries[code];
+    if(m_allCountries.contains(prefix))
+        return m_allCountries[prefix];
 
     return Country();
 }
 
+/**
+ * @brief RisipGlobals::initializeCountries
+ *
+ * MUST call this function at least ONCE in your application, during the startup/initializtion.
+ * This function will create the country list to be available application wide.
+ */
 void RisipGlobals::initializeCountries()
 {
     if(!m_countriesIntialized) {
@@ -148,9 +160,58 @@ void RisipGlobals::initializeCountries()
     }
 }
 
+/**
+ * @brief RisipGlobals::countriesInitialized
+ * @return
+ *
+ * Returns true/false whether the country code list is ready.
+ */
 bool RisipGlobals::countriesInitialized()
 {
     return m_countriesIntialized;
+}
+
+void RisipGlobals::validateNumber(RisipPhoneNumber *number)
+{
+    if(!number)
+        return;
+
+    QString rawNumber = number->rawNumber();
+    if(rawNumber.isEmpty())
+        return;
+
+    rawNumber = rawNumber.normalized(QString::NormalizationForm_KC, QChar::Unicode_8_0);
+    rawNumber.trimmed();
+    rawNumber.remove(QString("+"));
+    rawNumber.remove(QString(QString("-")));
+    rawNumber.simplified();
+    QStringList parts = rawNumber.split(QRegularExpression("\\s+"));
+
+    Country country;
+    if(parts.count() == 1) {
+
+        if(m_allCountries.contains(parts.first().left(1)))
+            country = m_allCountries[parts.first().left(1)];
+        else if(m_allCountries.contains(parts.first().left(2)))
+            country = m_allCountries[parts.first().left(2)];
+        else if(m_allCountries.contains(parts.first().left(3)))
+            country = m_allCountries[parts.first().left(3)];
+        else if(m_allCountries.contains(parts.first().left(4)))
+            country = m_allCountries[parts.first().left(4)];
+
+    } else if(parts.count() == 2) {
+        if(m_allCountries.contains(parts.first()))
+            country = m_allCountries[parts.first()];
+    } else if(parts.count() >= 3) {
+        if(m_allCountries.contains(parts.first()))
+            country = m_allCountries[parts.first()];
+    }
+
+    number->setCountryPrefix(country.prefix);
+    number->setCountryCode(country.code);
+    number->setCountryName(country.name);
+    number->setFullNumber(rawNumber.remove(QRegularExpression("\\s+")));
+    number->setNumberParts(parts);
 }
 
 void RisipGlobals::setCountryList(QHash<QString, Country> countryList)

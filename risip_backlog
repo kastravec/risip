@@ -1,8 +1,41 @@
 
 == Account ================
+- Registration - validation - phone number retrieval
+- login multiple accounts ?
 
 == Call ===================
-- loud speaker
+- loud speaker ?
+- Finish call page - call status - callee name - phone vs buddy - UI and icons
 
 == SIP Endpoint ===========
 - provide way to manage/control codecs and codecs priorities
+- stun servers
+- enable ice ?
+
+== Settings / sync / storage / cloud ===
+- manage settings
+- manage config files
+- manage input files
+
+==  Settings UI ===
+
+- Account
+  - View customer type (there will be different types)
+  -username / password
+  -email
+  -picture
+
+- Balance
+        - Balance page
+          -View/refresh balance
+          -Add credits - provide list of options
+
+- Language
+- Rates
+- Earn Credits
+
+- Help
+- About
+
+-Sign out
+

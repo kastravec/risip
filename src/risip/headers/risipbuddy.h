@@ -63,7 +63,6 @@ public:
     enum Type {
         Internal = 1,
         ExternalSIP,
-        GSM,
         Undefined = -1
     };
 

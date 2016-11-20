@@ -71,7 +71,7 @@ public:
 
     enum CallType {
         Pstn = 1,
-        Voip,
+        Sip,
         Undefined = -1
     };
 

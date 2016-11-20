@@ -3,9 +3,11 @@
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
 
+//#inclusw <QImage>
 #include <QDebug>
 
 //ios imports
+#import <UiKit/UIImage.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSObject.h>
 #import <Contacts/Contacts.h>
@@ -20,7 +22,6 @@
 - (void) contactScan;
 - (void) getAllContact;
 - (void) parseContactWithContact :(CNContact* )contact;
-- (NSMutableArray *) parseAddressWithContac: (CNContact *)contact;
 @end
 
 @implementation ContactsScan
@@ -63,7 +64,7 @@
         NSError* contactError;
         CNContactStore* addressBook = [[CNContactStore alloc]init];
         [addressBook containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers: @[addressBook.defaultContainerIdentifier]] error:&contactError];
-        NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey];
+        NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey, CNContactImageDataAvailableKey, CNContactImageDataKey];
                 CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
                 BOOL success = [addressBook enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){
             [self parseContactWithContact:contact];
@@ -81,10 +82,11 @@
     RisipPhoneContact *risipPhoneContact = new RisipPhoneContact;
     risipPhoneContact->setContactId(QString::fromNSString(contact.identifier).toInt());
 
-//    NSString * email = [contact.emailAddresses valueForKey:@"value"];
-//    risipPhoneContact->setEmail(QString::fromNSString(email));
-
-    //NSArray * addrArr = [self parseAddressWithContac:contact];
+    if(contact.imageDataAvailable) {
+        NSData *imgData = contact.imageData;
+        QByteArray imagedata = QByteArray::fromNSData(imgData);
+        risipPhoneContact->setContactImageData(imagedata);
+    }
 
     QString name = QString("%1 %2")
             .arg(QString::fromNSString(contact.givenName))
@@ -109,19 +111,6 @@
     m_handler->phoneContactDiscovered(risipPhoneContact);
 }
 
-- (NSMutableArray *)parseAddressWithContac: (CNContact *)contact
-{
-    NSMutableArray * addrArr = [[NSMutableArray alloc]init];
-    CNPostalAddressFormatter * formatter = [[CNPostalAddressFormatter alloc]init];
-    NSArray * addresses = (NSArray*)[contact.postalAddresses valueForKey:@"value"];
-    if (addresses.count > 0) {
-        for (CNPostalAddress* address in addresses) {
-            [addrArr addObject:[formatter stringFromPostalAddress:address]];
-        }
-    }
-
-    return addrArr;
-}
 @end
 
 /**

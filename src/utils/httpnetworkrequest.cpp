@@ -219,12 +219,12 @@ void HttpNetworkRequest::deleteData()
     sendHttpRequest(QString("DELETE"));
 }
 
-void HttpNetworkRequest::setCustomData(void *dt)
+void HttpNetworkRequest::setRisipData(void *dt)
 {
     m_customData = dt;
 }
 
-void *HttpNetworkRequest::customData()
+void *HttpNetworkRequest::risipData()
 {
     return m_customData;
 }

@@ -19,6 +19,7 @@
 ************************************************************************************/
 #include "risipphonecontact.h"
 #include "risipmodels.h"
+#include "risipglobals.h"
 
 #include <QDebug>
 
@@ -27,8 +28,9 @@ RisipPhoneNumber::RisipPhoneNumber(const QString &rawNumber, QObject *parent)
     ,m_phoneContact(NULL)
     ,m_rawNumber()
     ,m_countryPrefix()
-    ,m_nationalPrefix()
+    ,m_secondPrefix()
     ,m_number()
+    ,m_fullNumber()
     ,m_countryCode()
     ,m_label()
 {
@@ -73,7 +75,7 @@ void RisipPhoneNumber::setRawNumber(const QString &number)
     if(m_rawNumber != number) {
         m_rawNumber = number;
         emit rawNumberChanged(m_rawNumber);
-        validate();
+        RisipGlobals::validateNumber(this);
     }
 }
 
@@ -96,14 +98,54 @@ void RisipPhoneNumber::setLabel(const QString &label)
     }
 }
 
+QStringList RisipPhoneNumber::fullNumberParts() const
+{
+    return m_fullNumberParts;
+}
+
+void RisipPhoneNumber::setNumberParts(const QStringList &parts)
+{
+    m_fullNumberParts = parts;
+    emit fullNumberPartsChanged(m_fullNumberParts);
+}
+
 QString RisipPhoneNumber::countryPrefix() const
 {
     return m_countryPrefix;
 }
 
-QString RisipPhoneNumber::nationalPrefix() const
+void RisipPhoneNumber::setCountryPrefix(const QString &prefix)
 {
-    return m_nationalPrefix;
+    if(m_countryPrefix != prefix) {
+        m_countryPrefix = prefix;
+        emit countryPrefixChanged(m_countryPrefix);
+    }
+}
+
+QString RisipPhoneNumber::countryName() const
+{
+    return m_countryName;
+}
+
+void RisipPhoneNumber::setCountryName(const QString &name)
+{
+    if(m_countryName != name) {
+        m_countryName = name;
+        emit countryNameChanged(m_countryName);
+    }
+}
+
+QString RisipPhoneNumber::secondPrefix() const
+{
+    return m_secondPrefix;
+}
+
+void RisipPhoneNumber::setSecondPrefix(const QString &prefix)
+{
+    if(m_secondPrefix != prefix) {
+        m_secondPrefix = prefix;
+        emit secondPrefixChanged(m_secondPrefix);
+    }
 }
 
 QString RisipPhoneNumber::number() const
@@ -111,14 +153,38 @@ QString RisipPhoneNumber::number() const
     return m_number;
 }
 
+void RisipPhoneNumber::setNumber(const QString &number)
+{
+    if(m_number != number) {
+        m_number = number;
+        emit numberChanged(m_number);
+    }
+}
+
 QString RisipPhoneNumber::fullNumber() const
 {
-    return m_rawNumber; //m_countryPrefix + m_nationalPrefix + m_number;
+    return m_fullNumber;
+}
+
+void RisipPhoneNumber::setFullNumber(const QString &number)
+{
+    if(m_fullNumber != number) {
+        m_fullNumber = number;
+        emit fullNumberChanged(m_fullNumber);
+    }
 }
 
 QString RisipPhoneNumber::countryCode() const
 {
     return m_countryCode;
+}
+
+void RisipPhoneNumber::setCountryCode(const QString &code)
+{
+    if(m_countryCode != code) {
+        m_countryCode = code;
+        emit countryCodeChanged(m_countryCode);
+    }
 }
 
 /**
@@ -136,22 +202,6 @@ bool RisipPhoneNumber::valid() const
 }
 
 /**
- * @brief RisipPhoneNumber::validate
- *
- * Internal API.
- *
- * Validates the raw number that has been set.
- */
-void RisipPhoneNumber::validate()
-{
-    emit countryPrefixChanged(m_countryPrefix);
-    emit nationalPrefixChanged(m_nationalPrefix);
-    emit numberChanged(m_number);
-    emit countryCodeChanged(m_countryCode);
-    emit fullNumberChanged(m_countryPrefix + m_nationalPrefix + m_number);
-}
-
-/**
  * @brief RisipPhoneNumber::reset
  *
  * It wipes out all the number details. It simply leaves an empty shell object.
@@ -161,14 +211,14 @@ void RisipPhoneNumber::reset()
 {
     m_countryCode.clear();
     m_countryPrefix.clear();
-    m_nationalPrefix.clear();
+    m_secondPrefix.clear();
     m_label.clear();
     m_number.clear();
     m_rawNumber.clear();
 
     emit countryCodeChanged(m_countryCode);
     emit countryPrefixChanged(m_countryPrefix);
-    emit nationalPrefixChanged(m_nationalPrefix);
+    emit secondPrefixChanged(m_secondPrefix);
     emit labelChanged(m_label);
     emit numberChanged(m_number);
     emit rawNumberChanged(m_rawNumber);
@@ -208,7 +258,7 @@ QString RisipPhoneContact::fullName() const
     return m_fullName;
 }
 
-void RisipPhoneContact::setFullName(const QString &name)
+void RisipPhoneContact::setFullName(QString name)
 {
     if(m_fullName != name) {
         m_fullName = name;
@@ -232,6 +282,19 @@ void RisipPhoneContact::setEmail(const QString &email)
 RisipPhoneNumbersModel *RisipPhoneContact::phoneNumbersModel() const
 {
     return m_phoneNumbersModel;
+}
+
+QByteArray RisipPhoneContact::contactImageData() const
+{
+    return m_contactImageData;
+}
+
+void RisipPhoneContact::setContactImageData(const QByteArray &imageData)
+{
+    if(m_contactImageData != imageData) {
+        m_contactImageData = imageData;
+        emit contactImageDataChanged(m_contactImageData);
+    }
 }
 
 QQmlListProperty<RisipPhoneNumber> RisipPhoneContact::phoneNumbers()

@@ -23,7 +23,7 @@
 23;Benin;229;BJ
 24;Bermuda;1441;BM
 25;Bhutan;975;BT
-26;Bolivia; Plurinational State of;591;BO
+26;Bolivia;591;BO
 27;Bosnia and Herzegovina;387;BA
 28;Botswana;267;BW
 30;Brazil;55;BR
@@ -45,7 +45,7 @@
 47;Colombia;57;CO
 48;Comoros;269;KM
 49;Congo;242;CG
-50;Congo; The Democratic Republic of the Congo;243;CD
+50;Congo The Democratic Republic of the Congo;243;CD
 51;Cook Islands;682;CK
 52;Costa Rica;506;CR
 53;Cote d'Ivoire;225;CI
@@ -94,7 +94,7 @@
 98;Iceland;354;IS
 99;India;91;IN
 100;Indonesia;62;ID
-101;Iran; Islamic Republic of Persian Gulf;98;IR
+101;Iran Islamic Republic of Persian Gulf;98;IR
 102;Iraq;964;IQ
 103;Ireland;353;IE
 104;Israel;972;IL
@@ -105,8 +105,8 @@
 109;Kazakhstan;77;KZ
 110;Kenya;254;KE
 111;Kiribati;686;KI
-112;Korea; Democratic People's Republic of Korea;850;KP
-113;Korea; Republic of South Korea;82;KR
+112;Korea Democratic People's Republic of Korea;850;KP
+113;Korea Republic of South Korea;82;KR
 114;Kuwait;965;KW
 115;Kyrgyzstan;996;KG
 116;Laos;856;LA
@@ -132,7 +132,7 @@
 136;Mauritius;230;MU
 137;Mayotte;262;YT
 138;Mexico;52;MX
-139;Micronesia; Federated States of Micronesia;691;FM
+139;Micronesia Federated States of Micronesia;691;FM
 140;Moldova;373;MD
 141;Monaco;377;MC
 142;Mongolia;976;MN
@@ -157,7 +157,7 @@
 161;Oman;968;OM
 162;Pakistan;92;PK
 163;Palau;680;PW
-164;Palestinian Territory; Occupied;970;PS
+164;Palestinian Territory Occupied;970;PS
 165;Panama;507;PA
 166;Papua New Guinea;675;PG
 167;Paraguay;595;PY
@@ -200,7 +200,7 @@
 206;Syrian Arab Republic;963;SY
 207;Taiwan;886;TW
 208;Tajikistan;992;TJ
-209;Tanzania; United Republic of Tanzania;255;TZ
+209;Tanzania United Republic of Tanzania;255;TZ
 210;Thailand;66;TH
 211;Timor-Leste;670;TL
 212;Togo;228;TG
@@ -220,10 +220,10 @@
 227;Uruguay;598;UY
 228;Uzbekistan;998;UZ
 229;Vanuatu;678;VU
-230;Venezuela; Bolivarian Republic of Venezuela;58;VE
+230;Venezuela; 58;VE
 231;Vietnam;84;VN
-232;Virgin Islands; British;1284;VG
-233;Virgin Islands; U.S.;1340;VI
+232;Virgin British Islands;VG
+233;Virgin Islands;VI
 234;Wallis and Futuna;681;WF
 236;Yemen;967;YE
 238;Zambia;260;ZM

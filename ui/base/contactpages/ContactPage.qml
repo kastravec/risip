@@ -9,6 +9,7 @@ Page {
     id: root
 
     property alias contactName: contactNameLabel.text
+    property RisipPhoneContact phoneContact: RisipContactManager.contactForName(contactName)
     property alias phoneNumbersModel: phoneNumberViewer.model
 
     signal backClicked
@@ -47,8 +48,7 @@ Page {
                 }
             }
         }
-
-    }
+    } // end of header
 
     ColumnLayout {
         id: columnLayout
@@ -58,18 +58,36 @@ Page {
         anchors.topMargin: 20
 
         Rectangle {
-            id: rectangle
+            id: contactIconBox
             width: 80
             height: 80
-            color: "#ffffff"
             radius: width * 0.5
+            color: "#ffffff"
             border.color: "#000000"
-            border.width: 1
+            border.width: 0
+
+            Text {
+                id: initialsTxt
+                anchors.centerIn: contactIconBox
+                text: "..."
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                visible: true
+            }
+
+            Image {
+                id: contactIcon
+                width: 80
+                height: 80
+                anchors.centerIn: parent
+                source: "image://contactIcon/" + contactName
+            }
         }
 
         Text {
             id: contactNameLabel
             font.bold: true
+
         }
     }
 
@@ -79,24 +97,37 @@ Page {
         anchors.top: columnLayout.bottom
         anchors.topMargin: 30
         anchors.bottom: parent.bottom
-        width: parent.width/2
+        width: parent.width
         clip: true
         snapMode: ListView.SnapOneItem
 
         delegate: Rectangle {
             id: phoneNumberDelegate
-            width: parent.width
-            height: phoneNumberBox.height + 10
+            width: parent.width - 20
+            height: phoneNumberBox.height + 15
 
             RisipButton {
                 id: phoneNumberBox
-                width: phoneNumberViewer.width
-                anchors.centerIn: parent
+                width: phoneNumberDelegate.width - 10
+                height: 40
+                anchors.centerIn: phoneNumberDelegate
                 labelText.text: fullNumber
-
                 onClicked: RisipCallManager.callPhone(labelText.text);
             }
-        }
 
+            Image {
+                id: countryFlagIcon
+                width: 28
+                height: 28
+                source: "image://countryFlags/" + RisipContactManager.phoneNumberForNumber(fullNumber).countryCode
+                anchors.right: phoneNumberBox.left
+                anchors.rightMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                z:1
+            }
+//            Text {
+//                text: RisipContactManager.phoneNumberForNumber(fullNumber).countryCode
+//            }
+        } //end of delegate
     }
 }

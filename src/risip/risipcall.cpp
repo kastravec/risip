@@ -26,6 +26,7 @@
 #include "risipmodels.h"
 #include "risipcallmanager.h"
 #include "risipphonecontact.h"
+#include "risipglobals.h"
 
 #include <QCoreApplication>
 
@@ -201,7 +202,7 @@ RisipCall::RisipCall(QObject *parent)
     ,m_phoneNumber(NULL)
     ,m_risipMedia(NULL)
     ,m_pjsipCall(NULL)
-    ,m_callType(RisipCall::Voip)
+    ,m_callType(RisipCall::Sip)
     ,m_callDirection(Unknown)
     ,m_error()
 {
@@ -236,6 +237,8 @@ void RisipCall::setBuddy(RisipBuddy *buddy)
         m_buddy = buddy;
         emit buddyChanged(m_buddy);
     }
+
+    setCallType(Sip);
 }
 
 RisipPhoneNumber *RisipCall::phoneNumber() const
@@ -249,6 +252,8 @@ void RisipCall::setPhoneNumber(RisipPhoneNumber *number)
         m_phoneNumber = number;
         emit phoneNumberChanged(m_phoneNumber);
     }
+
+    setCallType(Pstn);
 }
 
 RisipMedia *RisipCall::media() const
@@ -502,11 +507,12 @@ void RisipCall::call()
     CallOpParam prm(true);
 
     QString callee;
-    if(m_callType == Pstn && m_phoneNumber)
-        callee = m_phoneNumber->fullNumber();
-    else if(m_callType == Voip && m_buddy)
+    if(m_callType == Pstn && m_phoneNumber) {
+        callee = RisipGlobals::formatToSip(m_phoneNumber->fullNumber(),
+                                           m_account->configuration()->serverAddress());
+    } else if(m_callType == Sip && m_buddy) {
         callee = m_buddy->uri();
-
+    }
     if(!callee.isNull()) {
         try {
             m_pjsipCall->makeCall(callee.toStdString(), prm);

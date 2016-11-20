@@ -1,5 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.3
 
 TabBar {
     id: root
@@ -23,84 +24,85 @@ TabBar {
 
         onActiveChanged: {
             if(active)
-                phoneBookIcon.source = "qrc:/images/icons/24/PhoneBookRed.png";
+                phoneBookIcon.source = "qrc:/images/icons/48/PhoneBookRed.png";
             else
-                phoneBookIcon.source = "qrc:/images/icons/24/PhoneBookBlack.png";
+                phoneBookIcon.source = "qrc:/images/icons/48/PhoneBookBlack.png";
         }
 
         Image {
             id: phoneBookIcon
-            source: "qrc:/images/icons/24/PhoneBookBlack.png";
+            source: "qrc:/images/icons/48/PhoneBookBlack.png";
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             width: 24
             height: 24
+            fillMode: Image.PreserveAspectFit
         }
     }
 
     TabButton {
         id: phoneDialButton
-
         property bool active: false
 
         onActiveChanged: {
             if(active)
-                phoneDialIcon.source = "qrc:/images/icons/24/PhoneRed.png";
+                phoneDialIcon.source = "qrc:/images/icons/48/PhoneRed.png";
             else
-                phoneDialIcon.source = "qrc:/images/icons/24/PhoneBlack.png";
+                phoneDialIcon.source = "qrc:/images/icons/48/PhoneBlack.png";
         }
 
         Image {
             id: phoneDialIcon
-            source: "qrc:/images/icons/24/PhoneBlack.png";
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
             width: 24
             height: 24
+            source: "qrc:/images/icons/48/PhoneBlack.png";
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.PreserveAspectFit
         }
     }
 
     TabButton {
         id: messageButton
-
         property bool active: false
 
         onActiveChanged: {
             if(active)
-                messageIcon.source = "qrc:/images/icons/24/MessageRed.png";
+                messageIcon.source = "qrc:/images/icons/48/MessageRed.png";
             else
-                messageIcon.source = "qrc:/images/icons/24/MessageBlack.png";
+                messageIcon.source = "qrc:/images/icons/48/MessageBlack.png";
         }
 
         Image {
             id: messageIcon
-            source: "qrc:/images/icons/24/MessageBlack.png";
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
             width: 24
             height: 24
+            source: "qrc:/images/icons/48/MessageBlack.png";
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.PreserveAspectFit
         }
     }
 
     TabButton {
         id: settingsButton
-
         property bool active: false
 
         onActiveChanged: {
             if(active)
-                settingsIcon.source = "qrc:/images/icons/24/SettingsRed.png";
+                settingsIcon.source = "qrc:/images/icons/48/SettingsRed.png";
             else
-                settingsIcon.source = "qrc:/images/icons/24/SettingsBlack.png";
+                settingsIcon.source = "qrc:/images/icons/48/SettingsBlack.png";
         }
 
         Image {
             id: settingsIcon
-            source: "qrc:/images/icons/24/SettingsBlack.png";
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
             width: 24
             height: 24
+            source: "qrc:/images/icons/48/SettingsBlack.png";
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.PreserveAspectFit
         }
     }
 

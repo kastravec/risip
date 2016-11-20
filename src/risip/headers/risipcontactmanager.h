@@ -29,6 +29,7 @@ class RisipContactHistoryModel;
 class RisipiOSContactAcessManager;
 class RisipPhoneContactsModel;
 class RisipPhoneContact;
+class RisipPhoneNumber;
 
 class RisipContactManager : public QObject
 {
@@ -66,6 +67,7 @@ public:
 
     Q_INVOKABLE void fetchPhoneContacts();
     Q_INVOKABLE RisipPhoneContact *contactForName(const QString &name);
+    Q_INVOKABLE RisipPhoneNumber *phoneNumberForNumber(const QString &number);
 
 Q_SIGNALS:
     void activeAccountChanged(RisipAccount *activeAccount);
@@ -92,6 +94,7 @@ private:
     RisipPhoneContactsModel *m_phoneContactsModel;
 
     QHash<QString, RisipPhoneContact *> m_phoneContacts;
+    QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
 
     //responsible for fetching contacts from the ios device.
 #ifdef Q_OS_IOS

@@ -267,12 +267,24 @@ RisipPhoneContact *RisipContactManager::contactForName(const QString &name)
     return NULL;
 }
 
+RisipPhoneNumber *RisipContactManager::phoneNumberForNumber(const QString &number)
+{
+    if(!number.isEmpty() && m_phoneNumbers.contains(number))
+        return m_phoneNumbers[number];
+
+    return NULL;
+}
+
 void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *contact)
 {
     if(contact) {
         if(!contact->fullName().trimmed().isEmpty()) {
             m_phoneContacts.insert(contact->fullName(), contact);
             m_phoneContactsModel->addContact(contact);
+
+            QList<RisipPhoneNumber *> numbers = contact->phoneNumberList();
+            for(int i=0; i<numbers.count(); ++i)
+                m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
         }
     }
 }

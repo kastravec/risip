@@ -19,23 +19,18 @@
 
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Window 2.2
 import QtQuick.Controls.Material 2.0
 
 import "risipcomponents"
 
-Window {
+Page {
     id: root
 
     Material.theme: Material.Light
     Material.background: "#FFFFFF"
-    Material.accent: "#DB0000"
+    Material.accent: "#db0000" //"#DB5AB9"
     Material.foreground: "#000000"
     Material.primary: "#FFFFFF"
-
-    width: 720
-    height: 1280
-    visible: true
 
     signal enterClicked
 
@@ -70,8 +65,7 @@ Window {
 
         Rectangle {
             id: page3
-            width: 200
-            height: 200
+
             color: "#ffffff"
 
             Image {

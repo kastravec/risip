@@ -54,7 +54,7 @@ void RisipMorApi::registerAccount(RisipAccountProfile *profile)
 {
     if(profile && profile->valid()) {
         HttpNetworkRequest *httpRequest = new HttpNetworkRequest(this);
-        httpRequest->setCustomData(this);
+        httpRequest->setRisipData(profile);
         connect(httpRequest, &HttpNetworkRequest::replyReady,
                 this, &RisipMorApi::accountRegstrationHandler);
 
@@ -76,7 +76,7 @@ void RisipMorApi::getUserBalance(RisipAccountProfile *profile)
 void RisipMorApi::accountRegstrationHandler(const QByteArray &data)
 {
     HttpNetworkRequest *httpReply = qobject_cast<HttpNetworkRequest *>(sender());
-    RisipAccountProfile *profile = static_cast<RisipAccountProfile *>(httpReply->customData());
+    RisipAccountProfile *profile = static_cast<RisipAccountProfile *>(httpReply->risipData());
 
     qDebug()<<"HTTP reply " << data << httpReply->status() << " profile: " << profile->username();
 

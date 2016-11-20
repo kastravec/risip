@@ -5,7 +5,7 @@ TEMPLATE = app
 CONFIG += exceptions c++11
 
 android: QT += androidextras
-QT = core network qml quick quickcontrols2 positioning location
+QT = gui core network qml quick quickcontrols2 positioning location
 
 ### DEFINES ###
 DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
@@ -44,7 +44,9 @@ SOURCES += src/app/main.cpp \
     src/utils/httpnetworkrequest.cpp \
     src/risip/risipgeopositionprovider.cpp \
     src/risip/risipglobals.cpp \
-    src/sipregistrars/mor/risipmorapi.cpp
+    src/sipregistrars/mor/risipmorapi.cpp \
+    src/risip/risipcontactimageprovider.cpp \
+    src/risip/risipcountryflagimageprovider.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -66,7 +68,9 @@ HEADERS += src/risip/headers/risip.h \
     src/utils/httpnetworkrequest.h \
     src/risip/headers/risipgeopositionprovider.h \
     src/sipregistrars/mor/risipmorapi.h \
-    src/risip/ios/risipioswifiprovider.h
+    src/risip/ios/risipioswifiprovider.h \
+    src/risip/headers/risipcontactimageprovider.h \
+    src/risip/headers/risipcountryflagimageprovider.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {
@@ -249,7 +253,8 @@ android {
 
 RESOURCES += qml.qrc \
     images.qrc \
-    risipconfigs.qrc
+    risipconfigs.qrc \
+    flagicons.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = risip/

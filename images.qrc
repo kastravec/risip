@@ -21,5 +21,15 @@
         <file>images/icons/24/PhoneRed.png</file>
         <file>images/icons/32/MicrophoneBlack.png</file>
         <file>images/icons/32/MicrophoneRed.png</file>
+        <file>images/LaunchScreenImage.png</file>
+        <file>images/icons/48/PhoneBookRed.png</file>
+        <file>images/icons/48/PhoneBookBlack.png</file>
+        <file>images/icons/48/MessageRed.png</file>
+        <file>images/icons/48/MessageBlack.png</file>
+        <file>images/icons/48/SettingsRed.png</file>
+        <file>images/icons/48/SettingsBlack.png</file>
+        <file>images/icons/48/PhoneRed.png</file>
+        <file>images/icons/48/PhoneBlack.png</file>
+        <file>images/icons/128/CircleBlack.png</file>
     </qresource>
 </RCC>

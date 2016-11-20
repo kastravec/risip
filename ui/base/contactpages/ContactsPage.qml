@@ -33,7 +33,7 @@ ContactsPageForm {
 
     searchContactInput.onTextChanged: {
         if(contactsListLayout.currentIndex === 0) {
-            RisipContactManager.phoneContactsModel.proxy.setFilterRegExp(searchContactInput.text);
+            phoneContactModel.setFilterRegExp(searchContactInput.text);
         } else if(contactsListLayout.currentIndex === 1) {
             RisipContactManager.activeBuddiesModel.proxy.filterRole = RisipBuddiesModel.ContactRole;
             RisipContactManager.activeBuddiesModel.proxy.setFilterRegExp(searchContactInput.text);

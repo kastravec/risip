@@ -20,8 +20,9 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
+import QtGraphicalEffects 1.0
 
-import Risip 1.0
+//import Risip 1.0
 
 Item {
     id: root
@@ -37,7 +38,13 @@ Item {
         snapMode: ListView.SnapToItem
         anchors.fill: parent
 
-        delegate:  Rectangle {
+        delegate: contactListViewDelegate
+    }
+
+    //delegate
+    Component {
+        id: contactListViewDelegate
+        Rectangle {
             id: rectangle
             width: parent.width
             height: 70
@@ -48,24 +55,52 @@ Item {
             }
 
             Rectangle {
-                id: icon
+                id: contactIconBox
                 width: 45
                 height: 45
                 radius: width * 0.5
-                border.width: 1
+                border.width: 0
                 border.color: "#000000" //"#db0000"
                 opacity: 0.7
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin: 10
+            }
 
-                Text {
-                    id: initialsTxt
-                    anchors.centerIn: icon.Center
-                    text: initials
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+            Text {
+                id: initialsTxt
+                anchors.centerIn: contactIconBox
+                text: initials
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                textFormat: Text.PlainText
+            }
+
+            Image {
+                id: contactPic
+                width: 45
+                height: 45
+                anchors.centerIn: contactIconBox
+                source: "image://contactIcon/" + fullName;
+                visible: false;
+            }
+
+            Rectangle {
+                id: contactPicMask
+                width: 45
+                height: 45
+                radius: width * 0.5
+                visible: false
+                clip: true
+                border.width: 0
+                anchors.centerIn: contactIconBox
+            }
+
+            OpacityMask {
+                id: opacityMask
+                anchors.fill: contactPicMask
+                source: contactPic
+                maskSource: contactPicMask
             }
 
             Text {
@@ -75,7 +110,8 @@ Item {
                 anchors.top: parent.top
                 anchors.topMargin: 15
                 anchors.leftMargin: 10
-                anchors.left: icon.right
+                anchors.left: contactIconBox.right
+                textFormat: Text.PlainText
             }
 
             Text {
@@ -85,7 +121,8 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 10
                 anchors.leftMargin: 10
-                anchors.left: icon.right
+                anchors.left: contactIconBox.right
+                textFormat: Text.PlainText
             }
         }
     }

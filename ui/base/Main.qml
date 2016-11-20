@@ -17,16 +17,29 @@
 **
 ************************************************************************************/
 import QtQuick 2.7
+import QtQuick.Window 2.2
+import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
+
 import Risip 1.0
 
 Item {
     id: root
-
     width: 720
     height: 1280
 
+    Material.theme: Material.Light
+    Material.background: "#FFFFFF"
+    Material.accent: "#db0000" //"#DB5AB9"
+    Material.foreground: "#000000"
+    Material.primary: "#FFFFFF"
+
     property string uiBasePath: "qrc:/ui/base/"
-    property bool firstRun: Risip.firstRun
+    property RisipAccount sipAccount: Risip.defaultAccount
+    property RisipEndpoint sipEndpoint: Risip.sipEndpoint
+
+    Component.onCompleted: { sipEndpoint.start(); RisipGeoPositionProvider.start();  }
+    Component.onDestruction: { sipEndpoint.stop(); }
 
     Loader {
         id: splashScreenLoader
@@ -37,52 +50,27 @@ Item {
         z:1
     }
 
-    //welcome screen is unloaded once is first used.
-    // active only on first run.
-    Loader {
-        id: welcomeScreenLoader
-        source: uiBasePath + "WelcomeScreen.qml"
-        active: firstRun //firstRun is set in settings always true for testing
-        visible: false
-        width: root.width
-        height: root.height
-        z:1
-    }
-
-    //MainWindow loader - main window of the app
     Loader {
         id: mainWindowLoader
         active: true
-        source: "MainWindow.qml"
         asynchronous: true
-        anchors.fill: parent
+        source: uiBasePath + "MainWindow.qml"
     }
 
     //handle splaschreen signals - when it times out what comes first!
     Connections {
         target: splashScreenLoader.item
         onTimeout: {
-            if(Risip.firstRun) {
-                welcomeScreenLoader.visible = true;
-            } else {
-                if(Risip.defaultAccount.status === RisipAccount.SignedIn)
-                    mainWindowLoader.item.visible = true;
-                else
-                    loginPageLoader.visible = true;
-            }
-
+            mainWindowLoader.item.visible = true;
             splashScreenLoader.active = false;
         }
     }
 
-    //welcome screen singal handler, from which we go to either
-    //the Login page or if autologin is enabled then directly to
-    //the Home page.
     Connections {
-        target: welcomeScreenLoader.item
-        onEnterClicked: {
-            welcomeScreenLoader.active = false;
-            mainWindowLoader.item.visible = true;
+        target: RisipGeoPositionProvider
+
+        onCountryCodeChanged: {
+            console.log("COUNTRY CODE: " + RisipGeoPositionProvider.countryCode);
         }
     }
 }

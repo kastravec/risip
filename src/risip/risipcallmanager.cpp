@@ -146,7 +146,7 @@ RisipCall *RisipCallManager::activeCall()
     return m_activeCall;
 }
 
-RisipCall *RisipCallManager::callSIPContact(const QString &contact)
+RisipCall *RisipCallManager::makeSIPCall(const QString &contact)
 {
     RisipBuddy *buddy = m_activeAccount->findBuddy(
                 RisipGlobals::formatToSip(contact, m_activeAccount->configuration()->serverAddress()));
@@ -167,7 +167,7 @@ RisipCall *RisipCallManager::callSIPContact(const QString &contact)
 RisipCall *RisipCallManager::callBuddy(RisipBuddy *buddy)
 {
     if(!buddy)
-        return NULL;
+        return new RisipCall(this);
 
     RisipCall *call = new RisipCall(this);
     call->setBuddy(buddy);
@@ -184,22 +184,34 @@ RisipCall *RisipCallManager::callBuddy(RisipBuddy *buddy)
 
 RisipCall *RisipCallManager::callPhone(const QString &number)
 {
-    if(!number.isNull())
-        return callRisipPhoneNumber(new RisipPhoneNumber(number, this));
+    if(number.isNull())
+        return new RisipCall(this);
+
+    RisipPhoneNumber *phoneNumber = RisipContactManager::instance()->phoneNumberForNumber(number);
+    if(phoneNumber)
+        return callRisipPhoneNumber(phoneNumber);
+
+    return new RisipCall(this);
 }
 
 RisipCall *RisipCallManager::callRisipPhoneNumber(RisipPhoneNumber *number)
 {
     if(!number)
-        return NULL;
+        return new RisipCall(this);
 
-    QString numberString = number->rawNumber().simplified();
-    numberString.replace(" ", "");
+    qDebug()<<"CALLING NUMBER :  " << number->fullNumber();
 
-    qDebug()<<"CALLING PHONE : number is valid? :" <<number->valid()
-           << "NUMBER: " << numberString.remove("+");
+    RisipCall *call = new RisipCall(this);
+    call->setPhoneNumber(number);
+    call->setAccount(m_activeAccount);
+    call->call();
+    emit outgoingCall(call);
 
-    return callSIPContact(numberString.remove("+"));
+    //adding call record for the active account.
+    qobject_cast<RisipCallHistoryModel *>(m_activeCallHistoryModel)->addCallRecord(call);
+    setActiveCall(call);
+
+    return call;
 }
 
 /**

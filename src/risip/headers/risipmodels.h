@@ -171,6 +171,8 @@ public:
         FullNumber = Qt::UserRole + 1,
         CountryPrefix,
         RegionPrefix,
+        CountryCode,
+        CountryName,
         Number,
         RawNumber
     };

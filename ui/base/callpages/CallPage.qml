@@ -36,7 +36,16 @@ CallPageForm {
             activeCall.media.micVolume = 1.0;
     }
 
-    usernameLabel.text: activeCall.buddy.uri;
+    Component.onCompleted: {
+        if(activeCall) {
+            if(activeCall.callType === RisipCall.Sip)
+                usernameLabel.text = activeCall.buddy.contact;
+            else if(activeCall.callType === RisipCall.Pstn)
+                usernameLabel.text = activeCall.phoneNumber.fullNumber
+        }
+    }
+
+
 
     Connections {
         target: RisipCallManager

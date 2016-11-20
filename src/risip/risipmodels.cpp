@@ -24,6 +24,7 @@
 #include "risipbuddy.h"
 #include "risipcall.h"
 #include "risipphonecontact.h"
+#include "risipglobals.h"
 
 #include <QSortFilterProxyModel>
 #include <QDebug>
@@ -34,7 +35,6 @@ RisipAbstractBuddyModel::RisipAbstractBuddyModel(QObject *parent)
     ,m_proxy(new QSortFilterProxyModel(this))
 {
     m_proxy->setSourceModel(this);
-    m_proxy->setDynamicSortFilter(true);
 }
 
 RisipAbstractBuddyModel::~RisipAbstractBuddyModel()
@@ -311,6 +311,9 @@ QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
+    if(index.row() > m_phoneContacts.count())
+        return QVariant();
+
     RisipPhoneContact *contact = m_phoneContacts.at(index.row());
     if(!contact) {
         qDebug()<<"No contact found model!";
@@ -321,7 +324,9 @@ QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
     case ContactId:
         return contact->contactId();
     case FullName:
-        return contact->fullName();
+        if(contact)
+            return contact->fullName();
+        return QVariant();
     case Initials: {
         QStringList firstLast = contact->fullName().split(" ");
         if(firstLast.count() == 0)
@@ -392,6 +397,7 @@ QHash<int, QByteArray> RisipPhoneNumbersModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[FullNumber] = "fullNumber";
     roles[CountryPrefix] = "countryPrefix";
+    roles[CountryCode] = "countryCode";
     roles[RegionPrefix] = "regionPrefix";
     roles[Number] = "number";
     roles[RawNumber] = "rawNumber";
@@ -419,6 +425,8 @@ QVariant RisipPhoneNumbersModel::data(const QModelIndex &index, int role) const
         return m_phoneContact->phoneNumberList()[index.row()]->fullNumber();
     case CountryPrefix:
         return m_phoneContact->phoneNumberList()[index.row()]->countryPrefix();
+    case CountryCode:
+        return m_phoneContact->phoneNumberList()[index.row()]->countryCode();
     case RegionPrefix:
         return QVariant();
     case Number:
