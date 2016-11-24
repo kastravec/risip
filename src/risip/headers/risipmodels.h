@@ -22,6 +22,7 @@
 
 #include <QAbstractListModel>
 #include <QQmlListProperty>
+#include "risipglobals.h"
 
 class QSortFilterProxyModel;
 class RisipAccount;
@@ -141,7 +142,7 @@ public:
 
     Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
 
-    RisipPhoneContactsModel(QObject *parent = NULL);
+    explicit RisipPhoneContactsModel(QObject *parent = NULL);
     ~RisipPhoneContactsModel();
 
     QSortFilterProxyModel *proxy() const;
@@ -150,6 +151,8 @@ public:
     QHash<int, QByteArray> roleNames() const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+    Q_INVOKABLE RisipPhoneContact *contactForIndex(int index);
 
 public Q_SLOTS:
     void addContact(RisipPhoneContact *contact);
@@ -179,7 +182,7 @@ public:
 
     Q_PROPERTY(RisipPhoneContact * phoneContact READ phoneContact WRITE setPhoneContact NOTIFY phoneContactChanged)
 
-    RisipPhoneNumbersModel(QObject *parent = 0);
+    explicit RisipPhoneNumbersModel(QObject *parent = 0);
     ~RisipPhoneNumbersModel();
 
     RisipPhoneContact *phoneContact() const;
@@ -194,5 +197,40 @@ Q_SIGNALS:
 
 private:
     RisipPhoneContact *m_phoneContact;
+};
+
+class RisipCountryRatesModel: public QAbstractListModel
+{
+    Q_OBJECT
+
+public:
+
+    enum RisipCountryRateDataRole {
+        CountryName = Qt::UserRole +1,
+        CountryCode,
+        CountryPrefix,
+        CountryRate,
+        ValidFromDate,
+        ValidTillDate
+    };
+
+    Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
+
+    explicit RisipCountryRatesModel(QObject *parent = 0);
+    ~RisipCountryRatesModel();
+
+    QSortFilterProxyModel *proxy() const;
+    void setProxy(QSortFilterProxyModel *proxy);
+
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+Q_SIGNALS:
+    void proxyChanged(QSortFilterProxyModel *proxy);
+
+private:
+    QSortFilterProxyModel *m_proxy;
+    QList<Country> m_allCountries;
 };
 #endif // RISIPBUDDYMODELS_H

@@ -8,9 +8,7 @@ import Risip 1.0
 Page {
     id: root
 
-    property alias contactName: contactNameLabel.text
-    property RisipPhoneContact phoneContact: RisipContactManager.contactForName(contactName)
-    property alias phoneNumbersModel: phoneNumberViewer.model
+    property RisipPhoneContact phoneContact: RisipContactManager.activePhoneContact
 
     signal backClicked
     signal favoriteClicked
@@ -25,12 +23,10 @@ Page {
             Image { source: "qrc:/images/icons/16/ArrowLeftRedx4.png"; Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter; }
             Label {
                 text: qsTr("Contacts")
+                height: 20
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {
-                        console.log("Back to contact..!");
-                        root.backClicked();
-                    }
+                    onClicked: { root.backClicked(); }
                 }
             }
         }
@@ -42,10 +38,7 @@ Page {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
-                    console.log("Favorite clicked..!");
-                    root.favoriteClicked();
-                }
+                onClicked: { root.favoriteClicked(); }
             }
         }
     } // end of header
@@ -72,7 +65,6 @@ Page {
                 text: "..."
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                visible: true
             }
 
             Image {
@@ -80,14 +72,14 @@ Page {
                 width: 80
                 height: 80
                 anchors.centerIn: parent
-                source: "image://contactIcon/" + contactName
+                source: "image://contactIcon/" + phoneContact.fullName
             }
         }
 
         Text {
             id: contactNameLabel
             font.bold: true
-
+            text: phoneContact.fullName
         }
     }
 
@@ -99,32 +91,34 @@ Page {
         anchors.bottom: parent.bottom
         width: parent.width
         clip: true
-        snapMode: ListView.SnapOneItem
+        snapMode: ListView.SnapToItem
 
+        model: phoneContact.phoneNumbersModel
         delegate: Rectangle {
             id: phoneNumberDelegate
-            width: parent.width - 20
+            width: parent.width/2 - 20
             height: phoneNumberBox.height + 15
-
-            RisipButton {
-                id: phoneNumberBox
-                width: phoneNumberDelegate.width - 10
-                height: 40
-                anchors.centerIn: phoneNumberDelegate
-                labelText.text: fullNumber
-                onClicked: RisipCallManager.callPhone(labelText.text);
-            }
+            property RisipPhoneNumber phoneNumber: RisipContactManager.phoneNumberForNumber(fullNumber)
 
             Image {
                 id: countryFlagIcon
                 width: 28
                 height: 28
-                source: "image://countryFlags/" + RisipContactManager.phoneNumberForNumber(fullNumber).countryCode
+                source: "image://countryFlags/" + phoneNumber.countryCode
                 anchors.right: phoneNumberBox.left
-                anchors.rightMargin: 10
+                anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
-                z:1
             }
+
+            RisipButton {
+                id: phoneNumberBox
+                width: phoneNumberDelegate.width - 10
+                height: 40
+                anchors.centerIn: parent
+                labelText.text: fullNumber
+                onClicked: RisipCallManager.callRisipPhoneNumber(phoneNumber);
+            }
+
 //            Text {
 //                text: RisipContactManager.phoneNumberForNumber(fullNumber).countryCode
 //            }

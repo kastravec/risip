@@ -31,5 +31,6 @@
         <file>images/icons/48/PhoneRed.png</file>
         <file>images/icons/48/PhoneBlack.png</file>
         <file>images/icons/128/CircleBlack.png</file>
+        <file>images/icons/128/GlobeSketch.png</file>
     </qresource>
 </RCC>

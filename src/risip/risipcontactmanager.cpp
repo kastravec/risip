@@ -47,6 +47,7 @@ RisipContactManager::RisipContactManager(QObject *parent)
     ,m_activeBuddiesModel(NULL)
     ,m_activeContactHistoryModel(NULL)
     ,m_phoneContactsModel(new RisipPhoneContactsModel(this))
+    ,m_activePhoneContact(NULL)
 {
     fetchPhoneContacts();
 }
@@ -97,6 +98,25 @@ void RisipContactManager::setActiveAccount(RisipAccount *account)
         }
 
         emit activeAccountChanged(m_activeAccount);
+    }
+}
+
+RisipPhoneContact *RisipContactManager::activePhoneContact() const
+{
+    return m_activePhoneContact;
+}
+
+void RisipContactManager::setActivePhoneContact(const QString &contactName)
+{
+    if(!contactName.isEmpty() && m_phoneContacts.contains(contactName))
+        setActivePhoneContact(m_phoneContacts[contactName]);
+}
+
+void RisipContactManager::setActivePhoneContact(RisipPhoneContact *phoneContact)
+{
+    if(m_activePhoneContact != phoneContact) {
+        m_activePhoneContact = phoneContact;
+        emit activePhoneContactChanged(m_activePhoneContact);
     }
 }
 
@@ -242,6 +262,8 @@ RisipContactHistoryModel *RisipContactManager::contactHistoryModelForAccount(con
  * It will retrieve all contacts and populate a contact phone model that can be used
  * from the phoneContactsModel property.
  *
+ * This function is called upon creation of RisipContactManager .
+ * Can be called anywhere in the app.
  * @see RisipContactManger::phoneContactsModel
  */
 void RisipContactManager::fetchPhoneContacts()
@@ -260,9 +282,18 @@ void RisipContactManager::fetchPhoneContacts()
 
 RisipPhoneContact *RisipContactManager::contactForName(const QString &name)
 {
-    if(m_phoneContacts.contains(name)) {
+    if(!name.isEmpty()
+            && m_phoneContacts.contains(name)) {
         return m_phoneContacts[name];
     }
+
+    return NULL;
+}
+
+RisipPhoneContact *RisipContactManager::contactForIndex(int index)
+{
+    if(m_phoneContactsModel)
+        return m_phoneContactsModel->contactForIndex(index);
 
     return NULL;
 }

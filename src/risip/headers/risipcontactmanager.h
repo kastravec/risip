@@ -38,6 +38,7 @@ public:
     Q_PROPERTY(RisipAccount * activeAccount READ activeAccount WRITE setActiveAccount NOTIFY activeAccountChanged)
     Q_PROPERTY(RisipBuddiesModel * activeBuddiesModel READ activeBuddiesModel WRITE setActiveBuddiesModel NOTIFY activeBuddiesModelChanged)
     Q_PROPERTY(RisipContactHistoryModel * activeContactHistory READ activeContactHistory WRITE setActiveContactHistory NOTIFY activeContactHistoryChanged)
+    Q_PROPERTY(RisipPhoneContact * activePhoneContact READ activePhoneContact WRITE setActivePhoneContact NOTIFY activePhoneContactChanged)
     Q_PROPERTY(RisipPhoneContactsModel * phoneContactsModel READ phoneContactsModel NOTIFY phoneContactsModelChanged)
     Q_PROPERTY(QQmlListProperty<RisipBuddiesModel> buddyModels READ buddyModels NOTIFY buddyModelsChanged)
     Q_PROPERTY(QQmlListProperty<RisipContactHistoryModel> contactHistoryModels READ contactHistoryModels NOTIFY contactHistoryModelsChanged)
@@ -48,6 +49,10 @@ public:
 
     RisipAccount *activeAccount() const;
     void setActiveAccount(RisipAccount *activeAccount);
+
+    RisipPhoneContact *activePhoneContact() const;
+    void setActivePhoneContact(RisipPhoneContact *phoneContact);
+    Q_INVOKABLE void setActivePhoneContact(const QString &contactName);
 
     RisipBuddiesModel *activeBuddiesModel() const;
     RisipContactHistoryModel *activeContactHistory() const;
@@ -67,12 +72,14 @@ public:
 
     Q_INVOKABLE void fetchPhoneContacts();
     Q_INVOKABLE RisipPhoneContact *contactForName(const QString &name);
+    Q_INVOKABLE RisipPhoneContact *contactForIndex(int index);
     Q_INVOKABLE RisipPhoneNumber *phoneNumberForNumber(const QString &number);
 
 Q_SIGNALS:
     void activeAccountChanged(RisipAccount *activeAccount);
     void activeBuddiesModelChanged(RisipBuddiesModel *model);
     void activeContactHistoryChanged(RisipContactHistoryModel *model);
+    void activePhoneContactChanged(RisipPhoneContact *contact);
     void buddyModelsChanged();
     void contactHistoryModelsChanged();
     void phoneContactsModelChanged(RisipPhoneContactsModel *model);
@@ -95,6 +102,7 @@ private:
 
     QHash<QString, RisipPhoneContact *> m_phoneContacts;
     QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
+    RisipPhoneContact *m_activePhoneContact;
 
     //responsible for fetching contacts from the ios device.
 #ifdef Q_OS_IOS

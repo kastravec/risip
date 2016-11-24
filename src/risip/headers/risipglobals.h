@@ -24,6 +24,7 @@
 #include <QString>
 #include <QPixmap>
 #include <QRunnable>
+#include <QDateTime>
 
 class RisipPhoneNumber;
 
@@ -48,6 +49,21 @@ struct RisipSettingsParam {
     static const QString RandomLocalPort;
 };
 
+struct Rate {
+    Rate();
+    Rate(const Rate &rate);
+
+    QString timeMeasure;
+    QString chargingMeasure;
+    QString actualRate;
+    QDateTime validFromDate;
+    QDateTime validTillDate;
+
+    Rate &operator=(const Rate &country);
+    bool operator!=(const Rate &country);
+    bool operator==(const Rate &country);
+};
+
 struct Country {
     Country(const QString &id = QString(), const QString &name = QString(),
             const QString &code = QString(), const QString &prefix = QString());
@@ -62,6 +78,7 @@ struct Country {
     QString code;
     QString prefix;
     QPixmap flag;
+    Rate rate;
 };
 
 struct RisipGlobals {

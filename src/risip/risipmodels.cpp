@@ -266,6 +266,8 @@ RisipPhoneContactsModel::RisipPhoneContactsModel(QObject *parent)
     m_proxy->setSourceModel(this);
     m_proxy->setSortRole(FullName);
     m_proxy->setFilterRole(FullName);
+    m_proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_proxy->setDynamicSortFilter(true);
 }
 
 RisipPhoneContactsModel::~RisipPhoneContactsModel()
@@ -284,7 +286,6 @@ void RisipPhoneContactsModel::setProxy(QSortFilterProxyModel *proxy)
         emit proxyChanged(m_proxy);
     }
 }
-
 
 QHash<int, QByteArray> RisipPhoneContactsModel::roleNames() const
 {
@@ -308,15 +309,13 @@ int RisipPhoneContactsModel::rowCount(const QModelIndex &parent) const
 
 QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
-        return QVariant();
-
-    if(index.row() > m_phoneContacts.count())
+    if (!index.isValid()
+            || index.row() >= m_phoneContacts.count())
         return QVariant();
 
     RisipPhoneContact *contact = m_phoneContacts.at(index.row());
     if(!contact) {
-        qDebug()<<"No contact found model!";
+        qDebug()<<"No contact found in model..!";
         return QVariant();
     }
 
@@ -340,6 +339,14 @@ QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
+}
+
+RisipPhoneContact *RisipPhoneContactsModel::contactForIndex(int index)
+{
+    if(m_phoneContacts.count() >= index >= 0)
+        return m_phoneContacts[index];
+
+    return NULL;
 }
 
 void RisipPhoneContactsModel::addContact(RisipPhoneContact *contact)
@@ -406,13 +413,10 @@ QHash<int, QByteArray> RisipPhoneNumbersModel::roleNames() const
 
 int RisipPhoneNumbersModel::rowCount(const QModelIndex &parent) const
 {
-    if (parent.isValid())
+    if (parent.isValid() || !m_phoneContact)
         return 0;
 
-    if(m_phoneContact)
-        return m_phoneContact->phoneNumberList().count();
-
-    return 0;
+    return m_phoneContact->phoneNumberList().count();
 }
 
 QVariant RisipPhoneNumbersModel::data(const QModelIndex &index, int role) const
@@ -433,6 +437,83 @@ QVariant RisipPhoneNumbersModel::data(const QModelIndex &index, int role) const
         return m_phoneContact->phoneNumberList()[index.row()]->number();
     case RawNumber:
         return m_phoneContact->phoneNumberList()[index.row()]->rawNumber();
+    default:
+        return QVariant();
+    }
+
+    return QVariant();
+}
+
+RisipCountryRatesModel::RisipCountryRatesModel(QObject *parent)
+    :QAbstractListModel(parent)
+    ,m_proxy(new QSortFilterProxyModel(this))
+{
+    m_proxy->setSourceModel(this);
+    m_proxy->setSortRole(CountryName);
+    m_proxy->setFilterRole(CountryName);
+    m_allCountries = RisipGlobals::countries();
+    sort(0);
+}
+
+RisipCountryRatesModel::~RisipCountryRatesModel()
+{
+}
+
+QSortFilterProxyModel *RisipCountryRatesModel::proxy() const
+{
+    return m_proxy;
+}
+
+void RisipCountryRatesModel::setProxy(QSortFilterProxyModel *proxy)
+{
+    if(m_proxy != proxy) {
+        m_proxy = proxy;
+        emit proxyChanged(m_proxy);
+    }
+}
+
+QHash<int, QByteArray> RisipCountryRatesModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[CountryName] = "countryName";
+    roles[CountryCode] = "countryCode";
+    roles[CountryRate] = "countryRate";
+    roles[CountryPrefix] = "countryPrefix";
+    roles[ValidFromDate] = "validFromDate";
+    roles[ValidTillDate] = "validTillDate";
+    return roles;
+}
+
+int RisipCountryRatesModel::rowCount(const QModelIndex &parent) const
+{
+    // For list models only the root node (an invalid parent) should return the list's size. For all
+    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
+    if (parent.isValid())
+        return 0;
+
+    return m_allCountries.count();
+}
+
+QVariant RisipCountryRatesModel::data(const QModelIndex &index, int role) const
+{
+    if(!index.isValid()
+            || index.row() > m_allCountries.count())
+        return QVariant();
+
+    Country country = m_allCountries[index.row()];
+    switch (role) {
+    case CountryName:
+        return country.name;
+    case CountryCode:
+        return country.code.toLower();
+    case CountryPrefix:
+        return country.prefix;
+    case CountryRate:
+        return country.rate.actualRate + country.rate.timeMeasure;
+    case ValidFromDate:
+        return country.rate.validFromDate;
+    case ValidTillDate:
+        return country.rate.validTillDate;
     default:
         return QVariant();
     }

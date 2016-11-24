@@ -40,9 +40,6 @@ class Risip: public QObject
 
 public:
     Q_PROPERTY(QQmlListProperty<RisipAccount> accounts READ accounts NOTIFY accountsChanged)
-    Q_PROPERTY(RisipContactManager * contactManager READ contactManager CONSTANT)
-    Q_PROPERTY(RisipCallManager * callManager READ callManager CONSTANT)
-    Q_PROPERTY(RisipMorApi * morApi READ morApi CONSTANT)
     Q_PROPERTY(QStringList accountNames READ accountNames NOTIFY accountNamesChanged)
     Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint CONSTANT)
     Q_PROPERTY(RisipAccount * defaultAccount READ defaultAccount NOTIFY defaultAccountChanged)
@@ -55,9 +52,6 @@ public:
 
     QQmlListProperty<RisipAccount> accounts();
     QStringList accountNames() const;
-    RisipContactManager *contactManager() const;
-    RisipCallManager *callManager() const;
-    RisipMorApi *morApi() const;
     RisipEndpoint *sipEndpoint();
     RisipAccount *defaultAccount();
     bool firstRun() const;

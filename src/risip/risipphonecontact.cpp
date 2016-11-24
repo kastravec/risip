@@ -289,7 +289,7 @@ QByteArray RisipPhoneContact::contactImageData() const
     return m_contactImageData;
 }
 
-void RisipPhoneContact::setContactImageData(const QByteArray &imageData)
+void RisipPhoneContact::setContactImageData(QByteArray imageData)
 {
     if(m_contactImageData != imageData) {
         m_contactImageData = imageData;
@@ -306,6 +306,14 @@ QQmlListProperty<RisipPhoneNumber> RisipPhoneContact::phoneNumbers()
 QList<RisipPhoneNumber *> RisipPhoneContact::phoneNumberList() const
 {
     return m_phoneNumbers.values();
+}
+
+RisipPhoneNumber *RisipPhoneContact::phoneNumberForNumber(const QString &number)
+{
+    if(m_phoneNumbers.contains(number))
+        return m_phoneNumbers[number];
+
+    return NULL;
 }
 
 void RisipPhoneContact::addPhoneNumber(const QString &number, const QString &label)

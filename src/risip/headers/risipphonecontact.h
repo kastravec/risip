@@ -130,10 +130,12 @@ public:
 
     RisipPhoneNumbersModel *phoneNumbersModel() const;
     QByteArray contactImageData() const;
-    void setContactImageData(const QByteArray &imageData);
+    void setContactImageData(QByteArray imageData);
 
     QQmlListProperty<RisipPhoneNumber> phoneNumbers();
     QList<RisipPhoneNumber *> phoneNumberList() const;
+    Q_INVOKABLE RisipPhoneNumber *phoneNumberForNumber(const QString &number);
+
     void addPhoneNumber(const QString &number, const QString &label = QString());
     void addPhoneNumber(RisipPhoneNumber *number);
     void removePhoneNumber(RisipPhoneNumber *number);

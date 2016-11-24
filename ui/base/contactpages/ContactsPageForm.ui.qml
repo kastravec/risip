@@ -21,23 +21,28 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 Page {
-    id: contactsPage
+    id: mainContactsPage
 
-    property alias phoneContactModel: phoneListView.model
     property alias buddyModel: sipListView.model
     property alias sipListView: sipListView
     property alias searchContactInput: searchContactInput
     property alias contactsListLayout: contactsListLayout
     property alias phoneListView: phoneListView
     property alias stackView: stackView
+    property alias contactPages: contactPages
+    property alias contactViewPage: contactViewPage
 
     StackView {
         id: stackView
         anchors.fill: parent
-        initialItem: mainContactsPage
+        initialItem: contactPages
+
+        ContactPage {
+            id: contactViewPage
+        }
 
         Page {
-            id: mainContactsPage
+            id: contactPages
             footer: TabBar {
                 id: tabBar
                 TabButton {
@@ -92,6 +97,5 @@ Page {
                 }
             }
         } //end page
-
-    }
+    } //end of stackview
 }

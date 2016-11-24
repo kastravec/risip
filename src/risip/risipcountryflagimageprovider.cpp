@@ -18,6 +18,8 @@
 **
 ************************************************************************************/
 #include "risipcountryflagimageprovider.h"
+#include <QDebug>
+#include <QFile>
 
 #include "risipglobals.h"
 
@@ -28,17 +30,19 @@ RisipCountryFlagImageProvider::RisipCountryFlagImageProvider()
 
 QPixmap RisipCountryFlagImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    int width = 80;
-    int height = 80;
+    int width = 550;
+    int height = 289;
     if (size)
         *size = QSize(width, height);
 
     QPixmap countryFlagPixmap(requestedSize.width() > 0 ? requestedSize.width() : width,
                    requestedSize.height() > 0 ? requestedSize.height() : height);
 
-    Country country = RisipGlobals::countryForPrefix(id);
-    if(!country.flag.isNull())
-        return country.flag;
+    QFile countryflag(QString(":/images/icons/flags/550/") + id + QString(".png"));
+    if(!countryflag.exists())
+        countryFlagPixmap.load(QString(":/images/icons/128/GlobeSketch.png"));
+    else
+        countryFlagPixmap.load(QString(":/images/icons/flags/550/") + id + QString(".png"));
 
     return countryFlagPixmap;
 }

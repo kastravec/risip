@@ -1,6 +1,7 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
 **    http://risip.io
+**
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
 **    the Free Software Foundation, either version 3 of the License, or
@@ -16,39 +17,29 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#ifndef RISIPRATEMANAGER_H
+#define RISIPRATEMANAGER_H
 
-import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
+#include <QObject>
 
-Item {
-    id: root
+class RisipCountryRatesModel;
 
-    RowLayout {
-        spacing: 20
+class RisipRateManager : public QObject
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(RisipCountryRatesModel * countryRatesModel READ countryRatesModel CONSTANT)
 
-        Text {
-            id: contactLabel
-            text: model.callContact
-            color: "#000000"
-        }
+    static RisipRateManager *instance();
+    ~RisipRateManager();
 
-        Text {
-            id: callDuration
-            text: model.callDuration
-            color: "#000000"
-        }
+    RisipCountryRatesModel *countryRatesModel() const;
 
-        Text {
-            id: callDirection
-            text: model.callDirection
-            color: "#000000"
-        }
+private:
+    explicit RisipRateManager(QObject *parent = 0);
 
-        Text {
-            id: callTimestamp
-            text: model.callTimestamp
-            color: "#000000"
-        }
-    }
-}
+    static RisipRateManager *m_instance;
+    RisipCountryRatesModel *m_countryRatesModel;
+};
+
+#endif // RISIPRATEMANAGER_H

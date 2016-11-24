@@ -1,6 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
-**
+**    http://risip.io
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
 **    the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,34 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
 
-//import Risip 1.0
+import SortFilterProxyModel 0.1
 
-Item {
-    id: root
+import Risip 1.0
 
-    property alias model: contactListView.model
+Page {
+    id: phoneContactsPageView
 
-    signal contactClicked(var contactName)
+    property alias filterPattern: proxyModel.filterPattern
+
+    signal contactClicked
+
+    SortFilterProxyModel {
+        id: proxyModel
+        sourceModel: RisipContactManager.phoneContactsModel
+        filterRoleName: "fullName"
+        filterCaseSensitivity: Qt.CaseInsensitive
+        sortOrder: Qt.AscendingOrder
+        sortRoleName: "fullName"
+    }
 
     ListView {
         id: contactListView
         clip: true
-        cacheBuffer: 500
         snapMode: ListView.SnapToItem
+        model: proxyModel
+        cacheBuffer: 700
         anchors.fill: parent
+        focus: true
 
         delegate: contactListViewDelegate
     }
@@ -51,7 +64,10 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked:{ root.contactClicked(fullName); }
+                onClicked:{
+                    RisipContactManager.setActivePhoneContact(fullName);
+                    phoneContactsPageView.contactClicked();
+                }
             }
 
             Rectangle {

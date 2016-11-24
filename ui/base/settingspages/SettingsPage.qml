@@ -86,6 +86,8 @@ Page {
                         stackView.push(balanceSettingsPageLoader.item);
                         break;
                     case 2: //Rates
+                        countryRatesPageLoader.active = true;
+                        stackView.push(countryRatesPageLoader);
                         break;
                     case 3: //Earn Credits
                         break;
@@ -137,6 +139,12 @@ Page {
     Loader {
         id: languageSettingsPageLoader
         source: "qrc:/ui/base/settingspages/LanguageSettingsPage.qml"
+        active: false
+    }
+
+    Loader {
+        id: countryRatesPageLoader
+        source: "qrc:/ui/base/settingspages/CountryRatesPage.qml"
         active: false
     }
 

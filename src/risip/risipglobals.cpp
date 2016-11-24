@@ -28,6 +28,54 @@ const QString RisipSettingsParam::ProxyServer("proxyServer");
 const QString RisipSettingsParam::LocalPort("localPort");
 const QString RisipSettingsParam::RandomLocalPort("randomLocalPort");
 
+Rate::Rate()
+    :timeMeasure("min")
+    ,chargingMeasure()
+    ,actualRate()
+    ,validFromDate()
+    ,validTillDate()
+{
+
+}
+
+Rate::Rate(const Rate &rate)
+    :timeMeasure(rate.timeMeasure)
+    ,chargingMeasure(rate.chargingMeasure)
+    ,actualRate(rate.actualRate)
+    ,validFromDate(rate.validFromDate)
+    ,validTillDate(rate.validTillDate)
+{
+
+}
+
+Rate &Rate::operator=(const Rate &rate)
+{
+    timeMeasure = rate.timeMeasure;
+    chargingMeasure = rate.chargingMeasure;
+    actualRate = rate.actualRate;
+    validFromDate = rate.validFromDate;
+    validTillDate = rate.validTillDate;
+    return *this;
+}
+
+bool Rate::operator!=(const Rate &rate)
+{
+    return (actualRate != rate.actualRate
+            && timeMeasure != rate.timeMeasure
+            && chargingMeasure != rate.chargingMeasure
+            && validFromDate != rate.validFromDate
+            && validTillDate != rate.validTillDate);
+}
+
+bool Rate::operator==(const Rate &rate)
+{
+    return (actualRate == rate.actualRate
+            && timeMeasure == rate.timeMeasure
+            && chargingMeasure == rate.chargingMeasure
+            && validFromDate == rate.validFromDate
+            && validTillDate == rate.validTillDate);
+}
+
 Country::Country(const QString &id, const QString &name,
                  const QString &code, const QString &prefix)
     :countryId(id)
@@ -100,9 +148,7 @@ private:
 
                 countryLine.remove(0, countryLine.indexOf(";") +1);
                 country.code = countryLine.left(countryLine.indexOf(";")).trimmed();
-
-                if(!country.flag.load(QString(":/images/icons/flags/550/") + country.code.toLower() + QString(".png")))
-                    qDebug()<<"ERROR FLAG LOADED" << QString(":/images/icons/flags/550/") + country.code.toLower() + QString(".png");
+//                country.flag.load(QString(":/images/icons/flags/550/") + country.code.toLower() + QString(".png"));
 
                 countries.insert(country.prefix, country);
             }
@@ -182,7 +228,7 @@ void RisipGlobals::validateNumber(RisipPhoneNumber *number)
 
     rawNumber = rawNumber.normalized(QString::NormalizationForm_KC, QChar::Unicode_8_0);
     rawNumber.trimmed();
-    rawNumber.remove(QString("+"));
+//    rawNumber.remove(QString("+"));
     rawNumber.remove(QString(QString("-")));
     rawNumber.simplified();
     QStringList parts = rawNumber.split(QRegularExpression("\\s+"));
@@ -222,3 +268,4 @@ void RisipGlobals::setCountryList(QHash<QString, Country> countryList)
     else
         m_countriesIntialized = false;
 }
+

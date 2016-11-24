@@ -46,7 +46,10 @@ SOURCES += src/app/main.cpp \
     src/risip/risipglobals.cpp \
     src/sipregistrars/mor/risipmorapi.cpp \
     src/risip/risipcontactimageprovider.cpp \
-    src/risip/risipcountryflagimageprovider.cpp
+    src/risip/risipcountryflagimageprovider.cpp \
+    src/risip/risipratemanager.cpp \
+    src/utils/qqmlsortfilterproxymodel.cpp \
+    src/utils/qqmlsortfilterproxymodel.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -70,7 +73,10 @@ HEADERS += src/risip/headers/risip.h \
     src/sipregistrars/mor/risipmorapi.h \
     src/risip/ios/risipioswifiprovider.h \
     src/risip/headers/risipcontactimageprovider.h \
-    src/risip/headers/risipcountryflagimageprovider.h
+    src/risip/headers/risipcountryflagimageprovider.h \
+    src/risip/headers/risipratemanager.h \
+    src/utils/qqmlsortfilterproxymodel.h \
+    src/utils/qqmlsortfilterproxymodel.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {
@@ -264,7 +270,11 @@ DISTFILES += \
     utils/runOnMac.sh \
     LICENSE.GPLv3 \
     LICENSE.HEADER.GPLv3 \
-    risip_backlog
+    risip_backlog \
+    src/utils/SortFilterProxyModel/qpm.json \
+    src/utils/SortFilterProxyModel/SortFilterProxyModel.pri \
+    src/utils/SortFilterProxyModel/LICENSE \
+    src/utils/SortFilterProxyModel/README.md
 
 OBJECTIVE_SOURCES += \
     src/risip/ios/risipioswifiprovider.mm

@@ -1,6 +1,6 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
-**
+**    http://risip.io
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
 **    the Free Software Foundation, either version 3 of the License, or
@@ -16,6 +16,7 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+
 import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.0

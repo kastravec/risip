@@ -35,5 +35,6 @@
         <file>ui/base/MainPage.qml</file>
         <file>ui/base/MainWindow.qml</file>
         <file>ui/base/contactpages/RisipBuddyListView.qml</file>
+        <file>ui/base/settingspages/CountryRatesPage.qml</file>
     </qresource>
 </RCC>
