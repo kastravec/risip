@@ -21,35 +21,56 @@
 #include "risipmedia.h"
 #include "risipcall.h"
 #include "risipendpoint.h"
+#include "risipaccount.h"
+
+#include "pjsipwrapper/pjsipcall.h"
+#include "pjsipwrapper/pjsipendpoint.h"
 
 #include <QDebug>
 
+class RisipMedia::Private
+{
+public:
+    VidDevManager *pjsipVideoManager;
+    AudDevManager *pjsipAudioManager;
+    AudioMedia *callAudio;
+    AudioMedia *localAudioMedia;
+    AudioMedia *audioDevice;
+    RisipCall *activeCall;
+    RisipEndpoint *sipEndpoint;
+    bool keepMediaSettings;
+    Error error;
+    bool loudSpeaker;
+};
+
 RisipMedia::RisipMedia(QObject *parent)
     :QObject(parent)
-    ,m_pjsipAudioManager(NULL)
-    ,m_callAudio(NULL)
-    ,m_localAudioMedia(NULL)
-    ,m_audioDevice(NULL)
-    ,m_activeCall(NULL)
-    ,m_sipEndpoint(NULL)
-    ,m_keepMediaSettings(true)
-    ,m_error()
-    ,m_loudSpeaker(false)
+    ,m_data(new Private)
 {
+    m_data->pjsipAudioManager = NULL;
+    m_data->callAudio = NULL;
+    m_data->localAudioMedia = NULL;
+    m_data->audioDevice = NULL;
+    m_data->activeCall = NULL;
+    m_data->sipEndpoint = NULL;
+    m_data->keepMediaSettings = true;
+    m_data->loudSpeaker = false;
 }
 
 RisipMedia::~RisipMedia()
 {
+    delete m_data;
+    m_data = NULL;
 }
 
 RisipCall *RisipMedia::activeCall() const
 {
-    return m_activeCall;
+    return m_data->activeCall;
 }
 
 RisipEndpoint *RisipMedia::sipEndpoint() const
 {
-    return m_sipEndpoint;
+    return m_data->sipEndpoint;
 }
 
 /**
@@ -64,19 +85,19 @@ RisipEndpoint *RisipMedia::sipEndpoint() const
  */
 void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
 {
-    if(m_sipEndpoint != endpoint) {
-        m_sipEndpoint = endpoint;
-        emit sipEndpointChanged(m_sipEndpoint);
+    if(m_data->sipEndpoint != endpoint) {
+        m_data->sipEndpoint = endpoint;
+        emit sipEndpointChanged(m_data->sipEndpoint);
 
-        if(m_sipEndpoint) {
-            m_pjsipAudioManager = &(m_sipEndpoint->endpointInstance()->audDevManager());
+        if(m_data->sipEndpoint) {
+            m_data->pjsipAudioManager = &(m_data->sipEndpoint->endpointInstance()->audDevManager());
 
             try {
-                m_localAudioMedia = &m_pjsipAudioManager->getCaptureDevMedia();
+                m_data->localAudioMedia = &m_data->pjsipAudioManager->getCaptureDevMedia();
             } catch (Error &err) {
                 setError(err);
             }
-            m_audioDevice = &m_pjsipAudioManager->getPlaybackDevMedia();
+            m_data->audioDevice = &m_data->pjsipAudioManager->getPlaybackDevMedia();
         }
     }
 }
@@ -94,21 +115,21 @@ void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
  */
 void RisipMedia::setActiveCall(RisipCall *call)
 {
-    if(m_activeCall != call) {
-        m_activeCall = call;
-        emit activeCallChanged(m_activeCall);
+    if(m_data->activeCall != call) {
+        m_data->activeCall = call;
+        emit activeCallChanged(m_data->activeCall);
 
         //setting an instance of the risip endpoint object in order to use the singleton instance of pjsip library.
         // see setSipEndpoint for more details
-        if(m_activeCall)
-            setSipEndpoint(m_activeCall->account()->sipEndPoint());
+        if(m_data->activeCall)
+            setSipEndpoint(m_data->activeCall->account()->sipEndPoint());
     }
 }
 
 int RisipMedia::speakerVolume() const
 {
-    if(m_pjsipAudioManager)
-        return m_pjsipAudioManager->getOutputVolume();
+    if(m_data->pjsipAudioManager)
+        return m_data->pjsipAudioManager->getOutputVolume();
 
     return -1;
 }
@@ -119,9 +140,9 @@ int RisipMedia::speakerVolume() const
  */
 void RisipMedia::setSpeakerVolume(int volume)
 {
-    if(m_pjsipAudioManager) {
-        if(m_pjsipAudioManager->getOutputVolume() != volume) {
-            m_pjsipAudioManager->setOutputVolume(volume, m_keepMediaSettings);
+    if(m_data->pjsipAudioManager) {
+        if(m_data->pjsipAudioManager->getOutputVolume() != volume) {
+            m_data->pjsipAudioManager->setOutputVolume(volume, m_data->keepMediaSettings);
             emit speakerVolumeChanged(volume);
         }
     }
@@ -129,10 +150,10 @@ void RisipMedia::setSpeakerVolume(int volume)
 
 qlonglong RisipMedia::micVolume() const
 {
-    if(!m_activeCall || !m_sipEndpoint)
+    if(!m_data->activeCall || !m_data->sipEndpoint)
         return -1.0;
 
-    return m_callAudio->getTxLevel();
+    return m_data->callAudio->getTxLevel();
 }
 
 /**
@@ -141,67 +162,67 @@ qlonglong RisipMedia::micVolume() const
  */
 void RisipMedia::setMicVolume(qlonglong volume)
 {
-    if((!m_activeCall || !m_sipEndpoint)
+    if((!m_data->activeCall || !m_data->sipEndpoint)
             && (0.0 <= volume >= 1.0) )
         return;
 
-    if(m_activeCall->pjsipCall()->isActive()) {
-        m_localAudioMedia->adjustTxLevel(volume);
+    if(m_data->activeCall->pjsipCall()->isActive()) {
+        m_data->localAudioMedia->adjustTxLevel(volume);
         emit micVolumeChanged(volume);
     }
 }
 
 bool RisipMedia::loudSpeaker() const
 {
-    return m_loudSpeaker;
+    return m_data->loudSpeaker;
 }
 
 void RisipMedia::setLoudSpeaker(bool loudspeaker)
 {
-    if(m_loudSpeaker != loudspeaker) {
-        m_loudSpeaker = loudspeaker;
+    if(m_data->loudSpeaker != loudspeaker) {
+        m_data->loudSpeaker = loudspeaker;
 
-        if(m_sipEndpoint && m_activeCall->pjsipCall()->isActive()) {
+        if(m_data->sipEndpoint && m_data->activeCall->pjsipCall()->isActive()) {
             try {
                 if(loudspeaker)
-                    m_pjsipAudioManager->setOutputRoute(PJMEDIA_AUD_DEV_ROUTE_LOUDSPEAKER);
+                    m_data->pjsipAudioManager->setOutputRoute(PJMEDIA_AUD_DEV_ROUTE_LOUDSPEAKER);
                 else
-                    m_pjsipAudioManager->setOutputRoute(PJMEDIA_AUD_DEV_ROUTE_DEFAULT);
+                    m_data->pjsipAudioManager->setOutputRoute(PJMEDIA_AUD_DEV_ROUTE_DEFAULT);
             } catch (Error &err) {
                 setError(err);
             }
         }
 
-        emit loudSpeakerChanged(m_loudSpeaker);
+        emit loudSpeakerChanged(m_data->loudSpeaker);
     }
 }
 
 bool RisipMedia::keepMediaSettings() const
 {
-    return m_keepMediaSettings;
+    return m_data->keepMediaSettings;
 }
 
 void RisipMedia::setKeepMediaSettings(const bool keep)
 {
-    if(m_keepMediaSettings != keep) {
-        m_keepMediaSettings = keep;
-        emit keepMediaSettingsChanged(m_keepMediaSettings);
+    if(m_data->keepMediaSettings != keep) {
+        m_data->keepMediaSettings = keep;
+        emit keepMediaSettingsChanged(m_data->keepMediaSettings);
     }
 }
 
 int RisipMedia::errorCode() const
 {
-    return m_error.status;
+    return m_data->error.status;
 }
 
 QString RisipMedia::errorMessage() const
 {
-    return QString::fromStdString(m_error.reason);
+    return QString::fromStdString(m_data->error.reason);
 }
 
 QString RisipMedia::errorInfo() const
 {
-    return QString::fromStdString(m_error.info(true));
+    return QString::fromStdString(m_data->error.info(true));
 }
 
 /**
@@ -215,26 +236,26 @@ QString RisipMedia::errorInfo() const
  */
 void RisipMedia::startCallMedia()
 {
-    if(!m_activeCall || !m_sipEndpoint)
+    if(!m_data->activeCall || !m_data->sipEndpoint)
         return;
 
-    CallInfo callInfo = m_activeCall->pjsipCall()->getInfo();
+    CallInfo callInfo = m_data->activeCall->pjsipCall()->getInfo();
     // Iterate all the call medias
     for (int i = 0; i < callInfo.media.size(); ++i) {
-        if (callInfo.media[i].type == PJMEDIA_TYPE_AUDIO && m_activeCall->pjsipCall()->getMedia(i)) {
-            m_callAudio = (AudioMedia *)m_activeCall->pjsipCall()->getMedia(i);
+        if (callInfo.media[i].type == PJMEDIA_TYPE_AUDIO && m_data->activeCall->pjsipCall()->getMedia(i)) {
+            m_data->callAudio = (AudioMedia *)m_data->activeCall->pjsipCall()->getMedia(i);
             break;
         }
     }
     // Connect the call audio media to sound device
     try {
-        m_localAudioMedia->startTransmit(*m_callAudio);
+        m_data->localAudioMedia->startTransmit(*m_data->callAudio);
     } catch (Error &err) {
         setError(err);
     }
 
     try {
-        m_callAudio->startTransmit(*m_audioDevice);
+        m_data->callAudio->startTransmit(*m_data->audioDevice);
     } catch (Error &err) {
         setError(err);
     }
@@ -244,15 +265,15 @@ void RisipMedia::setError(Error &error)
 {
     qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
 
-    if(m_error.status != error.status) {
-        m_error.status = error.status;
-        m_error.reason = error.reason;
-        m_error.srcFile = error.srcFile;
-        m_error.srcLine = error.srcLine;
-        m_error.title = error.title;
+    if(m_data->error.status != error.status) {
+        m_data->error.status = error.status;
+        m_data->error.reason = error.reason;
+        m_data->error.srcFile = error.srcFile;
+        m_data->error.srcLine = error.srcLine;
+        m_data->error.title = error.title;
 
-        emit errorCodeChanged(m_error.status);
-        emit errorMessageChanged(QString::fromStdString(m_error.reason));
-        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
+        emit errorCodeChanged(m_data->error.status);
+        emit errorMessageChanged(QString::fromStdString(m_data->error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_data->error.info(true)));
     }
 }

@@ -28,9 +28,21 @@
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
 #include "risipphonecontact.h"
+#include "risipphonenumber.h"
+
+#include "pjsipwrapper/pjsipcall.h"
 
 #include <QSortFilterProxyModel>
 #include <QDebug>
+
+class RisipCallManager::Private
+{
+public:
+    RisipAccount *m_activeAccount;
+    RisipCall *m_activeCall;
+    QAbstractItemModel *m_activeCallHistoryModel;
+    QHash<QString, QAbstractItemModel *> m_callHistoryModels;
+};
 
 RisipCallManager *RisipCallManager::m_callManagerInstance = NULL;
 RisipCallManager *RisipCallManager::instance()
@@ -49,12 +61,13 @@ RisipCallManager *RisipCallManager::instance()
  */
 RisipCallManager::RisipCallManager(QObject *parent)
     :QObject(parent)
-    ,m_activeAccount(Risip::instance()->defaultAccount())
-    ,m_activeCall(NULL)
-    ,m_activeCallHistoryModel(NULL)
-    ,m_callHistoryModels()
+    ,m_data(new Private)
 {
-    connect(m_activeAccount, &RisipAccount::incomingCall,
+    m_data->m_activeAccount = Risip::instance()->defaultAccount();
+    m_data->m_activeCall = NULL;
+    m_data->m_activeCallHistoryModel = NULL;
+
+    connect(m_data->m_activeAccount, &RisipAccount::incomingCall,
             this, &RisipCallManager::accountIncomingCall);
 }
 
@@ -66,35 +79,35 @@ RisipCallManager::RisipCallManager(QObject *parent)
  */
 void RisipCallManager::setActiveCall(RisipCall *call)
 {
-    if(m_activeCall != call) {
-        m_activeCall = call;
-        emit activeCallChanged(m_activeCall);
+    if(m_data->m_activeCall != call) {
+        m_data->m_activeCall = call;
+        emit activeCallChanged(m_data->m_activeCall);
     }
 }
 
 QAbstractItemModel *RisipCallManager::activeCallHistoryModel() const
 {
-    return qobject_cast<RisipCallHistoryModel *>(m_activeCallHistoryModel);
+    return qobject_cast<RisipCallHistoryModel *>(m_data->m_activeCallHistoryModel);
 }
 
 void RisipCallManager::setActiveCallHistoryModel(QAbstractItemModel *model)
 {
-    if(m_activeCallHistoryModel != model) {
-        m_activeCallHistoryModel = model;
-        emit activeCallHistoryModelChanged(m_activeCallHistoryModel);
+    if(m_data->m_activeCallHistoryModel != model) {
+        m_data->m_activeCallHistoryModel = model;
+        emit activeCallHistoryModelChanged(m_data->m_activeCallHistoryModel);
     }
 }
 
 QQmlListProperty<QAbstractItemModel> RisipCallManager::callHistoryModels()
 {
-    QList<QAbstractItemModel *> models = m_callHistoryModels.values();
+    QList<QAbstractItemModel *> models = m_data->m_callHistoryModels.values();
     return QQmlListProperty<QAbstractItemModel>(this, models);
 }
 
 QAbstractItemModel *RisipCallManager::callHistoryModelForAccount(const QString &account) const
 {
-    if(m_callHistoryModels.contains(account))
-        return qobject_cast<RisipCallHistoryModel *>(m_callHistoryModels[account]);
+    if(m_data->m_callHistoryModels.contains(account))
+        return qobject_cast<RisipCallHistoryModel *>(m_data->m_callHistoryModels[account]);
 
     return NULL;
 }
@@ -102,11 +115,13 @@ QAbstractItemModel *RisipCallManager::callHistoryModelForAccount(const QString &
 RisipCallManager::~RisipCallManager()
 {
     m_callManagerInstance = NULL;
+    delete m_data;
+    m_data = NULL;
 }
 
 RisipAccount *RisipCallManager::activeAccount() const
 {
-    return m_activeAccount;
+    return m_data->m_activeAccount;
 }
 
 /**
@@ -121,35 +136,35 @@ void RisipCallManager::setActiveAccount(RisipAccount *account)
     if(!account)
         return;
 
-    if(m_activeAccount !=account) {
+    if(m_data->m_activeAccount !=account) {
 
-        disconnect(m_activeAccount, &RisipAccount::incomingCall,
+        disconnect(m_data->m_activeAccount, &RisipAccount::incomingCall,
                 this, &RisipCallManager::accountIncomingCall);
 
-        m_activeAccount = account;
-        if(!m_activeAccount)
-            m_activeAccount = Risip::instance()->defaultAccount();
+        m_data->m_activeAccount = account;
+        if(!m_data->m_activeAccount)
+            m_data->m_activeAccount = Risip::instance()->defaultAccount();
 
-        connect(m_activeAccount, &RisipAccount::incomingCall,
+        connect(m_data->m_activeAccount, &RisipAccount::incomingCall,
                 this, &RisipCallManager::accountIncomingCall, Qt::UniqueConnection);
 
-        if(callHistoryModelForAccount(m_activeAccount->configuration()->uri()))
-            setActiveCallHistoryModel(callHistoryModelForAccount(m_activeAccount->configuration()->uri()));
+        if(callHistoryModelForAccount(m_data->m_activeAccount->configuration()->uri()))
+            setActiveCallHistoryModel(callHistoryModelForAccount(m_data->m_activeAccount->configuration()->uri()));
         //TODO what if call history model does not exists?
 
-        emit activeAccountChanged(m_activeAccount);
+        emit activeAccountChanged(m_data->m_activeAccount);
     }
 }
 
 RisipCall *RisipCallManager::activeCall()
 {
-    return m_activeCall;
+    return m_data->m_activeCall;
 }
 
 RisipCall *RisipCallManager::makeSIPCall(const QString &contact)
 {
-    RisipBuddy *buddy = m_activeAccount->findBuddy(
-                RisipGlobals::formatToSip(contact, m_activeAccount->configuration()->serverAddress()));
+    RisipBuddy *buddy = m_data->m_activeAccount->findBuddy(
+                RisipGlobals::formatToSip(contact, m_data->m_activeAccount->configuration()->serverAddress()));
     if(buddy == NULL) {
         buddy = new RisipBuddy(this);
         buddy->setAccount(activeAccount());
@@ -171,12 +186,12 @@ RisipCall *RisipCallManager::callBuddy(RisipBuddy *buddy)
 
     RisipCall *call = new RisipCall(this);
     call->setBuddy(buddy);
-    call->setAccount(m_activeAccount);
+    call->setAccount(m_data->m_activeAccount);
     call->call();
     emit outgoingCall(call);
 
     //adding call record for the active account.
-    qobject_cast<RisipCallHistoryModel *>(m_activeCallHistoryModel)->addCallRecord(call);
+    qobject_cast<RisipCallHistoryModel *>(m_data->m_activeCallHistoryModel)->addCallRecord(call);
     setActiveCall(call);
 
     return call;
@@ -203,12 +218,12 @@ RisipCall *RisipCallManager::callRisipPhoneNumber(RisipPhoneNumber *number)
 
     RisipCall *call = new RisipCall(this);
     call->setPhoneNumber(number);
-    call->setAccount(m_activeAccount);
+    call->setAccount(m_data->m_activeAccount);
     call->call();
     emit outgoingCall(call);
 
     //adding call record for the active account.
-    qobject_cast<RisipCallHistoryModel *>(m_activeCallHistoryModel)->addCallRecord(call);
+    qobject_cast<RisipCallHistoryModel *>(m_data->m_activeCallHistoryModel)->addCallRecord(call);
     setActiveCall(call);
 
     return call;
@@ -227,9 +242,9 @@ void RisipCallManager::createModelsForAccount(RisipAccount *account)
     if(!account)
         return;
 
-    if(!m_callHistoryModels.contains(account->configuration()->uri())) {
+    if(!m_data->m_callHistoryModels.contains(account->configuration()->uri())) {
         RisipCallHistoryModel *model = new RisipCallHistoryModel(this);
-        m_callHistoryModels[account->configuration()->uri()] = model;
+        m_data->m_callHistoryModels[account->configuration()->uri()] = model;
         model->setAccount(account);
     }
 }
@@ -247,8 +262,8 @@ void RisipCallManager::removeModelsForAccount(const RisipAccount *account)
     if(!account)
         return;
 
-    if(m_callHistoryModels.contains(account->configuration()->uri()))
-        delete m_callHistoryModels[account->configuration()->uri()];
+    if(m_data->m_callHistoryModels.contains(account->configuration()->uri()))
+        delete m_data->m_callHistoryModels[account->configuration()->uri()];
 }
 
 /**
@@ -260,11 +275,11 @@ void RisipCallManager::removeModelsForAccount(const RisipAccount *account)
 void RisipCallManager::accountIncomingCall()
 {
     RisipCall *call = new RisipCall(this);
-    call->setAccount(m_activeAccount);
+    call->setAccount(m_data->m_activeAccount);
     call->initiateIncomingCall();
 
     QString remoteUri = QString::fromStdString(call->pjsipCall()->getInfo().remoteUri);
-    RisipBuddy *buddy = m_activeAccount->findBuddy(remoteUri);
+    RisipBuddy *buddy = m_data->m_activeAccount->findBuddy(remoteUri);
     if(buddy == NULL) {
         buddy = new RisipBuddy;
         buddy->setUri(remoteUri);
@@ -274,7 +289,7 @@ void RisipCallManager::accountIncomingCall()
     call->setBuddy(buddy);
     emit incomingCall(call);
 
-    qobject_cast<RisipCallHistoryModel *>(m_activeCallHistoryModel)->addCallRecord(call);
+    qobject_cast<RisipCallHistoryModel *>(m_data->m_activeCallHistoryModel)->addCallRecord(call);
     //setting the call as the active one
     setActiveCall(call);
 }

@@ -46,13 +46,9 @@ public:
 
     Q_ENUM(BuddyRole)
     Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
-    Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
 
     RisipAccount *account() const;
     void setAccount(RisipAccount *account);
-
-    QSortFilterProxyModel *proxy() const;
-    void setProxy(QSortFilterProxyModel *proxy);
 
     // Basic functionality:
     QHash<int, QByteArray> roleNames() const;
@@ -64,11 +60,9 @@ public:
 
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);
-    void proxyChanged(QSortFilterProxyModel *proxy);
 
 private:
     RisipAccount *m_account;
-    QSortFilterProxyModel *m_proxy;
     QList<RisipBuddy *> m_buddies;
 };
 
@@ -100,16 +94,12 @@ public:
     };
 
     Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
-    Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
 
     explicit RisipCallHistoryModel(QObject *parent = 0);
     ~RisipCallHistoryModel();
 
     RisipAccount *account();
     void setAccount(RisipAccount *account);
-
-    QSortFilterProxyModel *proxy() const;
-    void setProxy(QSortFilterProxyModel *proxy);
 
     // Basic functionality:
     QHash<int, QByteArray> roleNames() const;
@@ -121,11 +111,9 @@ public:
 
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);
-    void proxyChanged(QSortFilterProxyModel *proxy);
 
 private:
     RisipAccount *m_account;
-    QSortFilterProxyModel *m_proxy;
     QList<RisipCall *> m_calls;
 };
 
@@ -140,13 +128,8 @@ public:
         PhoneNumberList
     };
 
-    Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
-
     explicit RisipPhoneContactsModel(QObject *parent = NULL);
     ~RisipPhoneContactsModel();
-
-    QSortFilterProxyModel *proxy() const;
-    void setProxy(QSortFilterProxyModel *proxy);
 
     QHash<int, QByteArray> roleNames() const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -158,12 +141,8 @@ public Q_SLOTS:
     void addContact(RisipPhoneContact *contact);
     void removeContact(RisipPhoneContact *contact);
 
-Q_SIGNALS:
-    void proxyChanged(QSortFilterProxyModel *proxy);
-
 private:
     QList<RisipPhoneContact *> m_phoneContacts;
-    QSortFilterProxyModel *m_proxy;
 };
 
 class RisipPhoneNumbersModel : public QAbstractListModel
@@ -214,23 +193,14 @@ public:
         ValidTillDate
     };
 
-    Q_PROPERTY(QSortFilterProxyModel * proxy READ proxy WRITE setProxy NOTIFY proxyChanged)
-
     explicit RisipCountryRatesModel(QObject *parent = 0);
     ~RisipCountryRatesModel();
-
-    QSortFilterProxyModel *proxy() const;
-    void setProxy(QSortFilterProxyModel *proxy);
 
     QHash<int, QByteArray> roleNames() const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-Q_SIGNALS:
-    void proxyChanged(QSortFilterProxyModel *proxy);
-
 private:
-    QSortFilterProxyModel *m_proxy;
     QList<Country> m_allCountries;
 };
 #endif // RISIPBUDDYMODELS_H

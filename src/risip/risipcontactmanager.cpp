@@ -26,9 +26,30 @@
 #include "risipmodels.h"
 #include "ios/risipioscontactaccessmanager.h"
 #include "risipphonecontact.h"
+#include "risipphonenumber.h"
 
-#include <QSortFilterProxyModel>
 #include <QDebug>
+
+class RisipContactManager::Private
+{
+public:
+    RisipAccount *m_activeAccount;
+    QHash<QString, RisipBuddiesModel *> m_accountBuddyModels;
+    QHash<QString, RisipContactHistoryModel *> m_accountContactHistoryModels;
+    RisipBuddiesModel *m_activeBuddiesModel;
+    RisipContactHistoryModel *m_activeContactHistoryModel;
+    RisipPhoneContactsModel *m_phoneContactsModel;
+
+    QHash<QString, RisipPhoneContact *> m_phoneContacts;
+    QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
+    RisipPhoneContact *m_activePhoneContact;
+
+    //responsible for fetching contacts from the ios device.
+#ifdef Q_OS_IOS
+    RisipiOSContactAcessManager *m_iosContacts = NULL;
+#endif
+
+};
 
 RisipContactManager *RisipContactManager::m_instance = NULL;
 RisipContactManager *RisipContactManager::instance()
@@ -41,19 +62,21 @@ RisipContactManager *RisipContactManager::instance()
 
 RisipContactManager::RisipContactManager(QObject *parent)
     :QObject(parent)
-    ,m_activeAccount(Risip::instance()->defaultAccount())
-    ,m_accountBuddyModels()
-    ,m_accountContactHistoryModels()
-    ,m_activeBuddiesModel(NULL)
-    ,m_activeContactHistoryModel(NULL)
-    ,m_phoneContactsModel(new RisipPhoneContactsModel(this))
-    ,m_activePhoneContact(NULL)
+    ,m_data(new Private)
 {
+    m_data->m_activeAccount = Risip::instance()->defaultAccount();
+    m_data->m_activeBuddiesModel = NULL;
+    m_data->m_activeContactHistoryModel = NULL;
+    m_data->m_phoneContactsModel = new RisipPhoneContactsModel(this);
+    m_data->m_activePhoneContact = NULL;
+
     fetchPhoneContacts();
 }
 
 RisipContactManager::~RisipContactManager()
 {
+    delete m_data;
+    m_data = NULL;
 }
 
 /**
@@ -64,7 +87,7 @@ RisipContactManager::~RisipContactManager()
  */
 RisipAccount *RisipContactManager::activeAccount() const
 {
-    return m_activeAccount;
+    return m_data->m_activeAccount;
 }
 
 /**
@@ -78,58 +101,58 @@ RisipAccount *RisipContactManager::activeAccount() const
  */
 void RisipContactManager::setActiveAccount(RisipAccount *account)
 {
-    if(m_activeAccount != account) {
-        m_activeAccount = account;
-        if(!m_activeAccount)
-            m_activeAccount = Risip::instance()->defaultAccount();
+    if(m_data->m_activeAccount != account) {
+        m_data->m_activeAccount = account;
+        if(!m_data->m_activeAccount)
+            m_data->m_activeAccount = Risip::instance()->defaultAccount();
 
-        if(m_activeAccount) {
-            if(buddyModelForAccount(m_activeAccount->configuration()->uri())) {
-                setActiveBuddiesModel(buddyModelForAccount(m_activeAccount->configuration()->uri()));
+        if(m_data->m_activeAccount) {
+            if(buddyModelForAccount(m_data->m_activeAccount->configuration()->uri())) {
+                setActiveBuddiesModel(buddyModelForAccount(m_data->m_activeAccount->configuration()->uri()));
             } else {
                 //TODO create model for this new active account
             }
 
-            if(contactHistoryModelForAccount(m_activeAccount->configuration()->uri())) {
-                setActiveContactHistory(contactHistoryModelForAccount(m_activeAccount->configuration()->uri()));
+            if(contactHistoryModelForAccount(m_data->m_activeAccount->configuration()->uri())) {
+                setActiveContactHistory(contactHistoryModelForAccount(m_data->m_activeAccount->configuration()->uri()));
             } else {
                 //TODO create model for this new active account
             }
         }
 
-        emit activeAccountChanged(m_activeAccount);
+        emit activeAccountChanged(m_data->m_activeAccount);
     }
 }
 
 RisipPhoneContact *RisipContactManager::activePhoneContact() const
 {
-    return m_activePhoneContact;
+    return m_data->m_activePhoneContact;
 }
 
 void RisipContactManager::setActivePhoneContact(const QString &contactName)
 {
-    if(!contactName.isEmpty() && m_phoneContacts.contains(contactName))
-        setActivePhoneContact(m_phoneContacts[contactName]);
+    if(!contactName.isEmpty() && m_data->m_phoneContacts.contains(contactName))
+        setActivePhoneContact(m_data->m_phoneContacts[contactName]);
 }
 
 void RisipContactManager::setActivePhoneContact(RisipPhoneContact *phoneContact)
 {
-    if(m_activePhoneContact != phoneContact) {
-        m_activePhoneContact = phoneContact;
-        emit activePhoneContactChanged(m_activePhoneContact);
+    if(m_data->m_activePhoneContact != phoneContact) {
+        m_data->m_activePhoneContact = phoneContact;
+        emit activePhoneContactChanged(m_data->m_activePhoneContact);
     }
 }
 
 RisipBuddiesModel *RisipContactManager::activeBuddiesModel() const
 {
-    return m_activeBuddiesModel;
+    return m_data->m_activeBuddiesModel;
 }
 
 void RisipContactManager::setActiveBuddiesModel(RisipBuddiesModel *model)
 {
-    if(m_activeBuddiesModel != model) {
-        m_activeBuddiesModel = model;
-        emit activeBuddiesModelChanged(m_activeBuddiesModel);
+    if(m_data->m_activeBuddiesModel != model) {
+        m_data->m_activeBuddiesModel = model;
+        emit activeBuddiesModelChanged(m_data->m_activeBuddiesModel);
     }
 }
 
@@ -143,38 +166,38 @@ void RisipContactManager::setActiveBuddiesModel(RisipBuddiesModel *model)
  */
 RisipContactHistoryModel *RisipContactManager::activeContactHistory() const
 {
-        return m_activeContactHistoryModel;
+        return m_data->m_activeContactHistoryModel;
 }
 
 void RisipContactManager::setActiveContactHistory(RisipContactHistoryModel *history)
 {
-    if(m_activeContactHistoryModel != history) {
-        m_activeContactHistoryModel = history;
-        emit activeContactHistoryChanged(m_activeContactHistoryModel);
+    if(m_data->m_activeContactHistoryModel != history) {
+        m_data->m_activeContactHistoryModel = history;
+        emit activeContactHistoryChanged(m_data->m_activeContactHistoryModel);
     }
 }
 
 QQmlListProperty<RisipBuddiesModel> RisipContactManager::buddyModels()
 {
-    QList<RisipBuddiesModel *> models = m_accountBuddyModels.values();
+    QList<RisipBuddiesModel *> models = m_data->m_accountBuddyModels.values();
     return QQmlListProperty<RisipBuddiesModel>(this, models);
 }
 
 QQmlListProperty<RisipContactHistoryModel> RisipContactManager::contactHistoryModels()
 {
-    QList<RisipContactHistoryModel *> models = m_accountContactHistoryModels.values();
+    QList<RisipContactHistoryModel *> models = m_data->m_accountContactHistoryModels.values();
     return QQmlListProperty<RisipContactHistoryModel>(this, models);
 }
 
 QQmlListProperty<RisipPhoneContact> RisipContactManager::phoneContacts()
 {
-    QList<RisipPhoneContact *> contacts = m_phoneContacts.values();
+    QList<RisipPhoneContact *> contacts = m_data->m_phoneContacts.values();
     return QQmlListProperty<RisipPhoneContact> (this, contacts);
 }
 
 QList<RisipPhoneContact *> RisipContactManager::phoneContactList() const
 {
-    return m_phoneContacts.values();
+    return m_data->m_phoneContacts.values();
 }
 
 /**
@@ -188,7 +211,7 @@ QList<RisipPhoneContact *> RisipContactManager::phoneContactList() const
  */
 RisipPhoneContactsModel *RisipContactManager::phoneContactsModel() const
 {
-     return m_phoneContactsModel;
+     return m_data->m_phoneContactsModel;
 }
 
 /**
@@ -205,15 +228,15 @@ void RisipContactManager::createModelsForAccount(RisipAccount *account)
     if(!account)
         return;
 
-    if(!m_accountBuddyModels.contains(account->configuration()->uri())) {
+    if(!m_data->m_accountBuddyModels.contains(account->configuration()->uri())) {
         RisipBuddiesModel *buddiesModel = new RisipBuddiesModel(this);
-        m_accountBuddyModels[account->configuration()->uri()] = buddiesModel;
+        m_data->m_accountBuddyModels[account->configuration()->uri()] = buddiesModel;
         buddiesModel->setAccount(account);
     }
 
-    if(!m_accountContactHistoryModels.contains(account->configuration()->uri())) {
+    if(!m_data->m_accountContactHistoryModels.contains(account->configuration()->uri())) {
         RisipContactHistoryModel *contactHistoryModel = new RisipContactHistoryModel(this);
-        m_accountContactHistoryModels[account->configuration()->uri()] = contactHistoryModel;
+        m_data->m_accountContactHistoryModels[account->configuration()->uri()] = contactHistoryModel;
         contactHistoryModel->setAccount(account);
     }
 }
@@ -232,25 +255,25 @@ void RisipContactManager::removeModelsForAccount(const RisipAccount *account)
     if(!account)
         return;
 
-    if(m_accountBuddyModels.contains(account->configuration()->uri())) {
-        delete m_accountBuddyModels.take(account->configuration()->uri());
+    if(m_data->m_accountBuddyModels.contains(account->configuration()->uri())) {
+        delete m_data->m_accountBuddyModels.take(account->configuration()->uri());
     }
-    if(m_accountContactHistoryModels.contains(account->configuration()->uri()))
-        delete m_accountContactHistoryModels.take(account->configuration()->uri());
+    if(m_data->m_accountContactHistoryModels.contains(account->configuration()->uri()))
+        delete m_data->m_accountContactHistoryModels.take(account->configuration()->uri());
 }
 
 RisipBuddiesModel *RisipContactManager::buddyModelForAccount(const QString &account) const
 {
-    if(!account.isEmpty() && m_accountBuddyModels.contains(account))
-        return qobject_cast<RisipBuddiesModel *>(m_accountBuddyModels[account]);
+    if(!account.isEmpty() && m_data->m_accountBuddyModels.contains(account))
+        return qobject_cast<RisipBuddiesModel *>(m_data->m_accountBuddyModels[account]);
 
     return NULL;
 }
 
 RisipContactHistoryModel *RisipContactManager::contactHistoryModelForAccount(const QString &account) const
 {
-    if(!account.isEmpty() && m_accountContactHistoryModels.contains(account))
-        return qobject_cast<RisipContactHistoryModel *>(m_accountContactHistoryModels[account]);
+    if(!account.isEmpty() && m_data->m_accountContactHistoryModels.contains(account))
+        return qobject_cast<RisipContactHistoryModel *>(m_data->m_accountContactHistoryModels[account]);
 
     return NULL;
 }
@@ -269,13 +292,13 @@ RisipContactHistoryModel *RisipContactManager::contactHistoryModelForAccount(con
 void RisipContactManager::fetchPhoneContacts()
 {
 #ifdef Q_OS_IOS
-    if(!m_iosContacts) {
-        m_iosContacts = new RisipiOSContactAcessManager(this);
+    if(!m_data->m_iosContacts) {
+        m_data->m_iosContacts = new RisipiOSContactAcessManager(this);
 
-        connect(m_iosContacts, &RisipiOSContactAcessManager::phoneContactDiscovered,
+        connect(m_data->m_iosContacts, &RisipiOSContactAcessManager::phoneContactDiscovered,
                 this, &RisipContactManager::phoneContactDiscovered, Qt::QueuedConnection);
 
-        m_iosContacts->fetchContactsFromDevice();
+        m_data->m_iosContacts->fetchContactsFromDevice();
     }
 #endif
 }
@@ -283,8 +306,8 @@ void RisipContactManager::fetchPhoneContacts()
 RisipPhoneContact *RisipContactManager::contactForName(const QString &name)
 {
     if(!name.isEmpty()
-            && m_phoneContacts.contains(name)) {
-        return m_phoneContacts[name];
+            && m_data->m_phoneContacts.contains(name)) {
+        return m_data->m_phoneContacts[name];
     }
 
     return NULL;
@@ -292,16 +315,16 @@ RisipPhoneContact *RisipContactManager::contactForName(const QString &name)
 
 RisipPhoneContact *RisipContactManager::contactForIndex(int index)
 {
-    if(m_phoneContactsModel)
-        return m_phoneContactsModel->contactForIndex(index);
+    if(m_data->m_phoneContactsModel)
+        return m_data->m_phoneContactsModel->contactForIndex(index);
 
     return NULL;
 }
 
 RisipPhoneNumber *RisipContactManager::phoneNumberForNumber(const QString &number)
 {
-    if(!number.isEmpty() && m_phoneNumbers.contains(number))
-        return m_phoneNumbers[number];
+    if(!number.isEmpty() && m_data->m_phoneNumbers.contains(number))
+        return m_data->m_phoneNumbers[number];
 
     return NULL;
 }
@@ -310,12 +333,12 @@ void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *contact)
 {
     if(contact) {
         if(!contact->fullName().trimmed().isEmpty()) {
-            m_phoneContacts.insert(contact->fullName(), contact);
-            m_phoneContactsModel->addContact(contact);
+            m_data->m_phoneContacts.insert(contact->fullName(), contact);
+            m_data->m_phoneContactsModel->addContact(contact);
 
             QList<RisipPhoneNumber *> numbers = contact->phoneNumberList();
             for(int i=0; i<numbers.count(); ++i)
-                m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
+                m_data->m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
         }
     }
 }

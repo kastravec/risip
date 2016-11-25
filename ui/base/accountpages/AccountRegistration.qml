@@ -19,27 +19,18 @@
 ************************************************************************************/
 
 import QtQuick 2.7
-import Risip 1.0
 
-AddSipServicePageForm {
-    id:root
+AccountRegistrationForm {
+    id: root
 
-    signal sipAccountAdded
+    signal accountRegistered
 
-    onSaveClicked: {
-        Risip.createAccount(configuration);
-        root.sipAccountAdded();
+    firstPage.onContinueButtonClicked: {
+        stackView.push(secondPage);
     }
 
-    RisipAccountConfiguration {
-        id: configuration
-        userName: usernameInput.text
-        password: passwordInput.text
-        serverAddress: serverAddressInput.text
-        proxyServer: proxyServerInput.text
-        localPort: parseInt(localPortInput.text)
-        randomLocalPort: parseInt(localPortInput.text)
-        networkProtocol: networkTypeInput.currentIndex
+    secondPage.onRegisterButtonClicked: {
+        console.log("Register clicked.");
+        root.accountRegistered();
     }
-
 }

@@ -90,7 +90,7 @@ Page {
 
     RisipButton {
         id: enterButton
-        labelText.text: qsTr("Let's start")
+        text: qsTr("Let's start")
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: 50

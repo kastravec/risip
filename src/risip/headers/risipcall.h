@@ -21,47 +21,17 @@
 #define RISIPCALL_H
 
 #include <QDateTime>
+#include <QObject>
 
-#include "risipaccount.h"
+#include <pjsua2.hpp>
 using namespace pj;
 
 class RisipMedia;
 class RisipCall;
 class RisipBuddy;
 class RisipPhoneNumber;
-
-class PjsipCall: public Call
-{
-public:
-    PjsipCall(PjsipAccount &account, int callId = PJSUA_INVALID_ID);
-    ~PjsipCall();
-
-    void onCallState(OnCallStateParam &prm);
-    void onCallTsxState(OnCallTsxStateParam &prm);
-    void onCallMediaState(OnCallMediaStateParam &prm);
-    void onCallSdpCreated(OnCallSdpCreatedParam &prm);
-    void onStreamCreated(OnStreamCreatedParam &prm);
-    void onStreamDestroyed(OnStreamDestroyedParam &prm);
-    void onDtmfDigit(OnDtmfDigitParam &prm);
-    void onCallTransferRequest(OnCallTransferRequestParam &prm);
-    void onCallTransferStatus(OnCallTransferStatusParam &prm);
-    void onCallReplaceRequest(OnCallReplaceRequestParam &prm);
-    void onCallReplaced(OnCallReplacedParam &prm);
-    void onCallRxOffer(OnCallRxOfferParam &prm);
-    void onCallTxOffer(OnCallTxOfferParam &prm);
-    void onInstantMessage(OnInstantMessageParam &prm);
-    void onInstantMessageStatus(OnInstantMessageStatusParam &prm);
-    void onTypingIndication(OnTypingIndicationParam &prm);
-    pjsip_redirect_op onCallRedirected(OnCallRedirectedParam &prm);
-    void onCallMediaTransportState(OnCallMediaTransportStateParam &prm);
-    void onCallMediaEvent(OnCallMediaEventParam &prm);
-    void onCreateMediaTransport(OnCreateMediaTransportParam &prm);
-
-    void setRisipCall(RisipCall *risipcall);
-
-private:
-    RisipCall *m_risipCall;
-};
+class RisipAccount;
+class PjsipCall;
 
 class RisipCall : public QObject
 {
@@ -164,19 +134,12 @@ private:
     void setMedia(RisipMedia *med);
     void setError(const Error &error);
 
-    RisipAccount *m_account;
-    RisipBuddy *m_buddy;
-    RisipPhoneNumber *m_phoneNumber;
-    RisipMedia *m_risipMedia;
-    PjsipCall *m_pjsipCall;
-    int m_callType;
-    QDateTime m_timestamp;
-    int m_callDirection;
-    Error m_error;
-
     friend class RisipCallManager;
     friend class RisipMedia;
     friend class PjsipCall;
+
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPCALL_H

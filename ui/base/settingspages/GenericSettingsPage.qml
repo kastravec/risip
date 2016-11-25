@@ -32,7 +32,7 @@ Page {
 
         Row {
             id: rowLayout
-            spacing: 2
+            spacing: 3
 
             Image { source: "qrc:/images/icons/16/ArrowLeftRedx4.png"; Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter; }
             Label {
@@ -60,6 +60,5 @@ Page {
                 }
             }
         }
-
     }
 }

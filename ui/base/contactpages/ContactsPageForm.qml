@@ -37,9 +37,7 @@ Page {
         anchors.fill: parent
         initialItem: contactPages
 
-        ContactPage {
-            id: contactViewPage
-        }
+        ContactPage { id: contactViewPage }
 
         Page {
             id: contactPages

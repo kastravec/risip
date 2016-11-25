@@ -21,54 +21,71 @@
 
 #include <QDebug>
 
+class RisipAccountConfiguration::Private
+{
+public:
+    RisipAccount *risipAccount;
+    AccountConfig accountConfig;
+    AuthCredInfo accountCredentials;
+    TransportConfig transportConfiguration;
+    int networkProtocol;
+    QString proxyAddress;
+    int proxyPort;
+    bool randomLocalPort;
+};
+
 RisipAccountConfiguration::RisipAccountConfiguration(QObject *parent)
     :QObject(parent)
-    ,m_risipAccount(NULL)
-    ,m_networkProtocol(UDP)
-    ,m_proxyAddress()
-    ,m_randomLocalPort(true)
+    ,m_data(new Private)
 {
+    m_data->risipAccount = NULL;
+    m_data->networkProtocol = UDP;
+    m_data->randomLocalPort = true;
+
     setTransportId(-1);
     setLocalPort(0); //setting port to 0 means that any available random port will be used
 //    setEncryptCalls(true);
 }
 
 RisipAccountConfiguration::~RisipAccountConfiguration()
-{}
+{
+    delete m_data;
+    m_data = NULL;
+}
 
 RisipAccount *RisipAccountConfiguration::account() const
 {
-    return m_risipAccount;
+    return m_data->risipAccount;
 }
 
 void RisipAccountConfiguration::setAccount(RisipAccount *account)
 {
-    if(m_risipAccount != account) {
-        m_risipAccount = account;
+    if(m_data->risipAccount != account) {
+        m_data->risipAccount = account;
 
-        if(m_risipAccount != NULL)
-            m_risipAccount->setConfiguration(this);
+        if(m_data->risipAccount != NULL)
+            m_data->risipAccount->setConfiguration(this);
 
-        emit accountChanged(m_risipAccount);
+        emit accountChanged(m_data->risipAccount);
     }
 }
 
 QString RisipAccountConfiguration::uri()
 {
-    if(m_accountConfig.idUri.empty()) {
+    if(m_data->accountConfig.idUri.empty()) {
         QString uri = QString("sip:") + userName() + QString("@") + serverAddress();
         setUri(uri);
         return uri;
     }
 
-    return QString::fromStdString(m_accountConfig.idUri);
+    return QString::fromStdString(m_data->accountConfig.idUri);
 }
 
 void RisipAccountConfiguration::setUri(const QString &accountUri)
 {
     string accountUristr = accountUri.toStdString();
-    if(m_accountConfig.idUri != accountUristr) {
-        m_accountConfig.idUri = accountUristr;
+    if(m_data->accountConfig.idUri != accountUristr) {
+        m_data->accountConfig.idUri = accountUristr;
         emit uriChanged(accountUri);
     }
 }
@@ -76,8 +93,8 @@ void RisipAccountConfiguration::setUri(const QString &accountUri)
 QString RisipAccountConfiguration::userName()
 {
     QString username;
-    if(!m_accountCredentials.username.empty())
-        username = QString::fromStdString(m_accountCredentials.username);
+    if(!m_data->accountCredentials.username.empty())
+        username = QString::fromStdString(m_data->accountCredentials.username);
 
     return username;
 }
@@ -85,15 +102,15 @@ QString RisipAccountConfiguration::userName()
 void RisipAccountConfiguration::setUserName(const QString &name)
 {
     if(userName() != name) {
-        m_accountCredentials.username = name.toStdString();
+        m_data->accountCredentials.username = name.toStdString();
         emit userNameChanged(name);
     }
 }
 
 QString RisipAccountConfiguration::password() const
 {
-    if(!m_accountCredentials.data.empty())
-        return QString::fromStdString(m_accountCredentials.data);
+    if(!m_data->accountCredentials.data.empty())
+        return QString::fromStdString(m_data->accountCredentials.data);
 
     return QString();
 }
@@ -101,16 +118,16 @@ QString RisipAccountConfiguration::password() const
 void RisipAccountConfiguration::setPassword(const QString &pass)
 {
     if(password() != pass) {
-        m_accountCredentials.data = pass.toStdString();
-        m_accountCredentials.dataType = 0; //0 is for plain password
+        m_data->accountCredentials.data = pass.toStdString();
+        m_data->accountCredentials.dataType = 0; //0 is for plain password
         emit passwordChanged(pass);
     }
 }
 
 QString RisipAccountConfiguration::scheme() const
 {
-    if(!m_accountCredentials.scheme.empty())
-        return QString::fromStdString(m_accountCredentials.scheme);
+    if(!m_data->accountCredentials.scheme.empty())
+        return QString::fromStdString(m_data->accountCredentials.scheme);
 
     return QString();
 }
@@ -118,7 +135,7 @@ QString RisipAccountConfiguration::scheme() const
 void RisipAccountConfiguration::setScheme(const QString &credScheme)
 {
     if(scheme() != credScheme) {
-        m_accountCredentials.scheme = credScheme.toStdString();
+        m_data->accountCredentials.scheme = credScheme.toStdString();
         emit schemeChanged(credScheme);
     }
 }
@@ -127,8 +144,8 @@ QString RisipAccountConfiguration::serverAddress()
 {
     //server address always is stored as a "sip:serveraddress" format in pjsip, so removing "sip:"
     //comes in handy for passing the just the server address around
-    if(!m_accountConfig.regConfig.registrarUri.empty())
-        return (QString::fromStdString(m_accountConfig.regConfig.registrarUri)).remove("sip:");
+    if(!m_data->accountConfig.regConfig.registrarUri.empty())
+        return (QString::fromStdString(m_data->accountConfig.regConfig.registrarUri)).remove("sip:");
 
     return QString();
 }
@@ -137,53 +154,53 @@ void RisipAccountConfiguration::setServerAddress(const QString &address)
 {
     //always add the "sip:" prefix to properly store server address inside pjsip.
     if(serverAddress() != address) {
-        m_accountConfig.regConfig.registrarUri = "sip:" + address.toStdString();
+        m_data->accountConfig.regConfig.registrarUri = "sip:" + address.toStdString();
         emit serverAddressChanged(address);
     }
 }
 
 QString RisipAccountConfiguration::proxyServer() const
 {
-    return m_proxyAddress;
+    return m_data->proxyAddress;
 }
 
 void RisipAccountConfiguration::setProxyServer(const QString &proxy)
 {
-    if(m_proxyAddress != proxy) {
-        m_proxyAddress = proxy;
+    if(m_data->proxyAddress != proxy) {
+        m_data->proxyAddress = proxy;
         emit proxyServerChanged(proxy);
     }
 }
 
 int RisipAccountConfiguration::proxyPort() const
 {
-    return m_proxyPort;
+    return m_data->proxyPort;
 }
 
 void RisipAccountConfiguration::setProxyPort(int port)
 {
-    if(m_proxyPort != port) {
-        m_proxyPort = port;
-        emit proxyPortChanged(m_proxyPort);
+    if(m_data->proxyPort != port) {
+        m_data->proxyPort = port;
+        emit proxyPortChanged(m_data->proxyPort);
     }
 }
 
 int RisipAccountConfiguration::networkProtocol() const
 {
-    return m_networkProtocol;
+    return m_data->networkProtocol;
 }
 
 void RisipAccountConfiguration::setNetworkProtocol(int protocol)
 {
-    if(m_networkProtocol != protocol) {
-        m_networkProtocol = protocol;
-        emit networkProtocolChanged(m_networkProtocol);
+    if(m_data->networkProtocol != protocol) {
+        m_data->networkProtocol = protocol;
+        emit networkProtocolChanged(m_data->networkProtocol);
     }
 }
 
 int RisipAccountConfiguration::localPort() const
 {
-    return (int)m_transportConfiguration.port;
+    return (int)m_data->transportConfiguration.port;
 }
 
 /**
@@ -198,30 +215,30 @@ int RisipAccountConfiguration::localPort() const
  */
 void RisipAccountConfiguration::setLocalPort(int port)
 {
-    if(m_transportConfiguration.port != port) {
-        m_transportConfiguration.port = port;
+    if(m_data->transportConfiguration.port != port) {
+        m_data->transportConfiguration.port = port;
         emit localPortChanged(port);
     }
 }
 
 bool RisipAccountConfiguration::randomLocalPort() const
 {
-    return m_randomLocalPort;
+    return m_data->randomLocalPort;
 }
 
 void RisipAccountConfiguration::setRandomLocalPort(bool random)
 {
-    if(m_randomLocalPort != random) {
-        m_randomLocalPort = random;
+    if(m_data->randomLocalPort != random) {
+        m_data->randomLocalPort = random;
         emit randomLocalPortChanged(random);
     }
 }
 
 bool RisipAccountConfiguration::encryptCalls() const
 {
-    if(m_accountConfig.mediaConfig.srtpUse == PJMEDIA_SRTP_DISABLED)
+    if(m_data->accountConfig.mediaConfig.srtpUse == PJMEDIA_SRTP_DISABLED)
         return false;
-    else if(m_accountConfig.mediaConfig.srtpUse == PJMEDIA_SRTP_OPTIONAL )
+    else if(m_data->accountConfig.mediaConfig.srtpUse == PJMEDIA_SRTP_OPTIONAL )
         return true;
 
     return false;
@@ -229,11 +246,11 @@ bool RisipAccountConfiguration::encryptCalls() const
 
 void RisipAccountConfiguration::setEncryptCalls(bool encrypt)
 {
-    if(m_accountConfig.mediaConfig.srtpUse != encrypt) {
+    if(m_data->accountConfig.mediaConfig.srtpUse != encrypt) {
         if(encrypt)
-            m_accountConfig.mediaConfig.srtpUse = PJMEDIA_SRTP_OPTIONAL;
+            m_data->accountConfig.mediaConfig.srtpUse = PJMEDIA_SRTP_OPTIONAL;
         else
-            m_accountConfig.mediaConfig.srtpUse = PJMEDIA_SRTP_DISABLED;
+            m_data->accountConfig.mediaConfig.srtpUse = PJMEDIA_SRTP_DISABLED;
 
         emit encryptCallsChanged(encrypt);
     }
@@ -255,13 +272,13 @@ bool RisipAccountConfiguration::valid()
 
 int RisipAccountConfiguration::transportId() const
 {
-    return m_accountConfig.sipConfig.transportId;
+    return m_data->accountConfig.sipConfig.transportId;
 }
 
 void RisipAccountConfiguration::setTransportId(int transId)
 {
     if(transportId() != transId) {
-        m_accountConfig.sipConfig.transportId = transId;
+        m_data->accountConfig.sipConfig.transportId = transId;
         emit transportIdChanged(transId);
     }
 }
@@ -283,7 +300,7 @@ AccountConfig RisipAccountConfiguration::pjsipAccountConfig()
         setUri(QString("sip:") + userName() + QString("@") + serverAddress());
 
     //add the proxy and relevant network type
-    if(!m_proxyAddress.isEmpty() || !m_proxyAddress.isNull()) {
+    if(!m_data->proxyAddress.isEmpty() || !m_data->proxyAddress.isNull()) {
         QString proxyUri = QString("sip:") + proxyServer() + QString(";transport=");
         switch (networkProtocol()) {
         case UDP:
@@ -305,37 +322,37 @@ AccountConfig RisipAccountConfiguration::pjsipAccountConfig()
             break;
         }
 
-        m_accountConfig.sipConfig.proxies = { proxyUri.toStdString() }; //FIXME add proxy port
+        m_data->accountConfig.sipConfig.proxies = { proxyUri.toStdString() }; //FIXME add proxy port
     }
 
     //adding the account credentials (username + password)
-    m_accountConfig.sipConfig.authCreds.push_back(m_accountCredentials);
+    m_data->accountConfig.sipConfig.authCreds.push_back(m_data->accountCredentials);
 
-    m_accountConfig.callConfig.timerMinSESec = 1200;
-    m_accountConfig.callConfig.timerSessExpiresSec = 22000;
+    m_data->accountConfig.callConfig.timerMinSESec = 1200;
+    m_data->accountConfig.callConfig.timerSessExpiresSec = 22000;
 
-//    m_accountConfig.natConfig.iceEnabled = true;
+//    m_data->accountConfig.natConfig.iceEnabled = true;
 
-    return m_accountConfig;
+    return m_data->accountConfig;
 }
 
 void RisipAccountConfiguration::setPjsipAccountConfig(AccountConfig pjsipConfig)
 {
-    m_accountConfig = pjsipConfig;
+    m_data->accountConfig = pjsipConfig;
 }
 
 TransportConfig RisipAccountConfiguration::pjsipTransportConfig()
 {
-    if(!m_randomLocalPort && localPort() != 0)
-        m_transportConfiguration.port = localPort();
-    else if(m_randomLocalPort)
-        m_transportConfiguration.port = 0;
+    if(!m_data->randomLocalPort && localPort() != 0)
+        m_data->transportConfiguration.port = localPort();
+    else if(m_data->randomLocalPort)
+        m_data->transportConfiguration.port = 0;
 
-//    m_accountConfig.natConfig.sipStunUse
-    return m_transportConfiguration;
+//    m_data->accountConfig.natConfig.sipStunUse
+    return m_data->transportConfiguration;
 }
 
 void RisipAccountConfiguration::setPjsipTransportConfig(TransportConfig pjsipConfig)
 {
-    m_transportConfiguration = pjsipConfig;
+    m_data->transportConfiguration = pjsipConfig;
 }

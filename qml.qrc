@@ -16,10 +16,8 @@
         <file>ui/base/settingspages/BalanceSettingsPage.qml</file>
         <file>ui/base/settingspages/GenericSettingsPage.qml</file>
         <file>ui/base/settingspages/LanguageSettingsPage.qml</file>
-        <file>ui/base/contactpages/ContactsPageForm.ui.qml</file>
         <file>ui/base/contactpages/ContactsPage.qml</file>
         <file>ui/base/callpages/DialPage.qml</file>
-        <file>ui/base/callpages/CallPageForm.ui.qml</file>
         <file>ui/base/callpages/CallPage.qml</file>
         <file>ui/base/callpages/DialPageForm.ui.qml</file>
         <file>ui/base/accountpages/AddSipServicePage.qml</file>
@@ -36,5 +34,11 @@
         <file>ui/base/MainWindow.qml</file>
         <file>ui/base/contactpages/RisipBuddyListView.qml</file>
         <file>ui/base/settingspages/CountryRatesPage.qml</file>
+        <file>ui/base/accountpages/AccountRegistration.qml</file>
+        <file>ui/base/accountpages/AccountRegistrationForm.qml</file>
+        <file>ui/base/accountpages/NumberRegistrationPage.qml</file>
+        <file>ui/base/accountpages/ProfileRegistrationPage.qml</file>
+        <file>ui/base/contactpages/ContactsPageForm.qml</file>
+        <file>ui/base/callpages/CallPageForm.qml</file>
     </qresource>
 </RCC>

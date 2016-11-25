@@ -17,29 +17,33 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#ifndef PJSIPACCOUNT_H
+#define PJSIPACCOUNT_H
 
-import QtQuick 2.7
-import Risip 1.0
+#include <pjsua2.hpp>
+using namespace pj;
 
-AddSipServicePageForm {
-    id:root
+class RisipAccount;
 
-    signal sipAccountAdded
+class PjsipAccount: public Account
+{
+public:
+    PjsipAccount();
+    ~PjsipAccount();
 
-    onSaveClicked: {
-        Risip.createAccount(configuration);
-        root.sipAccountAdded();
-    }
+    void onRegState(OnRegStateParam &prm);
+    void onRegStarted(OnRegStartedParam &prm);
+    void onIncomingCall(OnIncomingCallParam &prm);
+    void onIncomingSubscribe(OnIncomingSubscribeParam &prm);
+    void onInstantMessage(OnInstantMessageParam &prm);
+    void onInstantMessageStatus(OnInstantMessageStatusParam &prm);
+    void onTypingIndication(OnTypingIndicationParam &prm);
+    void onMwiInfo(OnMwiInfoParam &prm);
 
-    RisipAccountConfiguration {
-        id: configuration
-        userName: usernameInput.text
-        password: passwordInput.text
-        serverAddress: serverAddressInput.text
-        proxyServer: proxyServerInput.text
-        localPort: parseInt(localPortInput.text)
-        randomLocalPort: parseInt(localPortInput.text)
-        networkProtocol: networkTypeInput.currentIndex
-    }
+    void setRisipInterface(RisipAccount *acc);
 
-}
+private:
+    RisipAccount *m_risipAccount;
+};
+
+#endif // PJSIPACCOUNT_H

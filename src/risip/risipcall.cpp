@@ -26,216 +26,73 @@
 #include "risipmodels.h"
 #include "risipcallmanager.h"
 #include "risipphonecontact.h"
+#include "risipphonenumber.h"
 #include "risipglobals.h"
+
+#include "pjsipwrapper/pjsipaccount.h"
+#include "pjsipwrapper/pjsipcall.h"
 
 #include <QCoreApplication>
 
 #include <QDebug>
 
-PjsipCall::PjsipCall(PjsipAccount &account, int callId)
-    :Call(account, callId)
+class RisipCall::Private
 {
-    setRisipCall(NULL);
-}
-
-PjsipCall::~PjsipCall()
-{
-}
-
-/**
- * @brief PjsipCall::onCallState
- * @param prm
- *
- * Pjsip callback each time the state of the call is updated.
- * A call is active when a session has been initiated.
- */
-void PjsipCall::onCallState(OnCallStateParam &prm)
-{
-    Q_UNUSED(prm)
-    if(m_risipCall == NULL) {
-        qDebug()<<"risip call wrapper not set!!";
-        return;
-    }
-
-    //if call is no longer active then set to NULL
-    // emit a status change signal otherwise
-    if(!isActive())
-        m_risipCall->setPjsipCall(NULL);
-    else
-        m_risipCall->statusChanged(m_risipCall->status());
-}
-
-void PjsipCall::onCallTsxState(OnCallTsxStateParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-/**
- * @brief PjsipCall::onCallMediaState
- * @param prm
- *
- * This callback from Pjsip is triggered each time Pjsip intializes the media, in practice this means when the
- * call is being answered and Audio/Video is ready to be transmitted.
- *
- * See more details on @see RisipCall::initalizeMediaHandler
- */
-void PjsipCall::onCallMediaState(OnCallMediaStateParam &prm)
-{
-    Q_UNUSED(prm)
-    if(m_risipCall)
-        m_risipCall->initializeMediaHandler();
-}
-
-//logging purpose
-void PjsipCall::onCallSdpCreated(OnCallSdpCreatedParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onStreamCreated(OnStreamCreatedParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onStreamDestroyed(OnStreamDestroyedParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onDtmfDigit(OnDtmfDigitParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCallTransferRequest(OnCallTransferRequestParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCallTransferStatus(OnCallTransferStatusParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCallReplaceRequest(OnCallReplaceRequestParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCallReplaced(OnCallReplacedParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCallRxOffer(OnCallRxOfferParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCallTxOffer(OnCallTxOfferParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onInstantMessage(OnInstantMessageParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onInstantMessageStatus(OnInstantMessageStatusParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onTypingIndication(OnTypingIndicationParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-pjsip_redirect_op PjsipCall::onCallRedirected(OnCallRedirectedParam &prm)
-{
-    Q_UNUSED(prm)
-    return PJSIP_REDIRECT_ACCEPT;
-}
-
-//logging purpose
-void PjsipCall::onCallMediaTransportState(OnCallMediaTransportStateParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCallMediaEvent(OnCallMediaEventParam &prm)
-{
-
-    Q_UNUSED(prm)
-}
-
-//logging purpose
-void PjsipCall::onCreateMediaTransport(OnCreateMediaTransportParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-void PjsipCall::setRisipCall(RisipCall *risipcall)
-{
-    m_risipCall = risipcall;
-}
+public:
+    RisipAccount *account;
+    RisipBuddy *buddy;
+    RisipPhoneNumber *phoneNumber;
+    RisipMedia *risipMedia;
+    PjsipCall *pjsipCall;
+    int callType;
+    QDateTime timestamp;
+    int callDirection;
+    Error error;
+};
 
 RisipCall::RisipCall(QObject *parent)
     :QObject(parent)
-    ,m_account(NULL)
-    ,m_buddy(NULL)
-    ,m_phoneNumber(NULL)
-    ,m_risipMedia(NULL)
-    ,m_pjsipCall(NULL)
-    ,m_callType(RisipCall::Sip)
-    ,m_callDirection(Unknown)
-    ,m_error()
+    ,m_data(new Private)
 {
+    m_data->account = NULL;
+    m_data->buddy = NULL;
+    m_data->phoneNumber = NULL;
+    m_data->risipMedia = NULL;
+    m_data->pjsipCall = NULL;
+    m_data->callType = RisipCall::Sip;
+    m_data->callDirection = Unknown;
 }
 
 RisipCall::~RisipCall()
 {
     setPjsipCall(NULL);
+    delete m_data;
+    m_data = NULL;
 }
 
 RisipAccount *RisipCall::account() const
 {
-    return m_account;
+    return m_data->account;
 }
 
 void RisipCall::setAccount(RisipAccount *acc)
 {
-    if(m_account != acc ) {
-        m_account = acc;
-        emit accountChanged(m_account);
+    if(m_data->account != acc ) {
+        m_data->account = acc;
+        emit accountChanged(m_data->account);
     }
 }
 
 RisipBuddy *RisipCall::buddy() const
 {
-    return m_buddy;
+    return m_data->buddy;
 }
 
 void RisipCall::setBuddy(RisipBuddy *buddy)
 {
-    if(m_buddy != buddy) {
-        m_buddy = buddy;
-        emit buddyChanged(m_buddy);
+    if(m_data->buddy != buddy) {
+        m_data->buddy = buddy;
+        emit buddyChanged(m_data->buddy);
     }
 
     setCallType(Sip);
@@ -243,14 +100,14 @@ void RisipCall::setBuddy(RisipBuddy *buddy)
 
 RisipPhoneNumber *RisipCall::phoneNumber() const
 {
-    return m_phoneNumber;
+    return m_data->phoneNumber;
 }
 
 void RisipCall::setPhoneNumber(RisipPhoneNumber *number)
 {
-    if(m_phoneNumber != number) {
-        m_phoneNumber = number;
-        emit phoneNumberChanged(m_phoneNumber);
+    if(m_data->phoneNumber != number) {
+        m_data->phoneNumber = number;
+        emit phoneNumberChanged(m_data->phoneNumber);
     }
 
     setCallType(Pstn);
@@ -258,30 +115,30 @@ void RisipCall::setPhoneNumber(RisipPhoneNumber *number)
 
 RisipMedia *RisipCall::media() const
 {
-    return m_risipMedia;
+    return m_data->risipMedia;
 }
 
 void RisipCall::setMedia(RisipMedia *med)
 {
-    if(m_risipMedia != med) {
-        if(m_risipMedia) {
-            delete m_risipMedia;
-            m_risipMedia = NULL;
+    if(m_data->risipMedia != med) {
+        if(m_data->risipMedia) {
+            delete m_data->risipMedia;
+            m_data->risipMedia = NULL;
         }
 
-        m_risipMedia = med;
-        if(m_risipMedia) {
-            m_risipMedia->setActiveCall(this);
+        m_data->risipMedia = med;
+        if(m_data->risipMedia) {
+            m_data->risipMedia->setActiveCall(this);
         }
 
-        emit mediaChanged(m_risipMedia);
+        emit mediaChanged(m_data->risipMedia);
     }
 }
 
 int RisipCall::callId() const
 {
-    if(m_pjsipCall)
-        m_pjsipCall->getId();
+    if(m_data->pjsipCall)
+        m_data->pjsipCall->getId();
 
     return -1;
 }
@@ -294,14 +151,14 @@ int RisipCall::callId() const
  */
 void RisipCall::setPjsipCall(PjsipCall *call)
 {
-    delete m_pjsipCall;
-    m_pjsipCall = NULL;
+    delete m_data->pjsipCall;
+    m_data->pjsipCall = NULL;
 
-    m_pjsipCall = call;
+    m_data->pjsipCall = call;
     setMedia(NULL);
 
-    if(m_pjsipCall != NULL) {
-        m_pjsipCall->setRisipCall(this);
+    if(m_data->pjsipCall != NULL) {
+        m_data->pjsipCall->setRisipCall(this);
     }
 
     emit statusChanged(status());
@@ -315,29 +172,29 @@ void RisipCall::setPjsipCall(PjsipCall *call)
  */
 PjsipCall *RisipCall::pjsipCall() const
 {
-    return m_pjsipCall;
+    return m_data->pjsipCall;
 }
 
 int RisipCall::callType() const
 {
-    return m_callType;
+    return m_data->callType;
 }
 
 void RisipCall::setCallType(int type)
 {
-    if(m_callType != type) {
-        m_callType = type;
-        emit callTypeChanged(m_callType);
+    if(m_data->callType != type) {
+        m_data->callType = type;
+        emit callTypeChanged(m_data->callType);
     }
 }
 
 int RisipCall::status() const
 {
-    if(m_pjsipCall == NULL)
+    if(m_data->pjsipCall == NULL)
         return Null;
 
-    if(m_pjsipCall->isActive()) {
-        CallInfo callInfo = m_pjsipCall->getInfo();
+    if(m_data->pjsipCall->isActive()) {
+        CallInfo callInfo = m_data->pjsipCall->getInfo();
         switch (callInfo.state) {
         case PJSIP_INV_STATE_CALLING:
             return RisipCall::OutgoingCallStarted;
@@ -361,7 +218,7 @@ int RisipCall::status() const
 
 QDateTime RisipCall::timestamp() const
 {
-    return m_timestamp;
+    return m_data->timestamp;
 }
 
 /**
@@ -371,13 +228,13 @@ QDateTime RisipCall::timestamp() const
  */
 void RisipCall::createTimestamp()
 {
-    m_timestamp = QDateTime::currentDateTime();
-    emit timestampChanged(m_timestamp);
+    m_data->timestamp = QDateTime::currentDateTime();
+    emit timestampChanged(m_data->timestamp);
 }
 
 int RisipCall::callDirection() const
 {
-    return m_callDirection;
+    return m_data->callDirection;
 }
 
 /**
@@ -388,9 +245,9 @@ int RisipCall::callDirection() const
  */
 void RisipCall::setCallDirection(int direction)
 {
-    if(m_callDirection != direction) {
-        m_callDirection = direction;
-        emit callDirectionChanged(m_callDirection);
+    if(m_data->callDirection != direction) {
+        m_data->callDirection = direction;
+        emit callDirectionChanged(m_data->callDirection);
     }
 }
 
@@ -402,25 +259,25 @@ void RisipCall::setCallDirection(int direction)
  */
 int RisipCall::callDuration() const
 {
-    if(!m_pjsipCall)
+    if(!m_data->pjsipCall)
         return 0;
 
-    return (int)m_pjsipCall->getInfo().connectDuration.msec;
+    return (int)m_data->pjsipCall->getInfo().connectDuration.msec;
 }
 
 int RisipCall::errorCode() const
 {
-    return m_error.status;
+    return m_data->error.status;
 }
 
 QString RisipCall::errorMessage()
 {
-    return QString::fromStdString(m_error.reason);
+    return QString::fromStdString(m_data->error.reason);
 }
 
 QString RisipCall::errorInfo() const
 {
-    return QString::fromStdString(m_error.info(true));
+    return QString::fromStdString(m_data->error.info(true));
 }
 
 /**
@@ -432,10 +289,10 @@ QString RisipCall::errorInfo() const
  */
 void RisipCall::initializeMediaHandler()
 {
-    if(!m_risipMedia)
+    if(!m_data->risipMedia)
         setMedia(new RisipMedia);
 
-    m_risipMedia->startCallMedia();
+    m_data->risipMedia->startCallMedia();
 }
 
 /**
@@ -447,15 +304,15 @@ void RisipCall::initializeMediaHandler()
  */
 void RisipCall::answer()
 {
-    if(!m_account)
+    if(!m_data->account)
         return;
 
-    if(m_pjsipCall != NULL) { //check if call object is set
+    if(m_data->pjsipCall != NULL) { //check if call object is set
         RisipCallManager::instance()->setActiveCall(this);
         CallOpParam prm;
         prm.statusCode = PJSIP_SC_OK;
         try {
-            m_pjsipCall->answer(prm);
+            m_data->pjsipCall->answer(prm);
         } catch (Error &err) {
             setError(err);
         }
@@ -466,8 +323,8 @@ void RisipCall::answer()
 
 void RisipCall::hangup()
 {
-    if(m_pjsipCall == NULL
-            || !m_pjsipCall->isActive()) {
+    if(m_data->pjsipCall == NULL
+            || !m_data->pjsipCall->isActive()) {
         qDebug()<<"no call exists/active";
 
         emit statusChanged(status());
@@ -476,7 +333,7 @@ void RisipCall::hangup()
 
     CallOpParam prm;
     try {
-        m_pjsipCall->hangup(prm);
+        m_data->pjsipCall->hangup(prm);
     } catch (Error &err) {
         setError(err);
     }
@@ -493,29 +350,29 @@ void RisipCall::hangup()
  */
 void RisipCall::call()
 {
-    if(m_callType == Undefined
-            || !m_account
-            || (!m_buddy && !m_phoneNumber))
+    if(m_data->callType == Undefined
+            || !m_data->account
+            || (!m_data->buddy && !m_data->phoneNumber))
         return;
 
-    if(m_account->status() != RisipAccount::SignedIn)
+    if(m_data->account->status() != RisipAccount::SignedIn)
         return;
 
     setCallDirection(RisipCall::Outgoing);
     createTimestamp();
-    setPjsipCall(new PjsipCall(*m_account->pjsipAccount()));
+    setPjsipCall(new PjsipCall(*m_data->account->pjsipAccount()));
     CallOpParam prm(true);
 
     QString callee;
-    if(m_callType == Pstn && m_phoneNumber) {
-        callee = RisipGlobals::formatToSip(m_phoneNumber->fullNumber(),
-                                           m_account->configuration()->serverAddress());
-    } else if(m_callType == Sip && m_buddy) {
-        callee = m_buddy->uri();
+    if(m_data->callType == Pstn && m_data->phoneNumber) {
+        callee = RisipGlobals::formatToSip(m_data->phoneNumber->fullNumber(),
+                                           m_data->account->configuration()->serverAddress());
+    } else if(m_data->callType == Sip && m_data->buddy) {
+        callee = m_data->buddy->uri();
     }
     if(!callee.isNull()) {
         try {
-            m_pjsipCall->makeCall(callee.toStdString(), prm);
+            m_data->pjsipCall->makeCall(callee.toStdString(), prm);
         } catch (Error err) {
             setError(err);
         }
@@ -530,8 +387,8 @@ void RisipCall::call()
  */
 void RisipCall::hold(bool hold)
 {
-    if(m_pjsipCall == NULL
-            || !m_pjsipCall->isActive()) {
+    if(m_data->pjsipCall == NULL
+            || !m_data->pjsipCall->isActive()) {
         qDebug()<<"no call exists nor is active";
         return;
     }
@@ -540,7 +397,7 @@ void RisipCall::hold(bool hold)
         CallOpParam prm;
         prm.options = PJSUA_CALL_UPDATE_CONTACT;
         try {
-            m_pjsipCall->setHold(prm);
+            m_data->pjsipCall->setHold(prm);
         } catch (Error &err) {
             setError(err);
         }
@@ -548,7 +405,7 @@ void RisipCall::hold(bool hold)
         CallOpParam prm;
         prm.opt.flag = PJSUA_CALL_UNHOLD;
         try {
-            m_pjsipCall->reinvite(prm);
+            m_data->pjsipCall->reinvite(prm);
         } catch (Error &err) {
             setError(err);
         }
@@ -566,11 +423,11 @@ void RisipCall::hold(bool hold)
  */
 void RisipCall::initiateIncomingCall()
 {
-    if(!m_account)
+    if(!m_data->account)
         return;
 
-    if(m_account->status() == RisipAccount::SignedIn) {
-        setPjsipCall(m_account->incomingPjsipCall());
+    if(m_data->account->status() == RisipAccount::SignedIn) {
+        setPjsipCall(m_data->account->incomingPjsipCall());
         createTimestamp();
         setCallDirection(RisipCall::Incoming);
     }
@@ -578,18 +435,18 @@ void RisipCall::initiateIncomingCall()
 
 void RisipCall::setError(const Error &error)
 {
-    if(m_error.status != error.status) {
+    if(m_data->error.status != error.status) {
         qWarning()<<" ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
 
-        m_error.status = error.status;
-        m_error.reason = error.reason;
-        m_error.srcFile = error.srcFile;
-        m_error.srcLine = error.srcLine;
-        m_error.title = error.title;
+        m_data->error.status = error.status;
+        m_data->error.reason = error.reason;
+        m_data->error.srcFile = error.srcFile;
+        m_data->error.srcLine = error.srcLine;
+        m_data->error.title = error.title;
 
-        emit errorCodeChanged(m_error.status);
-        emit errorMessageChanged(QString::fromStdString(m_error.reason));
-        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
+        emit errorCodeChanged(m_data->error.status);
+        emit errorMessageChanged(QString::fromStdString(m_data->error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_data->error.info(true)));
         QCoreApplication::processEvents();
     }
 }

@@ -24,6 +24,7 @@
 #include "risipendpoint.h"
 #include <QQmlListProperty>
 
+
 class RisipAccount;
 class RisipEndpoint;
 class RisipAccountConfiguration;

@@ -77,10 +77,8 @@ private:
     explicit RisipCallManager(QObject *parent = 0);
     static RisipCallManager *m_callManagerInstance;
 
-    RisipAccount *m_activeAccount;
-    RisipCall *m_activeCall;
-    QAbstractItemModel *m_activeCallHistoryModel;
-    QHash<QString, QAbstractItemModel *> m_callHistoryModels;
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPCALLMANAGER_H

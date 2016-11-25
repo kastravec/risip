@@ -17,29 +17,33 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#ifndef PJSIPENDPOINT_H
+#define PJSIPENDPOINT_H
 
-import QtQuick 2.7
-import Risip 1.0
+#include <pjsua2.hpp>
+using namespace pj;
 
-AddSipServicePageForm {
-    id:root
+class RisipEndpoint;
 
-    signal sipAccountAdded
+class PjsipEndpoint: public Endpoint
+{
+public :
+    ~PjsipEndpoint();
+    static PjsipEndpoint *instance();
 
-    onSaveClicked: {
-        Risip.createAccount(configuration);
-        root.sipAccountAdded();
-    }
+    void onNatDetectionComplete(const OnNatDetectionCompleteParam &prm);
+    void onNatCheckStunServersComplete(const OnNatCheckStunServersCompleteParam &prm);
+    void onTransportState(const OnTransportStateParam &prm);
+    void onTimer(const OnTimerParam &prm);
+    void onSelectAccount(OnSelectAccountParam &prm);
 
-    RisipAccountConfiguration {
-        id: configuration
-        userName: usernameInput.text
-        password: passwordInput.text
-        serverAddress: serverAddressInput.text
-        proxyServer: proxyServerInput.text
-        localPort: parseInt(localPortInput.text)
-        randomLocalPort: parseInt(localPortInput.text)
-        networkProtocol: networkTypeInput.currentIndex
-    }
+    void setRisipEndpointInterface(RisipEndpoint *endpoint);
 
-}
+private:
+    PjsipEndpoint();
+
+    static PjsipEndpoint *pjsipEndpoinInstance;
+    RisipEndpoint *m_risipEndpoint;
+};
+
+#endif // PJSIPENDPOINT_H

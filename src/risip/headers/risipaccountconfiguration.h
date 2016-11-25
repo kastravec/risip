@@ -142,15 +142,8 @@ Q_SIGNALS:
     void validChanged(bool valid);
 
 private:
-    RisipAccount *m_risipAccount;
-    AccountConfig m_accountConfig;
-    AuthCredInfo m_accountCredentials;
-    TransportConfig m_transportConfiguration;
-
-    int m_networkProtocol;
-    QString m_proxyAddress;
-    int m_proxyPort;
-    bool m_randomLocalPort;
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPACCOUNTCONFIGURATION_H

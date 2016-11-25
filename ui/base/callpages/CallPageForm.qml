@@ -62,13 +62,13 @@ Page {
         RisipButton {
             id: answerCallButton
             Layout.preferredWidth: 80
-            labelText.text: qsTr("Answer")
+            text: qsTr("Answer")
         }
 
         RisipButton {
             id: endCallButton
             Layout.preferredWidth: 80
-            labelText.text: qsTr("End")
+            text: qsTr("End")
         }
     }
 

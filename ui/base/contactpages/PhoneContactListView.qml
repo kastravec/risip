@@ -23,7 +23,6 @@ import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
 
 import SortFilterProxyModel 0.1
-
 import Risip 1.0
 
 Page {

@@ -78,37 +78,30 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
-    RisipBuddy {
-        id: buddy
-        uri: "<sip:toptop@sip2sip.info>"
-        onPresenceChanged: {
-            console.log("BUDDY TOPTOP PRESENCE: " + presence);
+    Loader {
+        id: accountRegistrationLoader
+        source: uiBasePath + "/accountpages/" + "AccountRegistration.qml";
+        active: false
+        asynchronous: true
+        anchors.fill: parent
+    }
+
+    Connections {
+        target: accountRegistrationLoader.item
+
+        onAccountRegistered: {
+            if(sipAccount.status === RisipAccount.SignedIn) {
+                loginPageLoader.active = false;
+                mainPageLoader.item.visible = true;
+            } else {
+                loginPageLoader.active = true;
+                mainPageLoader.item.visible = false;
+            }
+
+            accountRegistrationLoader.active = false;
         }
     }
 
-    RisipBuddy {
-        id: buddy2
-        uri: "<sip:topatop@sip2sip.info>"
-        onPresenceChanged: {
-            console.log("BUDDY TOPATOP PRESENCE: " + presence);
-        }
-    }
-
-    RisipBuddy {
-        id: buddy3
-        uri: "<sip:pasaatop@sip2sip.info>"
-        onPresenceChanged: {
-            console.log("BUDDY TOPATOP PRESENCE: " + presence);
-        }
-    }
-
-    RisipBuddy {
-        id: buddy4
-        uri: "<sip:opop@sip2sip.info>"
-        onPresenceChanged: {
-            console.log("BUDDY TOPATOP PRESENCE: " + presence);
-        }
-    }
     //welcome screen singal handler, from which we go to either
     //the Login page or if autologin is enabled then directly to
     //the Home page.
@@ -119,11 +112,16 @@ ApplicationWindow {
                 loginPageLoader.active = false;
                 mainPageLoader.item.visible = true;
             } else {
-                loginPageLoader.active = true;
-                mainPageLoader.item.visible = false;
+
+                if(firstRun)
+                    accountRegistrationLoader.active = true;
+                else
+                    loginPageLoader.active = true;
+
+                mainPageLoader.item.visible = false; //main page is not visible because account is not signed int
             }
 
-            welcomeScreenLoader.active = false;
+            welcomeScreenLoader.active = false; //disabling welcome screen on enter clicked
         }
     }
 
@@ -136,13 +134,6 @@ ApplicationWindow {
             if(Risip.defaultAccount.status === RisipAccount.SignedIn) {
                 loginPageLoader.active = false;
                 mainPageLoader.item.visible = true;
-                sipAccount.addBuddy(buddy);
-                sipAccount.addBuddy(buddy2);
-                sipAccount.addBuddy(buddy3);
-                sipAccount.addBuddy(buddy2);
-                sipAccount.addBuddy(buddy4);
-                sipAccount.addBuddy(buddy4);
-
             } else if(Risip.defaultAccount.status === RisipAccount.SignedOut) {
                 loginPageLoader.active = true;
                 mainPageLoader.item.visible = false;

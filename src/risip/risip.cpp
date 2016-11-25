@@ -32,6 +32,7 @@
 #include "risipcallmanager.h"
 #include "risipcontactmanager.h"
 #include "risipphonecontact.h"
+#include "risipphonenumber.h"
 #include "risipgeopositionprovider.h"
 #include "risipratemanager.h"
 #include "sipregistrars/mor/risipmorapi.h"
@@ -244,7 +245,6 @@ void Risip::registerToQml()
     qmlRegisterType<RisipPhoneContact>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneContact");
     qmlRegisterType<RisipPhoneNumber>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneNumber");
     qmlRegisterType<HttpNetworkRequest>(RisipSettingsParam::QmlUri, 1, 0, "HttpNetworkRequest");
-    qmlRegisterType<QSortFilterProxyModel>(RisipSettingsParam::QmlUri, 1, 0, "QSortFilterProxyModel");
     qmlRegisterType<RisipPhoneNumbersModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneNumbersModel");
     qmlRegisterType<RisipCountryRatesModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipCountryRatesModel");
 }

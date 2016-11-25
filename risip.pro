@@ -49,7 +49,11 @@ SOURCES += src/app/main.cpp \
     src/risip/risipcountryflagimageprovider.cpp \
     src/risip/risipratemanager.cpp \
     src/utils/qqmlsortfilterproxymodel.cpp \
-    src/utils/qqmlsortfilterproxymodel.cpp
+    src/risip/pjsipwrapper/pjsipaccount.cpp \
+    src/risip/pjsipwrapper/pjsipcall.cpp \
+    src/risip/pjsipwrapper/pjsipbuddy.cpp \
+    src/risip/pjsipwrapper/pjsipendpoint.cpp \
+    src/risip/risipphonenumber.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -76,7 +80,11 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipcountryflagimageprovider.h \
     src/risip/headers/risipratemanager.h \
     src/utils/qqmlsortfilterproxymodel.h \
-    src/utils/qqmlsortfilterproxymodel.h
+    src/risip/pjsipwrapper/pjsipaccount.h \
+    src/risip/pjsipwrapper/pjsipcall.h \
+    src/risip/pjsipwrapper/pjsipbuddy.h \
+    src/risip/pjsipwrapper/pjsipendpoint.h \
+    src/risip/headers/risipphonenumber.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {

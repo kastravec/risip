@@ -24,6 +24,7 @@
 #include "risipbuddy.h"
 #include "risipcall.h"
 #include "risipphonecontact.h"
+#include "risipphonenumber.h"
 #include "risipglobals.h"
 
 #include <QSortFilterProxyModel>
@@ -32,15 +33,11 @@
 RisipAbstractBuddyModel::RisipAbstractBuddyModel(QObject *parent)
     :QAbstractListModel(parent)
     ,m_account(Risip::instance()->defaultAccount())
-    ,m_proxy(new QSortFilterProxyModel(this))
 {
-    m_proxy->setSourceModel(this);
 }
 
 RisipAbstractBuddyModel::~RisipAbstractBuddyModel()
 {
-    delete m_proxy;
-    m_proxy = NULL;
 }
 
 RisipAccount *RisipAbstractBuddyModel::account() const
@@ -53,24 +50,6 @@ void RisipAbstractBuddyModel::setAccount(RisipAccount *account)
     if(m_account != account) {
         m_account = account;
         emit accountChanged(m_account);
-    }
-}
-
-QSortFilterProxyModel *RisipAbstractBuddyModel::proxy() const
-{
-    return m_proxy;
-}
-
-void RisipAbstractBuddyModel::setProxy(QSortFilterProxyModel *proxy)
-{
-    if(m_proxy != proxy) {
-        if(m_proxy) {
-            delete m_proxy;
-            m_proxy = NULL;
-        }
-
-        m_proxy = proxy;
-        emit proxyChanged(m_proxy);
     }
 }
 
@@ -158,15 +137,11 @@ RisipContactHistoryModel::~RisipContactHistoryModel()
 RisipCallHistoryModel::RisipCallHistoryModel(QObject *parent)
     : QAbstractListModel(parent)
     ,m_account(Risip::instance()->defaultAccount())
-    ,m_proxy(new QSortFilterProxyModel(this))
 {
-    m_proxy->setSourceModel(this);
 }
 
 RisipCallHistoryModel::~RisipCallHistoryModel()
 {
-    delete m_proxy;
-    m_proxy = NULL;
 }
 
 RisipAccount *RisipCallHistoryModel::account()
@@ -179,19 +154,6 @@ void RisipCallHistoryModel::setAccount(RisipAccount *account)
     if(m_account != account) {
         m_account = account;
         emit accountChanged(m_account);
-    }
-}
-
-QSortFilterProxyModel *RisipCallHistoryModel::proxy() const
-{
-    return m_proxy;
-}
-
-void RisipCallHistoryModel::setProxy(QSortFilterProxyModel *proxy)
-{
-    if(m_proxy != proxy) {
-        m_proxy = proxy;
-        emit proxyChanged(m_proxy);
     }
 }
 
@@ -261,30 +223,11 @@ void RisipCallHistoryModel::removeCallRecord(RisipCall *call)
 RisipPhoneContactsModel::RisipPhoneContactsModel(QObject *parent)
     :QAbstractListModel(parent)
     ,m_phoneContacts()
-    ,m_proxy(new QSortFilterProxyModel(this))
 {
-    m_proxy->setSourceModel(this);
-    m_proxy->setSortRole(FullName);
-    m_proxy->setFilterRole(FullName);
-    m_proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxy->setDynamicSortFilter(true);
 }
 
 RisipPhoneContactsModel::~RisipPhoneContactsModel()
 {
-}
-
-QSortFilterProxyModel *RisipPhoneContactsModel::proxy() const
-{
-    return m_proxy;
-}
-
-void RisipPhoneContactsModel::setProxy(QSortFilterProxyModel *proxy)
-{
-    if(m_proxy != proxy ) {
-        m_proxy = proxy;
-        emit proxyChanged(m_proxy);
-    }
 }
 
 QHash<int, QByteArray> RisipPhoneContactsModel::roleNames() const
@@ -357,7 +300,6 @@ void RisipPhoneContactsModel::addContact(RisipPhoneContact *contact)
     if(!m_phoneContacts.contains(contact)) {
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
         m_phoneContacts.append(contact);
-        m_proxy->sort(0);
         endInsertRows();
     }
 }
@@ -446,30 +388,11 @@ QVariant RisipPhoneNumbersModel::data(const QModelIndex &index, int role) const
 
 RisipCountryRatesModel::RisipCountryRatesModel(QObject *parent)
     :QAbstractListModel(parent)
-    ,m_proxy(new QSortFilterProxyModel(this))
 {
-    m_proxy->setSourceModel(this);
-    m_proxy->setSortRole(CountryName);
-    m_proxy->setFilterRole(CountryName);
-    m_allCountries = RisipGlobals::countries();
-    sort(0);
 }
 
 RisipCountryRatesModel::~RisipCountryRatesModel()
 {
-}
-
-QSortFilterProxyModel *RisipCountryRatesModel::proxy() const
-{
-    return m_proxy;
-}
-
-void RisipCountryRatesModel::setProxy(QSortFilterProxyModel *proxy)
-{
-    if(m_proxy != proxy) {
-        m_proxy = proxy;
-        emit proxyChanged(m_proxy);
-    }
 }
 
 QHash<int, QByteArray> RisipCountryRatesModel::roleNames() const

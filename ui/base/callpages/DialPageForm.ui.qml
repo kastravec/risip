@@ -1,4 +1,3 @@
-
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
 **
@@ -30,9 +29,8 @@ Page {
     property alias contactInput: contactInput
 
     ColumnLayout {
-        spacing: 20
-        anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 20
 
         TextField {
             id: contactInput
@@ -43,7 +41,7 @@ Page {
 
         RisipButton {
             id: callButton
-            labelText.text: qsTr("Call")
+            text: qsTr("Call")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
     }

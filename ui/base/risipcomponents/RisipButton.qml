@@ -25,10 +25,11 @@ Rectangle {
     color: "#ffffff"
     border.width: 1
     border.color: "#000000"//"#db0000"
+
     width: labelText.implicitWidth + 25
     height: labelText.implicitHeight + 15
 
-    property alias labelText: labelText
+    property alias text: labelText.text
     property alias icon: icon
     property bool checkable: false
     property bool checked: false

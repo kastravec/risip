@@ -85,17 +85,8 @@ Q_SIGNALS:
 private:
     void setError(Error &error);
 
-    VidDevManager *m_pjsipVideoManager;
-    AudDevManager *m_pjsipAudioManager;
-    AudioMedia *m_callAudio;
-    AudioMedia *m_localAudioMedia;
-    AudioMedia *m_audioDevice;
-    RisipCall *m_activeCall;
-    RisipEndpoint *m_sipEndpoint;
-
-    bool m_keepMediaSettings;
-    Error m_error;
-    bool m_loudSpeaker;
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPMEDIA_H

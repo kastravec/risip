@@ -23,32 +23,11 @@
 
 #include <QObject>
 #include <pjsua2.hpp>
-
 using namespace pj;
 
 class RisipEndpoint;
 class RisipAccountConfiguration;
-
-class PjsipEndpoint: public Endpoint
-{
-public :
-    ~PjsipEndpoint();
-    static PjsipEndpoint *instance();
-
-    void onNatDetectionComplete(const OnNatDetectionCompleteParam &prm);
-    void onNatCheckStunServersComplete(const OnNatCheckStunServersCompleteParam &prm);
-    void onTransportState(const OnTransportStateParam &prm);
-    void onTimer(const OnTimerParam &prm);
-    void onSelectAccount(OnSelectAccountParam &prm);
-
-    void setRisipEndpointInterface(RisipEndpoint *endpoint);
-
-private:
-    PjsipEndpoint();
-
-    static PjsipEndpoint *pjsipEndpoinInstance;
-    RisipEndpoint *m_risipEndpoint;
-};
+class PjsipEndpoint;
 
 class RisipEndpoint : public QObject
 {
@@ -95,10 +74,8 @@ Q_SIGNALS:
 private:
     void setError(const Error &error);
 
-    PjsipEndpoint *m_pjsipEndpoint;
-    TransportId m_activeTransportId;
-    EpConfig m_endpointConfig;
-    Error m_error;
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPENDPOINT_H

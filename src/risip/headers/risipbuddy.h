@@ -32,20 +32,7 @@ class RisipAccount;
 class RisipMessage;
 class RisipCall;
 class RisipBuddy;
-
-class PjsipBuddy: public Buddy
-{
-public:
-    PjsipBuddy();
-    ~PjsipBuddy();
-
-    void onBuddyState();
-    void setRisipInterface(RisipBuddy *risipBuddy);
-    RisipBuddy *risipInterface();
-
-private:
-    RisipBuddy *m_risipBuddyInterface;
-};
+class PjsipBuddy;
 
 class RisipBuddy : public QObject
 {
@@ -113,14 +100,10 @@ private:
     PjsipBuddy *pjsipBuddy() const;
     void setPjsipBuddy(PjsipBuddy *buddy);
 
-    PjsipBuddy *m_pjsipBuddy;
-    RisipAccount *m_account;
-    BuddyConfig m_buddyConfig;
-    QString m_contact;
-    int m_type;
-    Error m_error;
-
     friend class RisipAccount;
+
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPBUDDY_H

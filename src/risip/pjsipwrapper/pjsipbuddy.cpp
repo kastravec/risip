@@ -17,29 +17,31 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#include "pjsipbuddy.h"
 
-import QtQuick 2.7
-import Risip 1.0
+#include "risipbuddy.h"
 
-AddSipServicePageForm {
-    id:root
+PjsipBuddy::PjsipBuddy()
+    :Buddy()
+{
+}
 
-    signal sipAccountAdded
+PjsipBuddy::~PjsipBuddy()
+{
+}
 
-    onSaveClicked: {
-        Risip.createAccount(configuration);
-        root.sipAccountAdded();
-    }
+void PjsipBuddy::onBuddyState()
+{
+    if(m_risipBuddyInterface != NULL && m_risipBuddyInterface->account())
+        m_risipBuddyInterface->presenceChanged(m_risipBuddyInterface->presence());
+}
 
-    RisipAccountConfiguration {
-        id: configuration
-        userName: usernameInput.text
-        password: passwordInput.text
-        serverAddress: serverAddressInput.text
-        proxyServer: proxyServerInput.text
-        localPort: parseInt(localPortInput.text)
-        randomLocalPort: parseInt(localPortInput.text)
-        networkProtocol: networkTypeInput.currentIndex
-    }
+void PjsipBuddy::setRisipInterface(RisipBuddy *risipBuddy)
+{
+    m_risipBuddyInterface = risipBuddy;
+}
 
+RisipBuddy *PjsipBuddy::risipInterface()
+{
+    return m_risipBuddyInterface;
 }

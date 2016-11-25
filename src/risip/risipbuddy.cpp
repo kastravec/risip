@@ -25,73 +25,64 @@
 #include "risipaccountconfiguration.h"
 #include "risipmodels.h"
 
+#include "pjsipwrapper/pjsipaccount.h"
+#include "pjsipwrapper/pjsipbuddy.h"
+
 #include <QDebug>
 
-PjsipBuddy::PjsipBuddy()
-    :Buddy()
+class RisipBuddy::Private
 {
-}
-
-PjsipBuddy::~PjsipBuddy()
-{
-}
-
-void PjsipBuddy::onBuddyState()
-{
-    if(m_risipBuddyInterface != NULL && m_risipBuddyInterface->account())
-        m_risipBuddyInterface->presenceChanged(m_risipBuddyInterface->presence());
-}
-
-void PjsipBuddy::setRisipInterface(RisipBuddy *risipBuddy)
-{
-    m_risipBuddyInterface = risipBuddy;
-}
-
-RisipBuddy *PjsipBuddy::risipInterface()
-{
-    return m_risipBuddyInterface;
-}
+public:
+    PjsipBuddy *pjsipBuddy;
+    RisipAccount *account;
+    BuddyConfig buddyConfig;
+    QString contact;
+    int type;
+    Error error;
+};
 
 RisipBuddy::RisipBuddy(QObject *parent)
     :QObject(parent)
-    ,m_pjsipBuddy(NULL)
-    ,m_account(NULL)
-    ,m_contact()
-    ,m_type(Internal)
-    ,m_error()
+    ,m_data(new Private)
 {
+    m_data->pjsipBuddy = NULL;
+    m_data->account = NULL;
+    m_data->type = Internal;
+
     //always subscribe to the buddy presence
-    m_buddyConfig.subscribe = true;
+    m_data->buddyConfig.subscribe = true;
 }
 
 RisipBuddy::~RisipBuddy()
 {
+    delete m_data;
+    m_data = NULL;
 }
 
 RisipAccount *RisipBuddy::account() const
 {
-    return m_account;
+    return m_data->account;
 }
 
 void RisipBuddy::setAccount(RisipAccount *acc)
 {
-    if(m_account != acc) {
-        m_account = acc;
-        emit accountChanged(m_account);
+    if(m_data->account != acc) {
+        m_data->account = acc;
+        emit accountChanged(m_data->account);
     }
 }
 
 QString RisipBuddy::uri() const
 {
-    return QString::fromStdString(m_buddyConfig.uri);
+    return QString::fromStdString(m_data->buddyConfig.uri);
 }
 
 //TODO what about the contact?
 void RisipBuddy::setUri(QString contactUri)
 {
     //FIXME too many conversions of strings here..
-    if(QString::fromStdString(m_buddyConfig.uri) != contactUri) {
-        m_buddyConfig.uri = contactUri.toStdString();
+    if(QString::fromStdString(m_data->buddyConfig.uri) != contactUri) {
+        m_data->buddyConfig.uri = contactUri.toStdString();
         emit uriChanged(contactUri);
         emit contactChanged(contact());
     }
@@ -99,49 +90,49 @@ void RisipBuddy::setUri(QString contactUri)
 
 QString RisipBuddy::contact()
 {
-    if(m_account) {
-        m_contact = uri().remove(QString("<sip:"));
-        m_contact = m_contact.remove(QString("@") + m_account->configuration()->serverAddress() + QString(">"));
+    if(m_data->account) {
+        m_data->contact = uri().remove(QString("<sip:"));
+        m_data->contact = m_data->contact.remove(QString("@") + m_data->account->configuration()->serverAddress() + QString(">"));
     }
 
-    return m_contact;
+    return m_data->contact;
 }
 
 void RisipBuddy::setContact(const QString contact)
 {
-    if(m_contact != contact) {
-        m_contact = contact;
+    if(m_data->contact != contact) {
+        m_data->contact = contact;
 
         if(type() == Internal
                 || type() == ExternalSIP) {
-            if(!m_contact.isEmpty() && m_account)
+            if(!m_data->contact.isEmpty() && m_data->account)
                 setUri(QString("<sip:")
-                       + m_contact
+                       + m_data->contact
                        + QString("@")
-                       + m_account->configuration()->serverAddress()
+                       + m_data->account->configuration()->serverAddress()
                        + QString(">"));
         }
 
-        emit contactChanged(m_contact);
+        emit contactChanged(m_data->contact);
     }
 }
 
 int RisipBuddy::type() const
 {
-    return m_type;
+    return m_data->type;
 }
 
 void RisipBuddy::setType(int type)
 {
-    if(m_type != type) {
-        m_type = type;
-        emit typeChanged(m_type);
+    if(m_data->type != type) {
+        m_data->type = type;
+        emit typeChanged(m_data->type);
     }
 }
 
 PjsipBuddy *RisipBuddy::pjsipBuddy() const
 {
-    return m_pjsipBuddy;
+    return m_data->pjsipBuddy;
 }
 
 /**
@@ -152,12 +143,12 @@ PjsipBuddy *RisipBuddy::pjsipBuddy() const
  */
 void RisipBuddy::setPjsipBuddy(PjsipBuddy *buddy)
 {
-    if(m_pjsipBuddy)
-        delete m_pjsipBuddy;
+    if(m_data->pjsipBuddy)
+        delete m_data->pjsipBuddy;
 
-    m_pjsipBuddy = buddy;
-    m_pjsipBuddy->setRisipInterface(this);
-    m_buddyConfig.uri = buddy->getInfo().uri;
+    m_data->pjsipBuddy = buddy;
+    m_data->pjsipBuddy->setRisipInterface(this);
+    m_data->buddyConfig.uri = buddy->getInfo().uri;
 }
 
 bool RisipBuddy::valid() const
@@ -172,19 +163,19 @@ void RisipBuddy::create()
 {
     //check if uri and account are set - buddy cannot be created without those properties
     if(uri().isEmpty()
-            || m_account == NULL)
+            || m_data->account == NULL)
         return;
 
-    if(m_pjsipBuddy != NULL) {
-        if(m_account->findBuddy(uri()))
+    if(m_data->pjsipBuddy != NULL) {
+        if(m_data->account->findBuddy(uri()))
             return;
     } else {
-        delete m_pjsipBuddy;
-        m_pjsipBuddy = NULL;
-        m_pjsipBuddy = new PjsipBuddy;
-        m_pjsipBuddy->setRisipInterface(this);
+        delete m_data->pjsipBuddy;
+        m_data->pjsipBuddy = NULL;
+        m_data->pjsipBuddy = new PjsipBuddy;
+        m_data->pjsipBuddy->setRisipInterface(this);
         try {
-            m_pjsipBuddy->create(*m_account->pjsipAccount(), m_buddyConfig);
+            m_data->pjsipBuddy->create(*m_data->account->pjsipAccount(), m_data->buddyConfig);
         } catch (Error &err) {
             setError(err);
         }
@@ -199,17 +190,17 @@ void RisipBuddy::create()
  */
 void RisipBuddy::releaseFromAccount()
 {
-    delete m_pjsipBuddy;
-    m_pjsipBuddy = NULL;
+    delete m_data->pjsipBuddy;
+    m_data->pjsipBuddy = NULL;
 }
 
 RisipMessage *RisipBuddy::sendInstantMessage(QString message)
 {
-    if(m_pjsipBuddy == NULL
-            || m_account == NULL)
+    if(m_data->pjsipBuddy == NULL
+            || m_data->account == NULL)
         return new RisipMessage();
 
-    if(m_account->status() == RisipAccount::SignedIn) {
+    if(m_data->account->status() == RisipAccount::SignedIn) {
         RisipMessage *risipMessage = new RisipMessage;
         risipMessage->setBuddy(this);
         risipMessage->setMessageBody(message);
@@ -217,7 +208,7 @@ RisipMessage *RisipBuddy::sendInstantMessage(QString message)
         risipMessage->setDirection(RisipMessage::Outgoing);
 
         try {
-            m_pjsipBuddy->sendInstantMessage(risipMessage->messageParamForSend());
+            m_data->pjsipBuddy->sendInstantMessage(risipMessage->messageParamForSend());
         } catch (Error &err) {
             qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
         }
@@ -230,15 +221,15 @@ RisipMessage *RisipBuddy::sendInstantMessage(QString message)
 
 void RisipBuddy::sendInstantMessage(RisipMessage *message)
 {
-    if(m_pjsipBuddy == NULL
-            || m_account == NULL)
+    if(m_data->pjsipBuddy == NULL
+            || m_data->account == NULL)
         return;
 
-    if(m_account->status() == RisipAccount::SignedIn) {
+    if(m_data->account->status() == RisipAccount::SignedIn) {
         message->setBuddy(this);
         message->setStatus(RisipMessage::Pending);
         try {
-            m_pjsipBuddy->sendInstantMessage(message->messageParamForSend());
+            m_data->pjsipBuddy->sendInstantMessage(message->messageParamForSend());
         } catch (Error &err) {
             qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
         }
@@ -249,13 +240,13 @@ void RisipBuddy::setError(const Error &error)
 {
     qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
 
-    if(m_error.status != error.status) {
+    if(m_data->error.status != error.status) {
 
-        m_error.status = error.status;
-        m_error.reason = error.reason;
-        m_error.srcFile = error.srcFile;
-        m_error.srcLine = error.srcLine;
-        m_error.title = error.title;
+        m_data->error.status = error.status;
+        m_data->error.reason = error.reason;
+        m_data->error.srcFile = error.srcFile;
+        m_data->error.srcLine = error.srcLine;
+        m_data->error.title = error.title;
 
 //        emit errorCodeChanged(m_error.status);
 //        emit errorMessageChanged(QString::fromStdString(m_error.reason));
@@ -265,11 +256,11 @@ void RisipBuddy::setError(const Error &error)
 
 int RisipBuddy::presence() const
 {
-    if(m_pjsipBuddy == NULL
-            || m_account == NULL)
+    if(m_data->pjsipBuddy == NULL
+            || m_data->account == NULL)
         return Null;
 
-    switch (m_pjsipBuddy->getInfo().presStatus.status) {
+    switch (m_data->pjsipBuddy->getInfo().presStatus.status) {
     case PJSUA_BUDDY_STATUS_ONLINE:
         return Online;
     case PJSUA_BUDDY_STATUS_OFFLINE:

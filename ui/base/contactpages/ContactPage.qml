@@ -115,7 +115,7 @@ Page {
                 width: phoneNumberDelegate.width - 10
                 height: 40
                 anchors.centerIn: parent
-                labelText.text: fullNumber
+                text: fullNumber
                 onClicked: RisipCallManager.callRisipPhoneNumber(phoneNumber);
             }
 

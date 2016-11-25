@@ -33,30 +33,10 @@ class RisipEndpoint;
 class RisipAccountConfiguration;
 class RisipBuddy;
 class RisipCall;
-class PjsipCall;
 class RisipCallHistoryModel;
 class RisipAccountProfile;
-
-class PjsipAccount: public Account
-{
-public:
-    PjsipAccount();
-    ~PjsipAccount();
-
-    void onRegState(OnRegStateParam &prm);
-    void onRegStarted(OnRegStartedParam &prm);
-    void onIncomingCall(OnIncomingCallParam &prm);
-    void onIncomingSubscribe(OnIncomingSubscribeParam &prm);
-    void onInstantMessage(OnInstantMessageParam &prm);
-    void onInstantMessageStatus(OnInstantMessageStatusParam &prm);
-    void onTypingIndication(OnTypingIndicationParam &prm);
-    void onMwiInfo(OnMwiInfoParam &prm);
-
-    void setRisipInterface(RisipAccount *acc);
-
-private:
-    RisipAccount *m_risipAccount;
-};
+class PjsipCall;
+class PjsipAccount;
 
 class RisipAccount: public QObject
 {
@@ -150,20 +130,12 @@ private:
     void setStatus(int status);
     void setError(const Error &error);
 
-    PjsipAccount *m_pjsipAccount;
-    RisipAccountProfile *m_profile;
-    RisipAccountConfiguration *m_configuration;
-    RisipEndpoint *m_sipEndpoint;
-    PresenceStatus m_presence;
-    bool m_autoSignIn;
-    int m_status;
-    PjsipCall *m_incomingPjsipCall;
-    QList<RisipBuddy *> m_allBuddies;
-    Error m_error;
-
     friend class RisipBuddy;
     friend class RisipCall;
     friend class PjsipAccount;
+
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPACCOUNT_H

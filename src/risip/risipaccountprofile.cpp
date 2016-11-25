@@ -20,10 +20,34 @@
 
 #include "risipaccountprofile.h"
 
+class RisipAccountProfile::Private
+{
+public:
+    int status;
+    int userId = -1;
+    QString userName;
+    QString password;
+    QString balance;
+    QString email;
+    QString firstName;
+    QString lastName;
+    QString country;
+    QString city;
+    QString address;
+    QString postcode;
+    QString vatNumber;
+    int currency;
+    QString phoneNumber;
+    QString mobileNumber;
+    int deviceType;
+    bool valid = false;
+    int tariffId;
+    int lcrId;
+};
+
 RisipAccountProfile::RisipAccountProfile(QObject *parent)
     :QObject(parent)
-    ,m_data(new RisipAccountProfileData)
-    ,m_status(Empty)
+    ,m_data(new Private)
 {
 
 }
@@ -36,7 +60,7 @@ RisipAccountProfile::~RisipAccountProfile()
 
 int RisipAccountProfile::userId() const
 {
-    return m_data->m_userId;
+    return m_data->userId;
 }
 
 bool RisipAccountProfile::valid() const
@@ -46,201 +70,201 @@ bool RisipAccountProfile::valid() const
 
 QString RisipAccountProfile::username() const
 {
-    return m_data->m_userName;
+    return m_data->userName;
 }
 
 void RisipAccountProfile::setUsername(const QString &username)
 {
-    if(m_data->m_userName != username) {
-        m_data->m_userName = username;
+    if(m_data->userName != username) {
+        m_data->userName = username;
         emit usernameChanged(username);
     }
 }
 
 QString RisipAccountProfile::password() const
 {
-    return m_data->m_password;
+    return m_data->password;
 }
 
 void RisipAccountProfile::setPassword(const QString &password)
 {
-    if(m_data->m_password != password) {
-        m_data->m_password = password;
+    if(m_data->password != password) {
+        m_data->password = password;
         emit passwordChanged(password);
     }
 }
 
 QString RisipAccountProfile::creditBalance() const
 {
-    return m_data->m_balance;
+    return m_data->balance;
 }
 
 QString RisipAccountProfile::email() const
 {
-    return m_data->m_email;
+    return m_data->email;
 }
 
 void RisipAccountProfile::setEmail(const QString &email)
 {
-    if(m_data->m_email != email) {
-        m_data->m_email = email;
+    if(m_data->email != email) {
+        m_data->email = email;
         emit emailChanged(email);
     }
 }
 
 QString RisipAccountProfile::firstName() const
 {
-    return m_data->m_firstName;
+    return m_data->firstName;
 }
 
 void RisipAccountProfile::setFirstName(const QString &firstname)
 {
-    if(m_data->m_firstName != firstname) {
-        m_data->m_firstName = firstname;
+    if(m_data->firstName != firstname) {
+        m_data->firstName = firstname;
         emit firstNameChanged(firstname);
     }
 }
 
 QString RisipAccountProfile::lastName() const
 {
-    return m_data->m_lastName;
+    return m_data->lastName;
 }
 
 void RisipAccountProfile::setLastName(const QString &lastname)
 {
-    if(m_data->m_lastName != lastname) {
-        m_data->m_lastName = lastname;
+    if(m_data->lastName != lastname) {
+        m_data->lastName = lastname;
         emit lastNameChanged(lastname);
     }
 }
 
 QString RisipAccountProfile::country() const
 {
-    return m_data->m_country;
+    return m_data->country;
 }
 
 void RisipAccountProfile::setCountry(const QString &country)
 {
-    if(m_data->m_country != country) {
-        m_data->m_country = country;
+    if(m_data->country != country) {
+        m_data->country = country;
         emit countryChanged(country);
     }
 }
 
 QString RisipAccountProfile::city() const
 {
-    return m_data->m_city;
+    return m_data->city;
 }
 
 void RisipAccountProfile::setCity(const QString &city)
 {
-    if(m_data->m_city != city) {
-        m_data->m_city = city;
+    if(m_data->city != city) {
+        m_data->city = city;
         emit cityChanged(city);
     }
 }
 
 QString RisipAccountProfile::address() const
 {
-    return m_data->m_address;
+    return m_data->address;
 }
 
 void RisipAccountProfile::setAddress(const QString &address)
 {
-    if(m_data->m_address != address) {
-        m_data->m_address = address;
+    if(m_data->address != address) {
+        m_data->address = address;
         emit addressChanged(address);
     }
 }
 
 QString RisipAccountProfile::postCode() const
 {
-    return m_data->m_postcode;
+    return m_data->postcode;
 }
 
 void RisipAccountProfile::setPostCode(const QString &code)
 {
-    if(m_data->m_postcode != code) {
-        m_data->m_postcode = code;
+    if(m_data->postcode != code) {
+        m_data->postcode = code;
         emit postCodeChanged(code);
     }
 }
 
 QString RisipAccountProfile::vatNumber() const
 {
-    return m_data->m_vatNumber;
+    return m_data->vatNumber;
 }
 
 void RisipAccountProfile::setVatNumber(const QString &number)
 {
-    if(m_data->m_vatNumber != number) {
-        m_data->m_vatNumber = number;
+    if(m_data->vatNumber != number) {
+        m_data->vatNumber = number;
         emit vatNumberChanged(number);
     }
 }
 
 int RisipAccountProfile::currency() const
 {
-    return m_data->m_currency;
+    return m_data->currency;
 }
 
 void RisipAccountProfile::setCurrency(int currency)
 {
-    if(m_data->m_currency != currency) {
-        m_data->m_currency = currency;
+    if(m_data->currency != currency) {
+        m_data->currency = currency;
         emit currencyChanged(currency);
     }
 }
 
 QString RisipAccountProfile::phoneNumber() const
 {
-    return m_data->m_phoneNumber;
+    return m_data->phoneNumber;
 }
 
 void RisipAccountProfile::setPhoneNumber(const QString &phone)
 {
-    if(m_data->m_phoneNumber != phone) {
-        m_data->m_phoneNumber = phone;
+    if(m_data->phoneNumber != phone) {
+        m_data->phoneNumber = phone;
         emit phoneNumberChanged(phone);
     }
 }
 
 QString RisipAccountProfile::mobileNumber() const
 {
-    return m_data->m_mobileNumber;
+    return m_data->mobileNumber;
 }
 
 void RisipAccountProfile::setMobileNumber(const QString &mobile)
 {
-    if(m_data->m_mobileNumber != mobile) {
-        m_data->m_mobileNumber = mobile;
+    if(m_data->mobileNumber != mobile) {
+        m_data->mobileNumber = mobile;
         emit mobileNumberChanged(mobile);
     }
 }
 
 int RisipAccountProfile::deviceType() const
 {
-    return m_data->m_deviceType;
+    return m_data->deviceType;
 }
 
 void RisipAccountProfile::setDeviceType(int type)
 {
-    if(m_data->m_deviceType != type) {
-        m_data->m_deviceType = type;
+    if(m_data->deviceType != type) {
+        m_data->deviceType = type;
         emit deviceTypeChanged(type);
     }
 }
 
 int RisipAccountProfile::status() const
 {
-    return m_status;
+    return m_data->status;
 }
 
 void RisipAccountProfile::setStatus(int status)
 {
-    if(m_status != status) {
-        m_status = status;
-        emit statusChanged(m_status);
+    if(m_data->status != status) {
+        m_data->status = status;
+        emit statusChanged(m_data->status);
     }
 }
 
@@ -249,5 +273,5 @@ void RisipAccountProfile::reset()
     delete m_data;
     m_data = NULL;
 
-    m_data = new RisipAccountProfileData;
+    m_data = new Private;
 }

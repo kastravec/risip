@@ -23,21 +23,44 @@ import QtQuick.Layouts 1.3
 
 import "../risipcomponents"
 
+import SortFilterProxyModel 0.1
 import Risip 1.0
 
 GenericSettingsPage {
     id: root
 
-    ListView {
-        id: listView
-        smooth: true
-        cacheBuffer: 300
-        snapMode: ListView.SnapToItem
-        clip: true
-        anchors.fill: parent
+    SortFilterProxyModel {
+        id: proxyModel
+        sourceModel: RisipRateManager.countryRatesModel
+        filterRoleName: "countryName"
+        filterCaseSensitivity: Qt.CaseInsensitive
+        sortOrder: Qt.AscendingOrder
+        sortRoleName: "countryName"
+        filterPattern: countrySearchInput.text
+    }
 
-        model: RisipRateManager.countryRatesModel
-        delegate: listViewDelegate
+    ColumnLayout {
+        id: columnLayout
+        spacing: 10
+        anchors.fill: root.contentItem
+
+        TextField {
+            id: countrySearchInput
+            placeholderText: qsTr("Search country")
+            Layout.fillWidth: true
+        }
+
+        ListView {
+            id: listView
+            smooth: true
+            cacheBuffer: 300
+            snapMode: ListView.SnapToItem
+            clip: true
+            model: proxyModel
+            delegate: listViewDelegate
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
     }
 
     Component {
@@ -48,26 +71,27 @@ GenericSettingsPage {
             width: listView.width
             height: 40
 
-            Image {
-                width: 40
-                height: 40
-                id: countryFlag
-                source: "image://countryFlags/" + countryPrefix //from model
+            RowLayout {
+                spacing: 15
 
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                anchors.verticalCenter: parent.verticalCenter
+                Image {
+                    width: 40
+                    height: 40
+                    id: countryFlag
+                    source: "image://countryFlags/" + countryCode //from model
+                }
+
+                RisipButton {
+                    id: countryNameButton
+                    text: countryName
+                }
+
+                Label {
+                    id: prefixLabel
+                    text: countryPrefix //from model
+                }
             }
-
-            RisipButton {
-                id: countryNameButton
-                labelText.text: countryName
-                anchors.left: countryFlag.right
-                anchors.leftMargin: 5
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-
         }
-    }
+    }//end of component delegate
+
 }

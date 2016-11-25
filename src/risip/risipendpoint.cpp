@@ -22,72 +22,33 @@
 #include "risipaccountconfiguration.h"
 #include "risip.h"
 
+#include "pjsipwrapper/pjsipendpoint.h"
+
 #include <QDebug>
 
-PjsipEndpoint *PjsipEndpoint::pjsipEndpoinInstance = NULL;
-PjsipEndpoint *PjsipEndpoint::instance()
+class RisipEndpoint::Private
 {
-    if(pjsipEndpoinInstance == NULL)
-        pjsipEndpoinInstance = new PjsipEndpoint;
-
-    return pjsipEndpoinInstance;
-}
-
-PjsipEndpoint::PjsipEndpoint()
-    :Endpoint()
-    ,m_risipEndpoint(NULL)
-{
-    delete pjsipEndpoinInstance;
-    pjsipEndpoinInstance = NULL;
-}
-
-PjsipEndpoint::~PjsipEndpoint()
-{
-    libDestroy();
-}
-
-void PjsipEndpoint::onNatDetectionComplete(const OnNatDetectionCompleteParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-void PjsipEndpoint::onNatCheckStunServersComplete(const OnNatCheckStunServersCompleteParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-void PjsipEndpoint::onTransportState(const OnTransportStateParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-void PjsipEndpoint::onTimer(const OnTimerParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-void PjsipEndpoint::onSelectAccount(OnSelectAccountParam &prm)
-{
-    Q_UNUSED(prm)
-}
-
-void PjsipEndpoint::setRisipEndpointInterface(RisipEndpoint *endpoint)
-{
-    m_risipEndpoint = endpoint;
-}
+public:
+    PjsipEndpoint *pjsipEndpoint;
+    TransportId activeTransportId;
+    EpConfig endpointConfig;
+    Error error;
+};
 
 RisipEndpoint::RisipEndpoint(QObject *parent)
     :QObject(parent)
-    ,m_activeTransportId(-1)
-    ,m_error()
+    ,m_data(new Private)
 {
+    m_data->activeTransportId = -1;
 }
 
 RisipEndpoint::~RisipEndpoint()
 {
     delete PjsipEndpoint::instance();
-    m_pjsipEndpoint = NULL;
+    m_data->pjsipEndpoint = NULL;
 
+    delete m_data;
+    m_data = NULL;
 }
 
 /**
@@ -99,10 +60,10 @@ RisipEndpoint::~RisipEndpoint()
  */
 int RisipEndpoint::status() const
 {
-    if(!m_pjsipEndpoint)
+    if(!m_data->pjsipEndpoint)
         return RisipEndpoint::NotStarted;
 
-    switch (m_pjsipEndpoint->libGetState()) {
+    switch (m_data->pjsipEndpoint->libGetState()) {
     case PJSUA_STATE_NULL:
     case PJSUA_STATE_CREATED:
     case PJSUA_STATE_INIT:
@@ -125,7 +86,7 @@ int RisipEndpoint::status() const
  */
 int RisipEndpoint::errorCode() const
 {
-    return m_error.status;
+    return m_data->error.status;
 }
 
 /**
@@ -136,7 +97,7 @@ int RisipEndpoint::errorCode() const
  */
 QString RisipEndpoint::errorMessage() const
 {
-    return QString::fromStdString(m_error.reason);
+    return QString::fromStdString(m_data->error.reason);
 }
 
 /**
@@ -147,12 +108,12 @@ QString RisipEndpoint::errorMessage() const
  */
 QString RisipEndpoint::errorInfo() const
 {
-    return QString::fromStdString(m_error.info(true));
+    return QString::fromStdString(m_data->error.info(true));
 }
 
 int RisipEndpoint::activeTransportId() const
 {
-    return m_activeTransportId;
+    return m_data->activeTransportId;
 }
 
 bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountConf)
@@ -187,7 +148,7 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
     }
 
     try {
-        m_activeTransportId = m_pjsipEndpoint->transportCreate(netType, accountConf->pjsipTransportConfig());
+        m_data->activeTransportId = m_data->pjsipEndpoint->transportCreate(netType, accountConf->pjsipTransportConfig());
     } catch (Error& err) {
         setError(err);
         return false;
@@ -205,12 +166,12 @@ bool RisipEndpoint::createTransportNetwork(RisipAccountConfiguration *accountCon
 bool RisipEndpoint::destroyActiveTransport()
 {
     //is there an active transport?
-    if(m_activeTransportId == -1)
+    if(m_data->activeTransportId == -1)
         return true;
 
     //closing it current active network transport.
     try {
-        m_pjsipEndpoint->transportClose(m_activeTransportId);
+        m_data->pjsipEndpoint->transportClose(m_data->activeTransportId);
     } catch(Error& err) {
         setError(err);
         return false;
@@ -232,14 +193,14 @@ PjsipEndpoint *RisipEndpoint::endpointInstance()
  */
 void RisipEndpoint::start()
 {
-    m_pjsipEndpoint = PjsipEndpoint::instance();
-    m_pjsipEndpoint->setRisipEndpointInterface(this);
+    m_data->pjsipEndpoint = PjsipEndpoint::instance();
+    m_data->pjsipEndpoint->setRisipEndpointInterface(this);
 
 //    m_endpointConfig.uaConfig.userAgent
 //    m_endpointConfig.uaConfig.maxCalls = 4;
 
     try {
-        m_pjsipEndpoint->libCreate();
+        m_data->pjsipEndpoint->libCreate();
     } catch (Error &err) {
         emit statusChanged(status());
         setError(err);
@@ -247,7 +208,7 @@ void RisipEndpoint::start()
     }
 
     try {
-        m_pjsipEndpoint->libInit(m_endpointConfig);
+        m_data->pjsipEndpoint->libInit(m_data->endpointConfig);
     } catch (Error &err) {
         emit statusChanged(status());
         setError(err);
@@ -255,7 +216,7 @@ void RisipEndpoint::start()
     }
 
     try {
-        m_pjsipEndpoint->libStart();
+        m_data->pjsipEndpoint->libStart();
     } catch (Error &err) {
         emit statusChanged(status());
         setError(err);
@@ -293,8 +254,8 @@ void RisipEndpoint::start()
  */
 void RisipEndpoint::stop()
 {
-    if(m_pjsipEndpoint && m_pjsipEndpoint->libGetState() != PJSUA_STATE_NULL)
-        m_pjsipEndpoint->libDestroy();
+    if(m_data->pjsipEndpoint && m_data->pjsipEndpoint->libGetState() != PJSUA_STATE_NULL)
+        m_data->pjsipEndpoint->libDestroy();
 
     emit statusChanged(status());
 }
@@ -303,16 +264,16 @@ void RisipEndpoint::setError(const Error &error)
 {
     qDebug()<<"ERROR: " <<"code: "<<error.status <<" info: " << QString::fromStdString(error.info(true));
 
-    if(m_error.status != error.status) {
+    if(m_data->error.status != error.status) {
 
-        m_error.status = error.status;
-        m_error.reason = error.reason;
-        m_error.srcFile = error.srcFile;
-        m_error.srcLine = error.srcLine;
-        m_error.title = error.title;
+        m_data->error.status = error.status;
+        m_data->error.reason = error.reason;
+        m_data->error.srcFile = error.srcFile;
+        m_data->error.srcLine = error.srcLine;
+        m_data->error.title = error.title;
 
-        emit errorCodeChanged(m_error.status);
-        emit errorMessageChanged(QString::fromStdString(m_error.reason));
-        emit errorInfoChanged(QString::fromStdString(m_error.info(true)));
+        emit errorCodeChanged(m_data->error.status);
+        emit errorMessageChanged(QString::fromStdString(m_data->error.reason));
+        emit errorInfoChanged(QString::fromStdString(m_data->error.info(true)));
     }
 }

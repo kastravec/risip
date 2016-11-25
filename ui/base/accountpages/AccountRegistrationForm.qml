@@ -19,27 +19,31 @@
 ************************************************************************************/
 
 import QtQuick 2.7
-import Risip 1.0
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.0
+import QtQuick.Controls.Material 2.0
 
-AddSipServicePageForm {
-    id:root
+import "../risipcomponents"
 
-    signal sipAccountAdded
+Page {
+    id: root
 
-    onSaveClicked: {
-        Risip.createAccount(configuration);
-        root.sipAccountAdded();
+    Material.theme: Material.Light
+    Material.background: "#FFFFFF"
+    Material.accent: "#db0000" //"#DB5AB9"
+    Material.foreground: "#000000"
+    Material.primary: "#FFFFFF"
+
+    property alias stackView: stackView
+    property alias firstPage: firstPage
+    property alias secondPage: secondPage
+
+    NumberRegistrationPage { id: firstPage }
+    ProfileRegistrationPage { id: secondPage }
+
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: firstPage
     }
-
-    RisipAccountConfiguration {
-        id: configuration
-        userName: usernameInput.text
-        password: passwordInput.text
-        serverAddress: serverAddressInput.text
-        proxyServer: proxyServerInput.text
-        localPort: parseInt(localPortInput.text)
-        randomLocalPort: parseInt(localPortInput.text)
-        networkProtocol: networkTypeInput.currentIndex
-    }
-
 }

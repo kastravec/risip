@@ -1,5 +1,5 @@
 #include "risipglobals.h"
-#include "risipphonecontact.h"
+#include "risipphonenumber.h"
 
 #include <QString>
 #include <QList>

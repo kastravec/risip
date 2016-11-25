@@ -24,32 +24,6 @@
 #include <QObject>
 #include "risipglobals.h"
 
-class RisipAccountProfileData
-{
-public:
-    int m_userId = -1;
-    QString m_userName;
-    QString m_password;
-    QString m_balance;
-    QString m_email;
-    QString m_firstName;
-    QString m_lastName;
-    QString m_country;
-    QString m_city;
-    QString m_address;
-    QString m_postcode;
-    QString m_vatNumber;
-    int m_currency;
-    QString m_phoneNumber;
-    QString m_mobileNumber;
-    int m_deviceType;
-    bool m_valid = false;
-
-    int m_tariffId;
-    int m_lcrId;
-
-};
-
 class RisipAccountProfile : public QObject
 {
     Q_OBJECT
@@ -167,8 +141,8 @@ Q_SIGNALS:
     void statusChanged(int status);
 
 private:
-    RisipAccountProfileData *m_data;
-    int m_status;
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPACCOUNTPROFILE_H

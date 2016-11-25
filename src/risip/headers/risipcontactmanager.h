@@ -93,22 +93,8 @@ private:
     void setActiveBuddiesModel(RisipBuddiesModel *model);
     void setActiveContactHistory(RisipContactHistoryModel *history);
 
-    RisipAccount *m_activeAccount;
-    QHash<QString, RisipBuddiesModel *> m_accountBuddyModels;
-    QHash<QString, RisipContactHistoryModel *> m_accountContactHistoryModels;
-    RisipBuddiesModel *m_activeBuddiesModel;
-    RisipContactHistoryModel *m_activeContactHistoryModel;
-    RisipPhoneContactsModel *m_phoneContactsModel;
-
-    QHash<QString, RisipPhoneContact *> m_phoneContacts;
-    QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
-    RisipPhoneContact *m_activePhoneContact;
-
-    //responsible for fetching contacts from the ios device.
-#ifdef Q_OS_IOS
-    RisipiOSContactAcessManager *m_iosContacts = NULL;
-#endif
-
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPCONTACTMANAGER_H

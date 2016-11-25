@@ -89,7 +89,7 @@ Page {
                 anchors.topMargin: 20
                 anchors.top: inputLayout.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
-                labelText.text: qsTr("Sign in")
+                text: qsTr("Sign in")
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: false
             }
@@ -110,7 +110,7 @@ Page {
                 RisipButton {
                     id: addSipServiceButton
                     Layout.fillWidth: true
-                    labelText.text: qsTr("Add SIP Service")
+                    text: qsTr("Add SIP Service")
                 }
             }
         }

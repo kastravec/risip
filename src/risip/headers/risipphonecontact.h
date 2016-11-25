@@ -22,87 +22,9 @@
 
 #include <QObject>
 #include <QQmlListProperty>
-class RisipPhoneContact;
+
+class RisipPhoneNumber;
 class RisipPhoneNumbersModel;
-
-class RisipPhoneNumber : public QObject
-{
-    Q_OBJECT
-public:
-    Q_PROPERTY(RisipPhoneContact *phoneContact READ phoneContact WRITE setPhoneContact NOTIFY phoneContactChanged)
-    Q_PROPERTY(QString rawNumber READ rawNumber WRITE setRawNumber NOTIFY rawNumberChanged)
-    Q_PROPERTY(QString countryPrefix READ countryPrefix NOTIFY countryPrefixChanged)
-    Q_PROPERTY(QString secondPrefix READ secondPrefix NOTIFY secondPrefixChanged)
-    Q_PROPERTY(QString number READ number NOTIFY numberChanged)
-    Q_PROPERTY(QString fullNumber READ fullNumber NOTIFY fullNumberChanged)
-    Q_PROPERTY(QString countryCode READ countryCode NOTIFY countryCodeChanged)
-    Q_PROPERTY(QString countryName READ countryName NOTIFY countryNameChanged)
-    Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
-    Q_PROPERTY(QString label READ label WRITE setLabel NOTIFY labelChanged)
-    Q_PROPERTY(QStringList fullNumberParts READ fullNumberParts NOTIFY fullNumberPartsChanged)
-
-    explicit RisipPhoneNumber(const QString &rawNumber = QString(), QObject *parent = 0);
-    ~RisipPhoneNumber();
-
-    RisipPhoneContact *phoneContact() const;
-    void setPhoneContact(RisipPhoneContact *contact);
-
-    QString rawNumber() const;
-    void setRawNumber(const QString &number);
-
-    QString label() const;
-    void setLabel(const QString &label);
-
-    QStringList fullNumberParts() const;
-    void setNumberParts(const QStringList &parts);
-
-    QString countryPrefix() const;
-    void setCountryPrefix(const QString &prefix);
-
-    QString countryCode() const;
-    void setCountryCode(const QString &code);
-
-    QString countryName() const;
-    void setCountryName(const QString &name);
-
-    QString secondPrefix() const;
-    void setSecondPrefix(const QString &prefix);
-
-    QString number() const;
-    void setNumber(const QString &number);
-
-    QString fullNumber() const;
-    void setFullNumber(const QString &name);
-
-    bool valid() const;
-
-Q_SIGNALS:
-    void phoneContactChanged(RisipPhoneContact *contact);
-    void rawNumberChanged(const QString &number);
-    void countryPrefixChanged(const QString &prefix);
-    void secondPrefixChanged(const QString &prefix);
-    void numberChanged(const QString &number);
-    void fullNumberChanged(const QString &number);
-    void countryCodeChanged(const QString &code);
-    void countryNameChanged(const QString &name);
-    void validChanged(bool valid);
-    void labelChanged(const QString &label);
-    void fullNumberPartsChanged(const QStringList &parts);
-
-private:
-    void reset();
-
-    RisipPhoneContact *m_phoneContact;
-    QString m_rawNumber;
-    QString m_countryPrefix;
-    QString m_secondPrefix;
-    QString m_number;
-    QString m_fullNumber;
-    QString m_countryCode;
-    QString m_countryName;
-    QString m_label;
-    QStringList m_fullNumberParts;
-};
 
 class RisipPhoneContact : public QObject
 {
@@ -149,12 +71,8 @@ Q_SIGNALS:
     void contactImageDataChanged(const QByteArray &imageData);
 
 private:
-    int m_id;
-    QString m_fullName;
-    QString m_email;
-    QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
-    RisipPhoneNumbersModel *m_phoneNumbersModel;
-    QByteArray m_contactImageData;
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPPHONECONTACT_H
