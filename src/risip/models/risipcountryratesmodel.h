@@ -17,31 +17,36 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#include "risipratemanager.h"
+#ifndef RISIPCOUNTRYRATESMODEL_H
+#define RISIPCOUNTRYRATESMODEL_H
 
-#include "risipcountryratesmodel.h"
+#include "risipglobals.h"
 
-RisipRateManager *RisipRateManager::m_instance = NULL;
-RisipRateManager *RisipRateManager::instance()
+#include <QAbstractListModel>
+
+class RisipCountryRatesModel: public QAbstractListModel
 {
-    if(m_instance == NULL)
-        m_instance = new RisipRateManager;
+    Q_OBJECT
 
-    return m_instance;
-}
+public:
+    enum RisipCountryRateDataRole {
+        CountryName = Qt::UserRole +1,
+        CountryCode,
+        CountryPrefix,
+        CountryRate,
+        ValidFromDate,
+        ValidTillDate
+    };
 
-RisipRateManager::RisipRateManager(QObject *parent)
-    :QObject(parent)
-    ,m_countryRatesModel(new RisipCountryRatesModel(new RisipCountryRatesModel(this)))
-{
-}
+    explicit RisipCountryRatesModel(QObject *parent = 0);
+    ~RisipCountryRatesModel();
 
-RisipRateManager::~RisipRateManager()
-{
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-}
+private:
+    QList<Country> m_allCountries;
+};
 
-RisipCountryRatesModel *RisipRateManager::countryRatesModel() const
-{
-    return m_countryRatesModel;
-}
+#endif // RISIPCOUNTRYRATESMODEL_H

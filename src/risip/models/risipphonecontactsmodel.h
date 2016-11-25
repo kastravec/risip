@@ -17,31 +17,39 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#include "risipratemanager.h"
+#ifndef RISIPPHONECONTACTSMODEL_H
+#define RISIPPHONECONTACTSMODEL_H
 
-#include "risipcountryratesmodel.h"
+#include <QAbstractListModel>
 
-RisipRateManager *RisipRateManager::m_instance = NULL;
-RisipRateManager *RisipRateManager::instance()
+class RisipPhoneContact;
+
+class RisipPhoneContactsModel : public QAbstractListModel
 {
-    if(m_instance == NULL)
-        m_instance = new RisipRateManager;
+    Q_OBJECT
+public:
+    enum RisipPhoneContactDataRole {
+        ContactId = Qt::UserRole + 1,
+        FullName,
+        Initials,
+        PhoneNumberList
+    };
 
-    return m_instance;
-}
+    explicit RisipPhoneContactsModel(QObject *parent = NULL);
+    ~RisipPhoneContactsModel();
 
-RisipRateManager::RisipRateManager(QObject *parent)
-    :QObject(parent)
-    ,m_countryRatesModel(new RisipCountryRatesModel(new RisipCountryRatesModel(this)))
-{
-}
+    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-RisipRateManager::~RisipRateManager()
-{
+    Q_INVOKABLE RisipPhoneContact *contactForIndex(int index);
 
-}
+public Q_SLOTS:
+    void addContact(RisipPhoneContact *contact);
+    void removeContact(RisipPhoneContact *contact);
 
-RisipCountryRatesModel *RisipRateManager::countryRatesModel() const
-{
-    return m_countryRatesModel;
-}
+private:
+    QList<RisipPhoneContact *> m_phoneContacts;
+};
+
+#endif // RISIPPHONECONTACTSMODEL_H

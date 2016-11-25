@@ -29,6 +29,7 @@
 #include "risipmodels.h"
 #include "risipphonecontact.h"
 #include "risipphonenumber.h"
+#include "risipcallhistorymodel.h"
 
 #include "pjsipwrapper/pjsipcall.h"
 

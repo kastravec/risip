@@ -81,10 +81,9 @@ Q_SIGNALS:
 private:
     explicit Risip(QObject *parent = 0);
     static Risip *m_risipInstance;
-    QHash<QString, RisipAccount *> m_accounts;
-    RisipEndpoint m_sipEndpoint;
-    QString m_defaultAccountUri;
-    bool m_defaultAccountAlways;
+
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIP_H

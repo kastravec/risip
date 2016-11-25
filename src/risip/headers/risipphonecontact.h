@@ -20,10 +20,10 @@
 #ifndef RISIPPHONECONTACT_H
 #define RISIPPHONECONTACT_H
 
-#include <QObject>
+#include "risipphonenumber.h"
+
 #include <QQmlListProperty>
 
-class RisipPhoneNumber;
 class RisipPhoneNumbersModel;
 
 class RisipPhoneContact : public QObject

@@ -27,6 +27,7 @@
 #include "ios/risipioscontactaccessmanager.h"
 #include "risipphonecontact.h"
 #include "risipphonenumber.h"
+#include "models/risipphonecontactsmodel.h"
 
 #include <QDebug>
 

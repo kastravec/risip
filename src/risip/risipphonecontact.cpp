@@ -20,7 +20,8 @@
 #include "risipphonecontact.h"
 #include "risipmodels.h"
 #include "risipglobals.h"
-#include "risipphonenumber.h"
+
+#include "models/risipphonenumbersmodel.h"
 
 #include <QDebug>
 

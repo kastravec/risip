@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>ui/simpledemo/SimpleDemo.qml</file>
         <file>ui/base/SplashScreen.qml</file>
         <file>ui/base/Main.qml</file>
         <file>ui/desktop/Main.qml</file>

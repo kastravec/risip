@@ -17,31 +17,25 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#include "risipratemanager.h"
+#ifndef RISIPBUDDYMODELS_H
+#define RISIPBUDDYMODELS_H
 
-#include "risipcountryratesmodel.h"
+#include "risipabstractbuddymodel.h"
 
-RisipRateManager *RisipRateManager::m_instance = NULL;
-RisipRateManager *RisipRateManager::instance()
+class RisipBuddiesModel: public RisipAbstractBuddyModel
 {
-    if(m_instance == NULL)
-        m_instance = new RisipRateManager;
+    Q_OBJECT
+public:
+    explicit RisipBuddiesModel(QObject *parent = NULL);
+    ~RisipBuddiesModel();
+};
 
-    return m_instance;
-}
-
-RisipRateManager::RisipRateManager(QObject *parent)
-    :QObject(parent)
-    ,m_countryRatesModel(new RisipCountryRatesModel(new RisipCountryRatesModel(this)))
+class RisipContactHistoryModel: public RisipAbstractBuddyModel
 {
-}
+    Q_OBJECT
+public:
+    explicit RisipContactHistoryModel(QObject *parent = NULL);
+    ~RisipContactHistoryModel();
+};
 
-RisipRateManager::~RisipRateManager()
-{
-
-}
-
-RisipCountryRatesModel *RisipRateManager::countryRatesModel() const
-{
-    return m_countryRatesModel;
-}
+#endif // RISIPBUDDYMODELS_H

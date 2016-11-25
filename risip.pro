@@ -15,7 +15,8 @@ DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
 ### INCLUDES ###
 INCLUDEPATH += $$PWD/src \
                $$PWD/src/risip/headers \
-               $$PWD/src/utils
+               $$PWD/src/utils \
+               $$PWD/src/risip/models
 
 # this include path depends on the directory of your pjsip headers/libs
 # it could be different directory names for different platform where you put the pjsip headers
@@ -37,7 +38,7 @@ SOURCES += src/app/main.cpp \
     src/risip/risipaccountprofile.cpp \
     src/risip/risipcallmanager.cpp \
     src/risip/risipcontactmanager.cpp \
-    src/risip/risipmodels.cpp \
+    src/risip/models/risipmodels.cpp \
     src/risip/risipphonecontact.cpp \
     src/app/risipuiloader.cpp \
     src/app/applicationsettings.cpp \
@@ -53,7 +54,12 @@ SOURCES += src/app/main.cpp \
     src/risip/pjsipwrapper/pjsipcall.cpp \
     src/risip/pjsipwrapper/pjsipbuddy.cpp \
     src/risip/pjsipwrapper/pjsipendpoint.cpp \
-    src/risip/risipphonenumber.cpp
+    src/risip/risipphonenumber.cpp \
+    src/risip/models/risipabstractbuddymodel.cpp \
+    src/risip/models/risipcallhistorymodel.cpp \
+    src/risip/models/risipphonecontactsmodel.cpp \
+    src/risip/models/risipcountryratesmodel.cpp \
+    src/risip/models/risipphonenumbersmodel.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -66,7 +72,7 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccountprofile.h \
     src/risip/headers/risipcallmanager.h \
     src/risip/headers/risipcontactmanager.h \
-    src/risip/headers/risipmodels.h \
+    src/risip/models/risipmodels.h \
     src/risip/headers/risipglobals.h \
     src/risip/headers/risipphonecontact.h \
     src/risip/ios/risipcallkprovider.h \
@@ -84,7 +90,12 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/pjsipwrapper/pjsipcall.h \
     src/risip/pjsipwrapper/pjsipbuddy.h \
     src/risip/pjsipwrapper/pjsipendpoint.h \
-    src/risip/headers/risipphonenumber.h
+    src/risip/headers/risipphonenumber.h \
+    src/risip/models/risipabstractbuddymodel.h \
+    src/risip/models/risipcallhistorymodel.h \
+    src/risip/models/risipphonecontactsmodel.h \
+    src/risip/models/risipcountryratesmodel.h \
+    src/risip/models/risipphonenumbersmodel.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {
