@@ -18,6 +18,15 @@ TabBar {
         root.previousIndex = root.currentIndex
     }
 
+    //setting the horizontal top line
+//    background: Rectangle {
+//        width: root.width
+//        height: 1
+//        anchors.top: root.top
+//        color: "transparent"
+//        border.color: "#aaaaaa"
+//    }
+
     TabButton {
         id: phoneBookButton
         property bool active: false

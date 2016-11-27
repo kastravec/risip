@@ -18,7 +18,6 @@
         <file>ui/base/contactpages/ContactsPage.qml</file>
         <file>ui/base/callpages/DialPage.qml</file>
         <file>ui/base/callpages/CallPage.qml</file>
-        <file>ui/base/callpages/DialPageForm.ui.qml</file>
         <file>ui/base/accountpages/AddSipServicePage.qml</file>
         <file>ui/base/accountpages/LoginPage.qml</file>
         <file>ui/base/callpages/CallHistoryListView.qml</file>
@@ -39,5 +38,12 @@
         <file>ui/base/accountpages/ProfileRegistrationPage.qml</file>
         <file>ui/base/contactpages/ContactsPageForm.qml</file>
         <file>ui/base/callpages/CallPageForm.qml</file>
+        <file>ui/base/risipcomponents/Line.qml</file>
+        <file>ui/base/risipcomponents/CountryListViewPage.qml</file>
+        <file>ui/base/risipcomponents/SearchField.qml</file>
+        <file>ui/base/risipcomponents/IconButton.qml</file>
+        <file>ui/base/risipcomponents/Arrow.qml</file>
+        <file>ui/base/callpages/DialPageForm.qml</file>
+        <file>ui/base/risipcomponents/CountryFlag.qml</file>
     </qresource>
 </RCC>

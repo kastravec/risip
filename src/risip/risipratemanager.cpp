@@ -18,7 +18,7 @@
 **
 ************************************************************************************/
 #include "risipratemanager.h"
-
+#include "risipglobals.h"
 #include "risipcountryratesmodel.h"
 
 RisipRateManager *RisipRateManager::m_instance = NULL;
@@ -32,16 +32,18 @@ RisipRateManager *RisipRateManager::instance()
 
 RisipRateManager::RisipRateManager(QObject *parent)
     :QObject(parent)
-    ,m_countryRatesModel(new RisipCountryRatesModel(new RisipCountryRatesModel(this)))
+    ,m_countryRatesModel(new RisipCountryRatesModel(this))
 {
 }
 
 RisipRateManager::~RisipRateManager()
 {
-
 }
 
 RisipCountryRatesModel *RisipRateManager::countryRatesModel() const
 {
+    if(m_countryRatesModel->rowCount() == 0)
+        m_countryRatesModel->setCountryList(RisipGlobals::instance()->countries());
+
     return m_countryRatesModel;
 }

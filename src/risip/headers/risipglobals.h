@@ -56,6 +56,7 @@ struct Rate {
     QString timeMeasure;
     QString chargingMeasure;
     QString actualRate;
+    QString currency;
     QDateTime validFromDate;
     QDateTime validTillDate;
 
@@ -81,20 +82,31 @@ struct Country {
     Rate rate;
 };
 
-struct RisipGlobals {
-    RisipGlobals();
+class RisipGlobals : public QObject
+{
+    Q_OBJECT
+public:
+    ~RisipGlobals();
 
+    void initializeCountries();
+
+    static RisipGlobals *instance();
     static QString formatToSip(const QString &contact, const QString &server);
     static QList<Country> countries();
     static const Country &countryForPrefix(const QString &prefix);
-    static void initializeCountries();
     static bool countriesInitialized();
     static void validateNumber(RisipPhoneNumber *number);
 
+Q_SIGNALS:
+    void countryListReady(const QList<Country> countries);
+
 private:
+    explicit RisipGlobals(QObject *parent = NULL);
+    static RisipGlobals *m_instance;
+
     static QHash<QString, Country> m_allCountries;
     static bool m_countriesIntialized;
-    static void setCountryList(QHash<QString, Country> countryList);
+    void setCountryList(QHash<QString, Country> countryList);
 
     friend class RisipConfigisLoader;
 };

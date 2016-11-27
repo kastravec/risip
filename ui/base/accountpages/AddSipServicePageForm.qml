@@ -42,7 +42,11 @@ Page {
             id: rowLayout
             spacing: 2
 
-            Image { source: "qrc:/images/icons/16/ArrowLeftRedx4.png"; Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter; }
+            Arrow {
+                orientation: "left"
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter;
+            }
+
             Label {
                 text: qsTr("Cancel")
                 MouseArea {

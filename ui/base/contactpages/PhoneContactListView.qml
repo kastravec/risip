@@ -35,10 +35,10 @@ Page {
     SortFilterProxyModel {
         id: proxyModel
         sourceModel: RisipContactManager.phoneContactsModel
-        filterRoleName: "fullName"
+        filterRoleName: "fullName" //from model
         filterCaseSensitivity: Qt.CaseInsensitive
         sortOrder: Qt.AscendingOrder
-        sortRoleName: "fullName"
+        sortRoleName: "fullName" //from model
     }
 
     ListView {
@@ -96,7 +96,7 @@ Page {
                 width: 45
                 height: 45
                 anchors.centerIn: contactIconBox
-                source: "image://contactIcon/" + fullName;
+                source: "image://contactIcon/" + fullName; //from model
                 visible: false;
             }
 
@@ -120,7 +120,7 @@ Page {
 
             Text {
                 id: fullNameLabel
-                text: fullName
+                text: fullName //from model
                 font.bold: true
                 anchors.top: parent.top
                 anchors.topMargin: 15

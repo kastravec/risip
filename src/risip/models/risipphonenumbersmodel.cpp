@@ -46,7 +46,6 @@ void RisipPhoneNumbersModel::setPhoneContact(RisipPhoneContact *contact)
         m_phoneContact = contact;
 //        endResetModel();
         emit phoneContactChanged(m_phoneContact);
-
     }
 }
 
@@ -72,7 +71,8 @@ int RisipPhoneNumbersModel::rowCount(const QModelIndex &parent) const
 
 QVariant RisipPhoneNumbersModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || !m_phoneContact)
+    if (!index.isValid() || !m_phoneContact
+            || index.row() >= m_phoneContact->phoneNumberList().count())
         return QVariant();
 
     switch (role) {

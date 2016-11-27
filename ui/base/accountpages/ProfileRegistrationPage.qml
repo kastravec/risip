@@ -25,13 +25,33 @@ import QtQuick.Layouts 1.0
 import "../risipcomponents"
 
 Page {
-    id:root
+    id: root
 
     property alias registerButton: registerButton
     property alias emailInput: emailInput
     property alias passwordInput: passwordInput
 
     signal registerButtonClicked
+    signal backClicked
+
+    header: ToolBar {
+
+        background: Rectangle {
+            implicitHeight: 40
+            color: "#ffffff"
+
+            Line {
+                id: horizontalLine
+                anchors.bottom: parent.bottom
+            }
+        }
+
+        ToolButton {
+            id: backButton
+            text: qsTr("Back")
+            onClicked: root.backClicked()
+        }
+    }
 
     Label {
         id: label
@@ -43,18 +63,21 @@ Page {
 
     ColumnLayout {
         id: columnLayout
+        width: parent.width *0.65
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 10
+        spacing: 15
         anchors.horizontalCenter: parent.horizontalCenter
 
         TextField {
             id: emailInput
+            Layout.fillWidth: true
             placeholderText: qsTr("Email address")
         }
 
         TextField {
             id: passwordInput
-            echoMode: TextInput.PasswordEchoOnEdit
+            Layout.fillWidth: true
+            echoMode: TextInput.Password
             placeholderText: qsTr("Password")
         }
     }

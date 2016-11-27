@@ -17,30 +17,20 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#ifndef RISIPRATEMANAGER_H
-#define RISIPRATEMANAGER_H
 
-#include <QObject>
+import QtQuick 2.7
 
-class RisipCountryRatesModel;
+Rectangle {
+    id: root
+    width: 24
+    height: 16
 
-class
-class RisipRateManager : public QObject
-{
-    Q_OBJECT
-public:
-    Q_PROPERTY(RisipCountryRatesModel * countryRatesModel READ countryRatesModel CONSTANT)
+    property string countryCode
 
-    static RisipRateManager *instance();
-    ~RisipRateManager();
-
-    RisipCountryRatesModel *countryRatesModel() const;
-
-private:
-    explicit RisipRateManager(QObject *parent = 0);
-
-    static RisipRateManager *m_instance;
-    RisipCountryRatesModel *m_countryRatesModel;
-};
-
-#endif // RISIPRATEMANAGER_H
+    Image {
+        id: countryFlagIcon
+        width: root.width
+        height: root.height
+        source: "image://countryFlags/" + root.countryCode
+    }
+}

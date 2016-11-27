@@ -17,30 +17,33 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#ifndef RISIPRATEMANAGER_H
-#define RISIPRATEMANAGER_H
 
-#include <QObject>
+import QtQuick 2.7
 
-class RisipCountryRatesModel;
+Item {
+    id: root
+    width: 12
+    height: 12
 
-class
-class RisipRateManager : public QObject
-{
-    Q_OBJECT
-public:
-    Q_PROPERTY(RisipCountryRatesModel * countryRatesModel READ countryRatesModel CONSTANT)
+    property var orientation: "left"
 
-    static RisipRateManager *instance();
-    ~RisipRateManager();
+    Image {
+        id: icon
+        width: root.width
+        height: root.height
+        source: "qrc:/images/icons/128/ArrowLeftRed.png";
+    }
 
-    RisipCountryRatesModel *countryRatesModel() const;
+    onOrientationChanged: {
+        if(orientation === "left") {
+            icon.source = "qrc:/images/icons/128/ArrowLeftRed.png";
+        } else if(orientation === "right") {
+            icon.source = "qrc:/images/icons/128/ArrowRightRed.png";
+        } else if(orientation === "down") {
+            icon.source = "qrc:/images/icons/128/ArrowheadDownRed.png";
+        } else if(orientation === "up") {
+            icon.source = "qrc:/images/icons/128/ArrowheadDownRed.png";
+        }
+    }
 
-private:
-    explicit RisipRateManager(QObject *parent = 0);
-
-    static RisipRateManager *m_instance;
-    RisipCountryRatesModel *m_countryRatesModel;
-};
-
-#endif // RISIPRATEMANAGER_H
+}

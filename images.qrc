@@ -32,5 +32,17 @@
         <file>images/icons/48/PhoneBlack.png</file>
         <file>images/icons/128/CircleBlack.png</file>
         <file>images/icons/128/GlobeSketch.png</file>
+        <file>images/icons/128/DeleteBlack.png</file>
+        <file>images/icons/128/MagnifyingGlassRed.png</file>
+        <file>images/icons/128/MagnifyingGlassBlack.png</file>
+        <file>images/icons/128/ArrowheadDownRed.png</file>
+        <file>images/icons/128/ArrowheadDownBlack.png</file>
+        <file>images/icons/128/CancelRed.png</file>
+        <file>images/icons/128/CancelBlack.png</file>
+        <file>images/icons/128/DeleteRed.png</file>
+        <file>images/icons/128/CloseRed.png</file>
+        <file>images/icons/128/CloseBlack.png</file>
+        <file>images/icons/128/ArrowLeftRed.png</file>
+        <file>images/icons/128/ArrowRightRed.png</file>
     </qresource>
 </RCC>

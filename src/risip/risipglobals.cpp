@@ -31,7 +31,8 @@ const QString RisipSettingsParam::RandomLocalPort("randomLocalPort");
 Rate::Rate()
     :timeMeasure("min")
     ,chargingMeasure()
-    ,actualRate()
+    ,actualRate("0.10")
+    ,currency("€")
     ,validFromDate()
     ,validTillDate()
 {
@@ -42,6 +43,7 @@ Rate::Rate(const Rate &rate)
     :timeMeasure(rate.timeMeasure)
     ,chargingMeasure(rate.chargingMeasure)
     ,actualRate(rate.actualRate)
+    ,currency(rate.currency)
     ,validFromDate(rate.validFromDate)
     ,validTillDate(rate.validTillDate)
 {
@@ -53,6 +55,7 @@ Rate &Rate::operator=(const Rate &rate)
     timeMeasure = rate.timeMeasure;
     chargingMeasure = rate.chargingMeasure;
     actualRate = rate.actualRate;
+    currency = rate.currency;
     validFromDate = rate.validFromDate;
     validTillDate = rate.validTillDate;
     return *this;
@@ -64,7 +67,8 @@ bool Rate::operator!=(const Rate &rate)
             && timeMeasure != rate.timeMeasure
             && chargingMeasure != rate.chargingMeasure
             && validFromDate != rate.validFromDate
-            && validTillDate != rate.validTillDate);
+            && validTillDate != rate.validTillDate
+            && currency != rate.currency);
 }
 
 bool Rate::operator==(const Rate &rate)
@@ -73,7 +77,8 @@ bool Rate::operator==(const Rate &rate)
             && timeMeasure == rate.timeMeasure
             && chargingMeasure == rate.chargingMeasure
             && validFromDate == rate.validFromDate
-            && validTillDate == rate.validTillDate);
+            && validTillDate == rate.validTillDate
+            && currency == rate.currency);
 }
 
 Country::Country(const QString &id, const QString &name,
@@ -147,13 +152,13 @@ private:
                 country.prefix = countryLine.left(countryLine.indexOf(";")).trimmed();
 
                 countryLine.remove(0, countryLine.indexOf(";") +1);
-                country.code = countryLine.left(countryLine.indexOf(";")).trimmed();
+                country.code = countryLine.left(countryLine.indexOf(";")).trimmed().toLower();
 //                country.flag.load(QString(":/images/icons/flags/550/") + country.code.toLower() + QString(".png"));
 
                 countries.insert(country.prefix, country);
             }
 
-            RisipGlobals::setCountryList(countries);
+            RisipGlobals::instance()->setCountryList(countries);
         } else {
             qDebug()<<"Configs files cannot be found nor be read!!";
         }
@@ -162,9 +167,24 @@ private:
 
 QHash<QString, Country> RisipGlobals::m_allCountries;
 bool RisipGlobals::m_countriesIntialized = false;
-RisipGlobals::RisipGlobals()
+
+RisipGlobals *RisipGlobals::m_instance = NULL;
+RisipGlobals::RisipGlobals(QObject *parent)
+    :QObject(parent)
+{
+}
+
+RisipGlobals::~RisipGlobals()
 {
 
+}
+
+RisipGlobals *RisipGlobals::instance()
+{
+    if(m_instance == NULL)
+        m_instance = new RisipGlobals;
+
+    return m_instance;
 }
 
 QString RisipGlobals::formatToSip(const QString &contact, const QString &server)
@@ -228,14 +248,13 @@ void RisipGlobals::validateNumber(RisipPhoneNumber *number)
 
     rawNumber = rawNumber.normalized(QString::NormalizationForm_KC, QChar::Unicode_8_0);
     rawNumber.trimmed();
-//    rawNumber.remove(QString("+"));
+    rawNumber.remove(QString("+"));
     rawNumber.remove(QString(QString("-")));
     rawNumber.simplified();
     QStringList parts = rawNumber.split(QRegularExpression("\\s+"));
 
     Country country;
     if(parts.count() == 1) {
-
         if(m_allCountries.contains(parts.first().left(1)))
             country = m_allCountries[parts.first().left(1)];
         else if(m_allCountries.contains(parts.first().left(2)))
@@ -260,6 +279,13 @@ void RisipGlobals::validateNumber(RisipPhoneNumber *number)
     number->setNumberParts(parts);
 }
 
+/**
+ * @brief RisipGlobals::setCountryList
+ * @param countryList
+ *
+ * Internal API.
+ * Called only ONCE at application initialization.
+ */
 void RisipGlobals::setCountryList(QHash<QString, Country> countryList)
 {
     m_allCountries = countryList;

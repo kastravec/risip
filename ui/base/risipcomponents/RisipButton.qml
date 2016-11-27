@@ -18,6 +18,7 @@
 ************************************************************************************/
 
 import QtQuick 2.7
+import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 Rectangle {
@@ -26,11 +27,13 @@ Rectangle {
     border.width: 1
     border.color: "#000000"//"#db0000"
 
-    width: labelText.implicitWidth + 25
-    height: labelText.implicitHeight + 15
+    //default margins of button box and text
+    width: label.implicitWidth + 25
+    height: label.implicitHeight + 15
 
-    property alias text: labelText.text
+    property alias text: label.text
     property alias icon: icon
+    property alias font: label.font
     property bool checkable: false
     property bool checked: false
 
@@ -43,8 +46,8 @@ Rectangle {
         spacing: 2
         anchors.fill: parent
 
-        Text {
-            id: labelText
+        Label {
+            id: label
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
         }
 
@@ -72,7 +75,7 @@ Rectangle {
             }
 
             PropertyChanges {
-                target: labelText
+                target: label
                 color: "#000000"
             }
 
@@ -90,7 +93,7 @@ Rectangle {
             }
 
             PropertyChanges {
-                target: labelText
+                target: label
                 color: "#db0000"
             }
 
@@ -109,7 +112,7 @@ Rectangle {
             }
 
             PropertyChanges {
-                target: labelText
+                target: label
                 color: "#6c1000"
             }
 

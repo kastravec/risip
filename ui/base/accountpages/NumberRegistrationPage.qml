@@ -35,7 +35,7 @@ Page {
     ColumnLayout {
         id: columnLayout
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 10
+        spacing: 60
         anchors.horizontalCenter: parent.horizontalCenter
 
         RowLayout {
@@ -43,43 +43,54 @@ Page {
 
             Image {
                 id: image
-                Layout.preferredHeight: 29
-                Layout.preferredWidth: 42
+                width: 24
+                height: 18
+                Layout.preferredWidth: width
+                Layout.preferredHeight: height
+                source: "image://countryFlags/de" //initial is 'de'
             }
 
             Label {
                 id: countryLabel
-                text: qsTr("Country")
+                text: qsTr("Germany")
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
 
-            Image {
-                id: image1
-                width: 20
-                height: 20
+            IconButton {
+                id: arrowIcon
+                width: 14
+                height: 14
+                Layout.preferredWidth: width
+                Layout.preferredHeight: height
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                defaultIcon: "qrc:/images/icons/128/ArrowheadDownBlack.png" //from model
+
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    onClicked: { countryPickerPopup.visible = true; }
+                }
             }
         }
 
         RowLayout {
             id: rowLayoutBottom
+            anchors.verticalCenter: parent.verticalCenter
 
-            Label {
+            TextField {
                 id: prefixLabel
                 text: qsTr("+49")
-                Layout.preferredHeight: 40
-                Layout.preferredWidth: 41
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+                Layout.alignment: Qt.AlignLeft
+                Layout.preferredWidth: 50
+                readOnly: true
             }
 
             TextField {
                 id: numberInput
-                text: qsTr("34343434")
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: Text.AlignLeft
             }
         }
     }
@@ -94,4 +105,39 @@ Page {
         onClicked: root.continueButtonClicked();
     }
 
-} //end of first page
+    Rectangle {
+        id: countryPickerPopup
+        width: parent.width
+        height: parent.height
+        focus: true
+        z: parent.z + 1
+        visible: false
+
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 20
+
+            RowLayout {
+                IconButton {
+                    id: closeButton
+                    width: 20
+                    height: 20
+                    defaultIcon: "qrc:/images/icons/128/CloseBlack.png"
+                    activeIcon: "qrc:/images/icons/128/CloseRed.png"
+
+                    onClicked: countryPickerPopup.visible = false;
+                }
+
+                Label { text: qsTr("Close") }
+            }
+
+            CountryListViewPage {
+                id: countryListView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+
+        } //end of column layout
+    }
+
+}

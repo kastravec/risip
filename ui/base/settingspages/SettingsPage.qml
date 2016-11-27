@@ -21,6 +21,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
+import "../risipcomponents"
 import Risip 1.0
 
 Page {
@@ -66,9 +67,12 @@ Page {
             RowLayout {
                 anchors.fill: parent
                 Label { text: settingsName }
-                Image {
+
+                Arrow {
+                    Layout.preferredWidth: width
+                    Layout.preferredHeight: height
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    source: "qrc:/images/icons/16/ArrowRightRedx4.png"
+                    orientation: "right"
                 }
             }
 
@@ -162,6 +166,11 @@ Page {
     Connections {
         target: languageSettingsPageLoader.item
         onBackClicked: { stackView.pop(); languageSettingsPageLoader.active = false; }
+    }
+
+    Connections {
+        target: countryRatesPageLoader.item
+        onBackClicked: { stackView.pop(); countryRatesPageLoader.active = false; }
     }
 
     //menu model - just simple menu text items

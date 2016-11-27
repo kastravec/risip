@@ -17,30 +17,32 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#ifndef RISIPRATEMANAGER_H
-#define RISIPRATEMANAGER_H
 
-#include <QObject>
+import QtQuick 2.7
 
-class RisipCountryRatesModel;
+Item {
+    id: root
 
-class
-class RisipRateManager : public QObject
-{
-    Q_OBJECT
-public:
-    Q_PROPERTY(RisipCountryRatesModel * countryRatesModel READ countryRatesModel CONSTANT)
+    property int borderMargins: 0
+    property int clickMargins: borderMargins
+    property string defaultIcon
+    property string activeIcon
 
-    static RisipRateManager *instance();
-    ~RisipRateManager();
+    signal clicked
 
-    RisipCountryRatesModel *countryRatesModel() const;
+    Image {
+        id: icon
+        anchors.fill: parent
+        anchors.margins: root.borderMargins
+        source: root.defaultIcon
+    }
 
-private:
-    explicit RisipRateManager(QObject *parent = 0);
-
-    static RisipRateManager *m_instance;
-    RisipCountryRatesModel *m_countryRatesModel;
-};
-
-#endif // RISIPRATEMANAGER_H
+    MouseArea {
+        id: mouseArea
+        anchors.fill: root
+        anchors.margins: root.clickMargins
+        onPressed: { icon.source = root.activeIcon; }
+        onReleased: { icon.source = root.defaultIcon; }
+        onClicked: { root.clicked(); }
+    }
+}

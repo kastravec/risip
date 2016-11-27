@@ -45,6 +45,9 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
+public Q_SLOTS:
+    void setCountryList(const QList<Country> list);
+
 private:
     QList<Country> m_allCountries;
 };

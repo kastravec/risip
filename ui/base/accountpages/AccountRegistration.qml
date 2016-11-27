@@ -30,7 +30,10 @@ AccountRegistrationForm {
     }
 
     secondPage.onRegisterButtonClicked: {
-        console.log("Register clicked.");
         root.accountRegistered();
+    }
+
+    secondPage.onBackClicked: {
+        stackView.pop();
     }
 }

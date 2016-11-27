@@ -1,6 +1,7 @@
 /***********************************************************************************
 **    Copyright (C) 2016  Petref Saraci
 **    http://risip.io
+**
 **    This program is free software: you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
 **    the Free Software Foundation, either version 3 of the License, or
@@ -21,20 +22,52 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
-import "../risipcomponents"
-
 import SortFilterProxyModel 0.1
 import Risip 1.0
 
-GenericSettingsPage {
+Page {
     id: root
 
-    CountryListViewPage {
-        id: countryListPage
-        anchors.fill: parent
+    property alias delegate: listView.delegate
 
-        delegate: listViewDelegate
+    signal countrySelected
+
+    SortFilterProxyModel {
+        id: proxyModel
+        sourceModel: RisipRateManager.countryRatesModel
+        filterRoleName: "countryName"
+        filterCaseSensitivity: Qt.CaseInsensitive
+        sortOrder: Qt.AscendingOrder
+        sortRoleName: "countryName"
+        filterPattern: countrySearchBox.text
     }
+
+    ColumnLayout {
+        id: columnLayout
+        spacing: 10
+        anchors.fill: root.contentItem
+        anchors.topMargin: 10
+
+        SearchField {
+            id: countrySearchBox
+            Layout.fillWidth: true
+            height: 40
+            placeholderText: qsTr("Search Country")
+        }
+
+        ListView {
+            id: listView
+            smooth: true
+            cacheBuffer: 300
+            snapMode: ListView.SnapToItem
+            clip: true
+            model: proxyModel
+            delegate: listViewDelegate
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
+
+    } //end of column layout
 
     Component {
         id: listViewDelegate
@@ -94,14 +127,6 @@ GenericSettingsPage {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: countryNameButton.right
                     anchors.leftMargin: 4
-                }
-
-                Label {
-                    id: rateLabel
-                    text: countryRate //from model
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: prefixLabel.right
-                    anchors.leftMargin: 10
                 }
             }
         }

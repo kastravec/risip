@@ -44,7 +44,8 @@ ApplicationWindow {
         if(firstRun) {
             welcomeScreenLoader.active = true;
         } else {
-            if(sipAccount.status === RisipAccount.SignedIn) {
+            if(sipAccount.status === RisipAccount.SignedIn
+                    || sipAccount.status === RisipAccount.Registering) {
                 loginPageLoader.active = false;
                 mainPageLoader.visible = true;
             } else {
@@ -108,11 +109,11 @@ ApplicationWindow {
     Connections {
         target: welcomeScreenLoader.item
         onEnterClicked: {
-            if(sipAccount.status === RisipAccount.SignedIn) {
+            if(sipAccount.status === RisipAccount.SignedIn
+                    || sipAccount.status === RisipAccount.Registering) {
                 loginPageLoader.active = false;
                 mainPageLoader.item.visible = true;
             } else {
-
                 if(firstRun)
                     accountRegistrationLoader.active = true;
                 else
@@ -131,7 +132,8 @@ ApplicationWindow {
 
         //handle signed in/out and errors
         onStatusChanged: {
-            if(Risip.defaultAccount.status === RisipAccount.SignedIn) {
+            if(sipAccount.status === RisipAccount.SignedIn
+                    || sipAccount.status === RisipAccount.Registering) {
                 loginPageLoader.active = false;
                 mainPageLoader.item.visible = true;
             } else if(Risip.defaultAccount.status === RisipAccount.SignedOut) {

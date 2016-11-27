@@ -67,6 +67,16 @@ Item {
         }
     }
 
+    //check on sip endpoint statu - > default account can login now
+    Connections {
+        target: sipEndpoint
+
+        onStatusChanged: {
+//            if(sipEndpoint.status === RisipEndpoint.Started)
+//                sipAccount.login();
+        }
+    }
+
     Connections {
         target: RisipGeoPositionProvider
 

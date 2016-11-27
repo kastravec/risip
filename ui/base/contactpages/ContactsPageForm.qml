@@ -20,6 +20,8 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
+import "../risipcomponents"
+
 Page {
     id: mainContactsPage
 
@@ -57,10 +59,12 @@ Page {
             ColumnLayout {
                 anchors.fill: parent
 
-                TextField {
+                SearchField {
                     id: searchContactInput
+                    height: 40
+                    Layout.fillHeight: false
                     Layout.fillWidth: true
-                    placeholderText: qsTr("Search a contact..")
+                    placeholderText: qsTr("Search Contacts")
                 }
 
                 StackLayout {

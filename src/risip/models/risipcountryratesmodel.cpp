@@ -18,10 +18,15 @@
 **
 ************************************************************************************/
 #include "risipcountryratesmodel.h"
+#include "risipglobals.h"
+
+#include <QDebug>
 
 RisipCountryRatesModel::RisipCountryRatesModel(QObject *parent)
     :QAbstractListModel(parent)
 {
+    connect(RisipGlobals::instance(), &RisipGlobals::countryListReady,
+            this, &RisipCountryRatesModel::setCountryList, Qt::QueuedConnection);
 }
 
 RisipCountryRatesModel::~RisipCountryRatesModel()
@@ -61,11 +66,11 @@ QVariant RisipCountryRatesModel::data(const QModelIndex &index, int role) const
     case CountryName:
         return country.name;
     case CountryCode:
-        return country.code.toLower();
+        return country.code;
     case CountryPrefix:
         return country.prefix;
     case CountryRate:
-        return country.rate.actualRate + country.rate.timeMeasure;
+        return country.rate.actualRate + country.rate.currency + QString("/") + country.rate.timeMeasure;
     case ValidFromDate:
         return country.rate.validFromDate;
     case ValidTillDate:
@@ -75,4 +80,10 @@ QVariant RisipCountryRatesModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
+}
+
+void RisipCountryRatesModel::setCountryList(const QList<Country> list)
+{
+    m_allCountries = list;
+    qDebug()<<"COUNTRY LIST SET TO MODEL : " <<m_allCountries.count();
 }

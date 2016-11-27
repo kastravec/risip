@@ -21,44 +21,60 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
+import "../risipcomponents"
+
 Page {
     id: root
 
     signal backClicked
     signal saveClicked
 
-    header: Item {
+    header: ToolBar {
+        id: toolBar
         focus: true
 
-        Row {
-            id: rowLayout
-            spacing: 3
+        background: Rectangle {
+            implicitHeight: 40
+            color: "#ffffff"
 
-            Image { source: "qrc:/images/icons/16/ArrowLeftRedx4.png"; Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter; }
-            Label {
-                text: qsTr("Settings")
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Settings clicked..!");
-                        root.backClicked();
-                    }
-                }
+            Line {
+                id: horizontalLine
+                anchors.bottom: parent.bottom
             }
         }
 
-        Label {
+        Arrow {
+            id: backIcon
+            orientation: "left"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+        }
+
+        ToolButton {
+            id: toolButton
+            text: qsTr("Settings")
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: backIcon.right
+            anchors.leftMargin: 2
+
+            onClicked: {
+                console.log("Settings clicked..!");
+                root.backClicked();
+            }
+        }
+
+        ToolButton {
             text: qsTr("Save")
+            anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            anchors.rightMargin: 5
+            anchors.rightMargin: 10
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    console.log("Save clicked..!");
-                    root.saveClicked();
-                }
+            onClicked: {
+                console.log("Save clicked..!");
+                root.saveClicked();
             }
         }
+
     }
 }

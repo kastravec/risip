@@ -55,9 +55,7 @@ Page {
 
             ColumnLayout {
                 id: inputLayout
-                anchors.top: parent.top
-                anchors.topMargin: 100
-                spacing: 15
+                anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 ComboBox {
@@ -103,8 +101,10 @@ Page {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVBottom
                 spacing: 15
 
-                Label {
-                    text: qsTr("Add a new SIP Account service? ")
+                RisipButton {
+                    id: registerButton
+                    Layout.fillWidth: true
+                    text: qsTr("Register your free account")
                 }
 
                 RisipButton {

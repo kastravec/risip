@@ -144,7 +144,7 @@ Risip::Risip(QObject *parent)
     ,m_data(new Private)
 {
     m_data->m_defaultAccountAlways = true;
-    RisipGlobals::initializeCountries();
+    RisipGlobals::instance()->initializeCountries();
 }
 
 Risip::~Risip()
@@ -228,6 +228,7 @@ void Risip::setDefaultAccount(const QString &uri)
             RisipContactManager::instance()->setActiveAccount(accountForUri(m_data->m_defaultAccountUri));
         }
 
+        qDebug()<<"SIP DEFAULT ACCOUNT " << uri;
         emit defaultAccountChanged(accountForUri(m_data->m_defaultAccountUri));
     }
 }
@@ -336,6 +337,8 @@ bool Risip::readSettings()
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     int totaltAccounts = settings.value(RisipSettingsParam::TotalAccounts).toInt();
 
+    QString defaultAccountUri = settings.value(RisipSettingsParam::DefaultAccount).toString();
+
     RisipAccountConfiguration *configuration = NULL;
     settings.beginGroup(RisipSettingsParam::AccountGroup);
     for(int i=0; i<totaltAccounts; ++i) {
@@ -357,8 +360,7 @@ bool Risip::readSettings()
         settings.endArray(); //end array
     }
 
-    //TODO setting default account always when reading settings ??
-//    setDefaultAccount(settings.value(RisipSettingsParam::DefaultAccount).toString());
+    setDefaultAccount(defaultAccountUri);
     return true;
 }
 
@@ -368,6 +370,8 @@ bool Risip::saveSettings()
     settings.setValue(RisipSettingsParam::TotalAccounts, m_data->m_accounts.size());
     settings.setValue(RisipSettingsParam::FirstRun, true); //FIXME always to true for testing
     settings.setValue(RisipSettingsParam::DefaultAccount, defaultAccount()->configuration()->uri());
+
+    qDebug()<<"SAVING DEFAULT ACCOUNT " << defaultAccount()->configuration()->uri();
 
     RisipAccount *account = NULL;
     settings.beginGroup(RisipSettingsParam::AccountGroup);
