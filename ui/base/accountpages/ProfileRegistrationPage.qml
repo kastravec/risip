@@ -29,6 +29,7 @@ Page {
 
     property alias registerButton: registerButton
     property alias emailInput: emailInput
+    property alias usernameInput: usernameInput
     property alias passwordInput: passwordInput
 
     signal registerButtonClicked
@@ -69,6 +70,13 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter
 
         TextField {
+            id: usernameInput
+            height: 37
+            Layout.fillWidth: true
+            placeholderText: qsTr("Username")
+        }
+
+        TextField {
             id: emailInput
             Layout.fillWidth: true
             placeholderText: qsTr("Email address")
@@ -91,4 +99,5 @@ Page {
 
         onClicked: root.registerButtonClicked();
     }
+
 }

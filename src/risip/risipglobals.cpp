@@ -12,7 +12,7 @@
 
 #include <QDebug>
 
-const char *RisipSettingsParam::QmlUri="Risip";
+const char *RisipSettingsParam::risipQmlURI="Risip";
 const QString RisipSettingsParam::FirstRun("firstRun");
 const QString RisipSettingsParam::DefaultAccount("defaultAccount");
 const QString RisipSettingsParam::AutoSignIn("autoSignIn");
@@ -36,7 +36,6 @@ Rate::Rate()
     ,validFromDate()
     ,validTillDate()
 {
-
 }
 
 Rate::Rate(const Rate &rate)
@@ -153,7 +152,6 @@ private:
 
                 countryLine.remove(0, countryLine.indexOf(";") +1);
                 country.code = countryLine.left(countryLine.indexOf(";")).trimmed().toLower();
-//                country.flag.load(QString(":/images/icons/flags/550/") + country.code.toLower() + QString(".png"));
 
                 countries.insert(country.prefix, country);
             }
@@ -209,6 +207,11 @@ const Country &RisipGlobals::countryForPrefix(const QString &prefix)
         return m_allCountries[prefix];
 
     return Country();
+}
+
+const Country &RisipGlobals::countryForCode(const QString &code)
+{
+
 }
 
 /**

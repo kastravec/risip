@@ -72,12 +72,7 @@ QVariant RisipPhoneContactsModel::data(const QModelIndex &index, int role) const
             return contact->fullName();
         return QVariant();
     case Initials: {
-        QStringList firstLast = contact->fullName().split(" ");
-        if(firstLast.count() == 0)
-            return QString(".");
-        if(firstLast.count() == 1)
-            return firstLast.at(0).left(1).toUpper();
-        return firstLast.at(0).left(1) + QString(".") + firstLast.at(1).left(1);
+        return contact->initials();
     }
     case PhoneNumberList:
         return QVariant::fromValue(contact->phoneNumberList());

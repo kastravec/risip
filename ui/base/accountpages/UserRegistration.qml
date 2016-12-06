@@ -17,30 +17,44 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#ifndef RISIPRATEMANAGER_H
-#define RISIPRATEMANAGER_H
 
-#include <QObject>
+import QtQuick 2.7
 
-class RisipCountryRatesModel;
+import Risip 1.0
 
+UserRegistrationForm {
+    id: root
 
-class RisipRateManager : public QObject
-{
-    Q_OBJECT
-public:
-    Q_PROPERTY(RisipCountryRatesModel * countryRatesModel READ countryRatesModel CONSTANT)
+    property RisipMorUser user: RisipMorUser {}
+    property RisipUserProfile profile: user.profile
 
-    static RisipRateManager *instance();
-    ~RisipRateManager();
+    signal accountRegistered
 
-    RisipCountryRatesModel *countryRatesModel() const;
+    firstPage.onContinueButtonClicked: {
+        stackView.push(secondPage);
+    }
 
-private:
-    explicit RisipRateManager(QObject *parent = 0);
+    secondPage.onRegisterButtonClicked: {
+        profile.username = secondPage.usernameInput.text;
+        profile.password = secondPage.passwordInput.text;
+        profile.email = secondPage.emailInput.text;
+        profile.countryPrefix = firstPage.prefixLabel.text
+        user.profile = root.profile;
 
-    static RisipRateManager *m_instance;
-    RisipCountryRatesModel *m_countryRatesModel;
-};
+        // registers a user in the SIP server.
+//        user.registerUser();
+    }
 
-#endif // RISIPRATEMANAGER_H
+    secondPage.onBackClicked: {
+        stackView.pop();
+    }
+
+    Connections {
+        target: user
+
+        onStatusChanged: {
+            console.log("Status of user is: " + status);
+//            root.accountRegistered();
+        }
+    }
+}

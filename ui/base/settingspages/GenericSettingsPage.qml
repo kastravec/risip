@@ -33,15 +33,10 @@ Page {
         id: toolBar
         focus: true
 
-        background: Rectangle {
-            implicitHeight: 40
-            color: "#ffffff"
-
-            Line {
-                id: horizontalLine
-                anchors.bottom: parent.bottom
-            }
-        }
+//        background: Rectangle {
+//            implicitHeight: 40
+//            color: "#ffffff"
+//        }
 
         Arrow {
             id: backIcon
@@ -58,21 +53,13 @@ Page {
             anchors.left: backIcon.right
             anchors.leftMargin: 2
 
+            background: Rectangle {
+                color: "#ffffff"
+            }
+
             onClicked: {
                 console.log("Settings clicked..!");
                 root.backClicked();
-            }
-        }
-
-        ToolButton {
-            text: qsTr("Save")
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-
-            onClicked: {
-                console.log("Save clicked..!");
-                root.saveClicked();
             }
         }
 

@@ -23,8 +23,9 @@
 
 #include <QObject>
 
-class RisipAccountProfile;
-class RisipAccount;
+class RisipMorUser;
+class RisipMorDevice;
+class RisipUserProfile;
 
 class RisipMorApi : public QObject
 {
@@ -40,33 +41,35 @@ public:
     };
 
     Q_ENUM(ApiError)
-    Q_PROPERTY(int status READ status NOTIFY statusChanged)
+    Q_PROPERTY(int lcrId READ lcrId NOTIFY lcrIdChanged)
+    Q_PROPERTY(QString uniqueHash READ uniqueHash WRITE setUniqueHash NOTIFY uniqueHashChanged)
+    Q_PROPERTY(QString secretKey READ secretKey WRITE setSecretKey NOTIFY secretKeyChanged)
+    Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
 
-    static RisipMorApi *instance();
+    explicit RisipMorApi(QObject *parent = 0);
     ~RisipMorApi();
 
     int status() const;
+    int lcrId() const;
 
-    Q_INVOKABLE RisipAccountProfile *getUserProfile(const QString &username);
-    Q_INVOKABLE void registerAccount(RisipAccountProfile *profile);
-    Q_INVOKABLE void getUserBalance(const QString &username);
-    Q_INVOKABLE void getUserBalance(RisipAccountProfile *profile);
+    QString uniqueHash() const;
+    void setUniqueHash(const QString &hash);
+
+    QString secretKey() const;
+    void setSecretKey(const QString &key);
+
+    QString host() const;
+    void setHost(const QString &host);
 
 Q_SIGNALS:
-    void statusChanged(int status);
-    void accountRegistered(RisipAccount *account);
-
-private Q_SLOTS:
-    void accountRegstrationHandler(const QByteArray &data);
-    void accountRegistrationError(int errorCode);
-    void userBalanceUpdateHandler(const QByteArray &data);
-    void userBalanceUpdateError(int errorCode);
+    void lcrIdChanged(int lcrId);
+    void uniqueHashChanged(const QString &uniqueHass);
+    void secretKeyChanged(const QString &key);
+    void hostChanged(const QString &host);
 
 private:
-    explicit RisipMorApi(QObject *parent = 0);
-
-    static RisipMorApi *m_instance;
-    int m_status;
+    class Private;
+    Private *m_data;
 };
 
 #endif // MORAPI_H

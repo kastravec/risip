@@ -4,7 +4,6 @@
         <file>ui/base/Main.qml</file>
         <file>ui/desktop/Main.qml</file>
         <file>ui/base/TechnicalProblemPage.qml</file>
-        <file>ui/base/TechnicalProblemPageForm.ui.qml</file>
         <file>ui/base/HomePage.qml</file>
         <file>ui/base/WelcomeScreen.qml</file>
         <file>qtquickcontrols2.conf</file>
@@ -32,8 +31,6 @@
         <file>ui/base/MainWindow.qml</file>
         <file>ui/base/contactpages/RisipBuddyListView.qml</file>
         <file>ui/base/settingspages/CountryRatesPage.qml</file>
-        <file>ui/base/accountpages/AccountRegistration.qml</file>
-        <file>ui/base/accountpages/AccountRegistrationForm.qml</file>
         <file>ui/base/accountpages/NumberRegistrationPage.qml</file>
         <file>ui/base/accountpages/ProfileRegistrationPage.qml</file>
         <file>ui/base/contactpages/ContactsPageForm.qml</file>
@@ -45,5 +42,8 @@
         <file>ui/base/risipcomponents/Arrow.qml</file>
         <file>ui/base/callpages/DialPageForm.qml</file>
         <file>ui/base/risipcomponents/CountryFlag.qml</file>
+        <file>ui/base/TechnicalProblemPageForm.qml</file>
+        <file>ui/base/accountpages/UserRegistration.qml</file>
+        <file>ui/base/accountpages/UserRegistrationForm.qml</file>
     </qresource>
 </RCC>

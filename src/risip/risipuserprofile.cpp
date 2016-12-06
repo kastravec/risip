@@ -18,12 +18,11 @@
 **
 ************************************************************************************/
 
-#include "risipaccountprofile.h"
+#include "risipuserprofile.h"
 
-class RisipAccountProfile::Private
+class RisipUserProfile::Private
 {
 public:
-    int status;
     int userId = -1;
     QString userName;
     QString password;
@@ -31,7 +30,7 @@ public:
     QString email;
     QString firstName;
     QString lastName;
-    QString country;
+    Country country;
     QString city;
     QString address;
     QString postcode;
@@ -45,35 +44,44 @@ public:
     int lcrId;
 };
 
-RisipAccountProfile::RisipAccountProfile(QObject *parent)
+RisipUserProfile::RisipUserProfile(QObject *parent)
     :QObject(parent)
     ,m_data(new Private)
 {
-
+    m_data->firstName = QString("Unknown");
+    m_data->lastName = QString("Unknown");
 }
 
-RisipAccountProfile::~RisipAccountProfile()
+RisipUserProfile::~RisipUserProfile()
 {
     delete m_data;
     m_data = NULL;
 }
 
-int RisipAccountProfile::userId() const
+int RisipUserProfile::userId() const
 {
     return m_data->userId;
 }
 
-bool RisipAccountProfile::valid() const
+bool RisipUserProfile::valid() const
 {
-    return true;
+    if(m_data->userName.isEmpty()
+            && m_data->firstName.isEmpty()
+            && m_data->lastName.isEmpty()
+            && m_data->password.isEmpty()
+            && m_data->country.code.isEmpty()
+            && m_data->email.isEmpty())
+        return false;
+
+    return false;
 }
 
-QString RisipAccountProfile::username() const
+QString RisipUserProfile::username() const
 {
     return m_data->userName;
 }
 
-void RisipAccountProfile::setUsername(const QString &username)
+void RisipUserProfile::setUsername(const QString &username)
 {
     if(m_data->userName != username) {
         m_data->userName = username;
@@ -81,12 +89,12 @@ void RisipAccountProfile::setUsername(const QString &username)
     }
 }
 
-QString RisipAccountProfile::password() const
+QString RisipUserProfile::password() const
 {
     return m_data->password;
 }
 
-void RisipAccountProfile::setPassword(const QString &password)
+void RisipUserProfile::setPassword(const QString &password)
 {
     if(m_data->password != password) {
         m_data->password = password;
@@ -94,17 +102,17 @@ void RisipAccountProfile::setPassword(const QString &password)
     }
 }
 
-QString RisipAccountProfile::creditBalance() const
+QString RisipUserProfile::creditBalance() const
 {
     return m_data->balance;
 }
 
-QString RisipAccountProfile::email() const
+QString RisipUserProfile::email() const
 {
     return m_data->email;
 }
 
-void RisipAccountProfile::setEmail(const QString &email)
+void RisipUserProfile::setEmail(const QString &email)
 {
     if(m_data->email != email) {
         m_data->email = email;
@@ -112,12 +120,12 @@ void RisipAccountProfile::setEmail(const QString &email)
     }
 }
 
-QString RisipAccountProfile::firstName() const
+QString RisipUserProfile::firstName() const
 {
     return m_data->firstName;
 }
 
-void RisipAccountProfile::setFirstName(const QString &firstname)
+void RisipUserProfile::setFirstName(const QString &firstname)
 {
     if(m_data->firstName != firstname) {
         m_data->firstName = firstname;
@@ -125,12 +133,12 @@ void RisipAccountProfile::setFirstName(const QString &firstname)
     }
 }
 
-QString RisipAccountProfile::lastName() const
+QString RisipUserProfile::lastName() const
 {
     return m_data->lastName;
 }
 
-void RisipAccountProfile::setLastName(const QString &lastname)
+void RisipUserProfile::setLastName(const QString &lastname)
 {
     if(m_data->lastName != lastname) {
         m_data->lastName = lastname;
@@ -138,25 +146,44 @@ void RisipAccountProfile::setLastName(const QString &lastname)
     }
 }
 
-QString RisipAccountProfile::country() const
+QString RisipUserProfile::countryCode() const
 {
-    return m_data->country;
+    return m_data->country.name;
 }
 
-void RisipAccountProfile::setCountry(const QString &country)
+void RisipUserProfile::setCountryCode(const QString &code)
 {
-    if(m_data->country != country) {
-        m_data->country = country;
-        emit countryChanged(country);
+    if(m_data->country.code != code) {
+
+        m_data->country.code = code;
+        emit countryCodeChanged(m_data->country.code);
     }
 }
 
-QString RisipAccountProfile::city() const
+QString RisipUserProfile::countryPrefix() const
+{
+    return m_data->country.prefix;
+}
+
+void RisipUserProfile::setCountryPrefix(const QString &prefix)
+{
+    if(prefix.isEmpty())
+        return;
+
+    QString tmpPrefix(prefix);
+    tmpPrefix.remove("+");
+    if(m_data->country.prefix != tmpPrefix) {
+        m_data->country = RisipGlobals::countryForPrefix(tmpPrefix);
+        emit countryPrefixChanged(tmpPrefix);
+    }
+}
+
+QString RisipUserProfile::city() const
 {
     return m_data->city;
 }
 
-void RisipAccountProfile::setCity(const QString &city)
+void RisipUserProfile::setCity(const QString &city)
 {
     if(m_data->city != city) {
         m_data->city = city;
@@ -164,12 +191,12 @@ void RisipAccountProfile::setCity(const QString &city)
     }
 }
 
-QString RisipAccountProfile::address() const
+QString RisipUserProfile::address() const
 {
     return m_data->address;
 }
 
-void RisipAccountProfile::setAddress(const QString &address)
+void RisipUserProfile::setAddress(const QString &address)
 {
     if(m_data->address != address) {
         m_data->address = address;
@@ -177,12 +204,12 @@ void RisipAccountProfile::setAddress(const QString &address)
     }
 }
 
-QString RisipAccountProfile::postCode() const
+QString RisipUserProfile::postCode() const
 {
     return m_data->postcode;
 }
 
-void RisipAccountProfile::setPostCode(const QString &code)
+void RisipUserProfile::setPostCode(const QString &code)
 {
     if(m_data->postcode != code) {
         m_data->postcode = code;
@@ -190,12 +217,12 @@ void RisipAccountProfile::setPostCode(const QString &code)
     }
 }
 
-QString RisipAccountProfile::vatNumber() const
+QString RisipUserProfile::vatNumber() const
 {
     return m_data->vatNumber;
 }
 
-void RisipAccountProfile::setVatNumber(const QString &number)
+void RisipUserProfile::setVatNumber(const QString &number)
 {
     if(m_data->vatNumber != number) {
         m_data->vatNumber = number;
@@ -203,12 +230,12 @@ void RisipAccountProfile::setVatNumber(const QString &number)
     }
 }
 
-int RisipAccountProfile::currency() const
+int RisipUserProfile::currency() const
 {
     return m_data->currency;
 }
 
-void RisipAccountProfile::setCurrency(int currency)
+void RisipUserProfile::setCurrency(int currency)
 {
     if(m_data->currency != currency) {
         m_data->currency = currency;
@@ -216,12 +243,12 @@ void RisipAccountProfile::setCurrency(int currency)
     }
 }
 
-QString RisipAccountProfile::phoneNumber() const
+QString RisipUserProfile::phoneNumber() const
 {
     return m_data->phoneNumber;
 }
 
-void RisipAccountProfile::setPhoneNumber(const QString &phone)
+void RisipUserProfile::setPhoneNumber(const QString &phone)
 {
     if(m_data->phoneNumber != phone) {
         m_data->phoneNumber = phone;
@@ -229,12 +256,12 @@ void RisipAccountProfile::setPhoneNumber(const QString &phone)
     }
 }
 
-QString RisipAccountProfile::mobileNumber() const
+QString RisipUserProfile::mobileNumber() const
 {
     return m_data->mobileNumber;
 }
 
-void RisipAccountProfile::setMobileNumber(const QString &mobile)
+void RisipUserProfile::setMobileNumber(const QString &mobile)
 {
     if(m_data->mobileNumber != mobile) {
         m_data->mobileNumber = mobile;
@@ -242,12 +269,12 @@ void RisipAccountProfile::setMobileNumber(const QString &mobile)
     }
 }
 
-int RisipAccountProfile::deviceType() const
+int RisipUserProfile::deviceType() const
 {
     return m_data->deviceType;
 }
 
-void RisipAccountProfile::setDeviceType(int type)
+void RisipUserProfile::setDeviceType(int type)
 {
     if(m_data->deviceType != type) {
         m_data->deviceType = type;
@@ -255,23 +282,22 @@ void RisipAccountProfile::setDeviceType(int type)
     }
 }
 
-int RisipAccountProfile::status() const
-{
-    return m_data->status;
-}
-
-void RisipAccountProfile::setStatus(int status)
-{
-    if(m_data->status != status) {
-        m_data->status = status;
-        emit statusChanged(m_data->status);
-    }
-}
-
-void RisipAccountProfile::reset()
+void RisipUserProfile::reset()
 {
     delete m_data;
     m_data = NULL;
 
     m_data = new Private;
+}
+
+Country RisipUserProfile::country() const
+{
+    return m_data->country;
+}
+
+void RisipUserProfile::setCountry(Country country)
+{
+    if(m_data->country != country) {
+        m_data->country = country;
+    }
 }

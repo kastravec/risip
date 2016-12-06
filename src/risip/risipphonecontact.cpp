@@ -28,21 +28,21 @@
 class RisipPhoneContact::Private
 {
 public:
-    int m_id;
-    QString m_fullName;
-    QString m_email;
-    QHash<QString, RisipPhoneNumber *> m_phoneNumbers;
-    RisipPhoneNumbersModel *m_phoneNumbersModel;
-    QByteArray m_contactImageData;
+    int id;
+    QString fullName;
+    QString email;
+    QHash<QString, RisipPhoneNumber *> phoneNumbers;
+    RisipPhoneNumbersModel *phoneNumbersModel;
+    QByteArray contactImageData;
 };
 
 RisipPhoneContact::RisipPhoneContact(QObject *parent)
     :QObject(parent)
     ,m_data(new Private)
 {
-    m_data->m_id = -1;
-    m_data->m_phoneNumbersModel = new RisipPhoneNumbersModel(this);
-    m_data->m_phoneNumbersModel->setPhoneContact(this);
+    m_data->id = -1;
+    m_data->phoneNumbersModel = new RisipPhoneNumbersModel(this);
+    m_data->phoneNumbersModel->setPhoneContact(this);
 }
 
 RisipPhoneContact::~RisipPhoneContact()
@@ -53,76 +53,87 @@ RisipPhoneContact::~RisipPhoneContact()
 
 int RisipPhoneContact::contactId() const
 {
-    return m_data->m_id;
+    return m_data->id;
 }
 
 void RisipPhoneContact::setContactId(int id)
 {
-    if(m_data->m_id != id) {
-        m_data->m_id = id;
-        emit contactIdChanged(m_data->m_id);
+    if(m_data->id != id) {
+        m_data->id = id;
+        emit contactIdChanged(m_data->id);
     }
 }
 
 QString RisipPhoneContact::fullName() const
 {
-    return m_data->m_fullName;
+    return m_data->fullName;
 }
 
 void RisipPhoneContact::setFullName(QString name)
 {
-    if(m_data->m_fullName != name) {
-        m_data->m_fullName = name;
-        emit fullNameChanged(m_data->m_fullName);
+    if(m_data->fullName != name) {
+        m_data->fullName = name;
+        emit fullNameChanged(m_data->fullName);
+        emit initialsChanged(initials());
     }
 }
 
 QString RisipPhoneContact::email() const
 {
-    return m_data->m_email;
+    return m_data->email;
 }
 
 void RisipPhoneContact::setEmail(const QString &email)
 {
-    if(m_data->m_email != email) {
-        m_data->m_email = email;
+    if(m_data->email != email) {
+        m_data->email = email;
         emit emailChanged(email);
     }
 }
 
+QString RisipPhoneContact::initials() const
+{
+    QStringList firstLast = m_data->fullName.split(" ");
+    if(firstLast.count() == 0)
+        return QString(".");
+    if(firstLast.count() == 1)
+        return firstLast.at(0).left(1).toUpper();
+    return firstLast.at(0).left(1) + QString(".") + firstLast.at(1).left(1);
+}
+
 RisipPhoneNumbersModel *RisipPhoneContact::phoneNumbersModel() const
 {
-    return m_data->m_phoneNumbersModel;
+    return m_data->phoneNumbersModel;
 }
 
 QByteArray RisipPhoneContact::contactImageData() const
 {
-    return m_data->m_contactImageData;
+    return m_data->contactImageData;
 }
 
 void RisipPhoneContact::setContactImageData(QByteArray imageData)
 {
-    if(m_data->m_contactImageData != imageData) {
-        m_data->m_contactImageData = imageData;
-        emit contactImageDataChanged(m_data->m_contactImageData);
+    if(m_data->contactImageData != imageData) {
+        m_data->contactImageData = imageData;
+        emit contactImageDataChanged(m_data->contactImageData);
     }
 }
 
 QQmlListProperty<RisipPhoneNumber> RisipPhoneContact::phoneNumbers()
 {
-    QList<RisipPhoneNumber *> numbers = m_data->m_phoneNumbers.values();
+    QList<RisipPhoneNumber *> numbers = m_data->phoneNumbers.values();
     return QQmlListProperty<RisipPhoneNumber>(this, numbers);
 }
 
 QList<RisipPhoneNumber *> RisipPhoneContact::phoneNumberList() const
 {
-    return m_data->m_phoneNumbers.values();
+    return m_data->phoneNumbers.values();
 }
 
 RisipPhoneNumber *RisipPhoneContact::phoneNumberForNumber(const QString &number)
 {
-    if(m_data->m_phoneNumbers.contains(number))
-        return m_data->m_phoneNumbers[number];
+    if(m_data->phoneNumbers.contains(number))
+        return m_data->phoneNumbers[number];
 
     return NULL;
 }
@@ -131,23 +142,23 @@ void RisipPhoneContact::addPhoneNumber(const QString &number, const QString &lab
 {
     RisipPhoneNumber *phoneNumber = new RisipPhoneNumber(number, this);
     phoneNumber->setLabel(label);
-    if(!m_data->m_phoneNumbers.contains(phoneNumber->fullNumber()))
-        m_data->m_phoneNumbers[phoneNumber->fullNumber()] = phoneNumber;
+    if(!m_data->phoneNumbers.contains(phoneNumber->fullNumber()))
+        m_data->phoneNumbers[phoneNumber->fullNumber()] = phoneNumber;
 }
 
 void RisipPhoneContact::addPhoneNumber(RisipPhoneNumber *number)
 {
     if(number) {
-        if(!m_data->m_phoneNumbers.contains(number->fullNumber()))
-            m_data->m_phoneNumbers[number->fullNumber()] = number;
+        if(!m_data->phoneNumbers.contains(number->fullNumber()))
+            m_data->phoneNumbers[number->fullNumber()] = number;
     }
 }
 
 void RisipPhoneContact::removePhoneNumber(RisipPhoneNumber *number)
 {
     if(number) {
-        if(m_data->m_phoneNumbers.contains(number->fullNumber()))
-            m_data->m_phoneNumbers.take(number->fullNumber())->deleteLater();
+        if(m_data->phoneNumbers.contains(number->fullNumber()))
+            m_data->phoneNumbers.take(number->fullNumber())->deleteLater();
     }
 }
 

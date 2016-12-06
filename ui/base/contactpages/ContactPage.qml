@@ -33,38 +33,36 @@ Page {
     signal backClicked
     signal favoriteClicked
 
-    header: Item {
+    header: ToolBar {
         focus: true
-
-        Row {
-            id: headerLayout
+        RowLayout {
             spacing: 2
 
             Arrow {
                 orientation: "left"
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter;
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             }
 
             Label {
                 text: qsTr("Contacts")
-                height: 20
                 MouseArea {
                     anchors.fill: parent
                     onClicked: { root.backClicked(); }
                 }
             }
-        }
 
-        Label {
-            text: qsTr("Favorite")
-            anchors.right: parent.right
-            anchors.rightMargin: 5
+            Label {
+                text: qsTr("Favorite")
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: { root.favoriteClicked(); }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: { root.favoriteClicked(); }
+                }
             }
-        }
+
+        } //end of toolbar layout
+
     } // end of header
 
     ColumnLayout {
@@ -137,9 +135,6 @@ Page {
                 onClicked: RisipCallManager.callRisipPhoneNumber(phoneNumber);
             }
 
-            Text {
-                text: RisipContactManager.phoneNumberForNumber(fullNumber).countryCode
-            }
         } //end of delegate
     }
 }

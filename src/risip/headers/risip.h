@@ -32,7 +32,7 @@ class RisipCall;
 class RisipBuddy;
 class RisipContactManager;
 class RisipCallManager;
-class RisipAccountProfile;
+class RisipUserProfile;
 class RisipMorApi;
 
 class Risip: public QObject
@@ -60,7 +60,6 @@ public:
     bool defaultAccountAlways() const;
     void setDefaultAccountAlways(bool always = true);
 
-    Q_INVOKABLE void registerAccount(RisipAccountProfile *profile);
     Q_INVOKABLE RisipAccount *accountForUri(const QString &accountUri);
     Q_INVOKABLE RisipAccount *accountForConfiguration(RisipAccountConfiguration *configuration);
     Q_INVOKABLE RisipAccount *createAccount(RisipAccountConfiguration *configuration);

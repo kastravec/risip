@@ -30,12 +30,6 @@ ApplicationWindow {
     visibility: Window.AutomaticVisibility
     visible: true
 
-//    Material.theme: Material.Light
-//    Material.background: "#FFFFFF"
-//    Material.accent: "#db0000" //"#DB5AB9"
-//    Material.foreground: "#000000"
-//    Material.primary: "#FFFFFF"
-
     property string uiBasePath: "qrc:/ui/base/"
     property bool firstRun: Risip.firstRun
     property RisipAccount sipAccount: Risip.defaultAccount
@@ -44,8 +38,7 @@ ApplicationWindow {
         if(firstRun) {
             welcomeScreenLoader.active = true;
         } else {
-            if(sipAccount.status === RisipAccount.SignedIn
-                    || sipAccount.status === RisipAccount.Registering) {
+            if(sipAccount.status === RisipAccount.SignedIn) {
                 loginPageLoader.active = false;
                 mainPageLoader.visible = true;
             } else {
@@ -81,7 +74,7 @@ ApplicationWindow {
 
     Loader {
         id: accountRegistrationLoader
-        source: uiBasePath + "/accountpages/" + "AccountRegistration.qml";
+        source: uiBasePath + "/accountpages/" + "UserRegistration.qml";
         active: false
         asynchronous: true
         anchors.fill: parent
@@ -109,8 +102,7 @@ ApplicationWindow {
     Connections {
         target: welcomeScreenLoader.item
         onEnterClicked: {
-            if(sipAccount.status === RisipAccount.SignedIn
-                    || sipAccount.status === RisipAccount.Registering) {
+            if(sipAccount.status === RisipAccount.SignedIn) {
                 loginPageLoader.active = false;
                 mainPageLoader.item.visible = true;
             } else {
@@ -132,8 +124,7 @@ ApplicationWindow {
 
         //handle signed in/out and errors
         onStatusChanged: {
-            if(sipAccount.status === RisipAccount.SignedIn
-                    || sipAccount.status === RisipAccount.Registering) {
+            if(sipAccount.status === RisipAccount.SignedIn) {
                 loginPageLoader.active = false;
                 mainPageLoader.item.visible = true;
             } else if(Risip.defaultAccount.status === RisipAccount.SignedOut) {

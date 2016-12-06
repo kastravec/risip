@@ -25,7 +25,7 @@
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
 #include "risipcall.h"
-#include "risipaccountprofile.h"
+#include "risipuserprofile.h"
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
 
@@ -38,7 +38,7 @@ class RisipAccount::Private
 {
 public:
     PjsipAccount *pjsipAccount;
-    RisipAccountProfile *profile;
+    RisipUserProfile *profile;
     RisipAccountConfiguration *configuration;
     RisipEndpoint *sipEndpoint;
     PresenceStatus presence;
@@ -82,12 +82,12 @@ RisipAccount::~RisipAccount()
     m_data = NULL;
 }
 
-RisipAccountProfile *RisipAccount::profile()
+RisipUserProfile *RisipAccount::profile()
 {
     return m_data->profile;
 }
 
-void RisipAccount::setProfile(RisipAccountProfile *profile)
+void RisipAccount::setProfile(RisipUserProfile *profile)
 {
     if(m_data->profile != profile) {
         delete m_data->profile;
@@ -238,13 +238,15 @@ void RisipAccount::setIncomingPjsipCall(PjsipCall *call)
  */
 RisipBuddy *RisipAccount::findBuddy(const QString &uri)
 {
-    try {
-        PjsipBuddy *pjsipBuddy = static_cast<PjsipBuddy *>(m_data->pjsipAccount->findBuddy(uri.toStdString()));
-        if(pjsipBuddy) {
-            return pjsipBuddy->risipInterface();
+    if(!uri.isEmpty()) {
+        try {
+            PjsipBuddy *pjsipBuddy = static_cast<PjsipBuddy *>(m_data->pjsipAccount->findBuddy(uri.toStdString()));
+            if(pjsipBuddy) {
+                return pjsipBuddy->risipInterface();
+            }
+        } catch (Error &err) {
+            setError(err);
         }
-    } catch (Error &err) {
-        setError(err);
     }
 
     return NULL;

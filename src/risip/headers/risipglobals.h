@@ -32,7 +32,7 @@ struct RisipCurrencies {
 };
 
 struct RisipSettingsParam {
-    static const char *QmlUri;
+    static const char *risipQmlURI;
     static const QString FirstRun;
     static const QString DefaultAccount;
     static const QString AutoSignIn;
@@ -94,6 +94,7 @@ public:
     static QString formatToSip(const QString &contact, const QString &server);
     static QList<Country> countries();
     static const Country &countryForPrefix(const QString &prefix);
+    static const Country &countryForCode(const QString &code);
     static bool countriesInitialized();
     static void validateNumber(RisipPhoneNumber *number);
 

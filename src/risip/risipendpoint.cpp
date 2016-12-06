@@ -229,9 +229,9 @@ void RisipEndpoint::start()
 
     //FIXME Codec priorities
     //TODO Codecs settings page
-    Endpoint::instance().codecSetPriority("PCMA/8000", 255);
-    Endpoint::instance().codecSetPriority("PCMU/8000", 254);
-    Endpoint::instance().codecSetPriority("g722/16000", 200);
+    Endpoint::instance().codecSetPriority("PCMA/8000", 215);
+    Endpoint::instance().codecSetPriority("PCMU/8000", 214);
+    Endpoint::instance().codecSetPriority("g722/16000", 255);
 //    Endpoint::instance().codecSetPriority("iLBC/8000", 0);
     Endpoint::instance().codecSetPriority("speex/16000", 0);
     Endpoint::instance().codecSetPriority("speex/8000", 0);

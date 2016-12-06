@@ -25,7 +25,7 @@
 #include "risipbuddy.h"
 #include "risipcall.h"
 #include "risipaccountconfiguration.h"
-#include "risipaccountprofile.h"
+#include "risipuserprofile.h"
 #include "risipmedia.h"
 #include "risipmessage.h"
 #include "risipmodels.h"
@@ -33,15 +33,21 @@
 #include "risipcontactmanager.h"
 #include "risipphonecontact.h"
 #include "risipphonenumber.h"
-#include "risipgeopositionprovider.h"
 #include "risipratemanager.h"
-#include "sipregistrars/mor/risipmorapi.h"
+
 #include "utils/httpnetworkrequest.h"
+
+#include "location/risipgeopositionprovider.h"
 
 #include "models/risipcallhistorymodel.h"
 #include "models/risipcountryratesmodel.h"
 #include "models/risipphonecontactsmodel.h"
 #include "models/risipphonenumbersmodel.h"
+
+#include "sipregistrars/mor/risipmorapi.h"
+#include "sipregistrars/mor/risipmordevice.h"
+#include "sipregistrars/mor/risipmoruser.h"
+#include "sipregistrars/mor/risipmoruserbalance.h"
 
 #include <QQmlEngine>
 #include <QSettings>
@@ -112,14 +118,6 @@ static QObject *risipGeoPositionProviderSingletonProvider(QQmlEngine *engine, QJ
     Q_UNUSED(scriptEngine)
 
     return RisipGeoPositionProvider::instance();
-}
-
-static QObject *risipMorApiSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
-{
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    return RisipMorApi::instance();
 }
 
 static QObject *risipRateManagerSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -213,11 +211,6 @@ void Risip::setDefaultAccountAlways(bool always)
     }
 }
 
-void Risip::registerAccount(RisipAccountProfile *profile)
-{
-    RisipMorApi::instance()->registerAccount(profile);
-}
-
 void Risip::setDefaultAccount(const QString &uri)
 {
     if(m_data->m_defaultAccountUri != uri) {
@@ -235,35 +228,37 @@ void Risip::setDefaultAccount(const QString &uri)
 
 void Risip::registerToQml()
 {
-    qmlRegisterSingletonType<Risip>(RisipSettingsParam::QmlUri, 1, 0, "Risip", risipSingletonProvider);
-    qmlRegisterSingletonType<RisipCallManager>(RisipSettingsParam::QmlUri, 1, 0,
+    qmlRegisterSingletonType<Risip>(RisipSettingsParam::risipQmlURI, 1, 0, "Risip", risipSingletonProvider);
+    qmlRegisterSingletonType<RisipCallManager>(RisipSettingsParam::risipQmlURI, 1, 0,
                                                "RisipCallManager", risipCallManagerSingletonProvider);
-    qmlRegisterSingletonType<RisipContactManager>(RisipSettingsParam::QmlUri, 1, 0,
+    qmlRegisterSingletonType<RisipContactManager>(RisipSettingsParam::risipQmlURI, 1, 0,
                                                "RisipContactManager", risipContactManagerSingletonProvider);
-    qmlRegisterSingletonType<RisipGeoPositionProvider>(RisipSettingsParam::QmlUri, 1, 0,
+    qmlRegisterSingletonType<RisipGeoPositionProvider>(RisipSettingsParam::risipQmlURI, 1, 0,
                                                "RisipGeoPositionProvider", risipGeoPositionProviderSingletonProvider);
-    qmlRegisterSingletonType<RisipMorApi>(RisipSettingsParam::QmlUri, 1, 0,
-                                          "RisipMorApi", risipMorApiSingletonProvider);
-    qmlRegisterSingletonType<RisipRateManager>(RisipSettingsParam::QmlUri, 1, 0,
+    qmlRegisterSingletonType<RisipRateManager>(RisipSettingsParam::risipQmlURI, 1, 0,
                                                "RisipRateManager", risipRateManagerSingletonProvider);
 
-    qmlRegisterType<RisipEndpoint>(RisipSettingsParam::QmlUri, 1, 0, "RisipEndpoint");
-    qmlRegisterType<RisipAccount>(RisipSettingsParam::QmlUri, 1, 0, "RisipAccount");
-    qmlRegisterType<RisipAccountProfile>(RisipSettingsParam::QmlUri, 1, 0, "RisipAccountProfile");
-    qmlRegisterType<RisipBuddy>(RisipSettingsParam::QmlUri, 1, 0, "RisipBuddy");
-    qmlRegisterType<RisipCall>(RisipSettingsParam::QmlUri, 1, 0, "RisipCall");
-    qmlRegisterType<RisipAccountConfiguration>(RisipSettingsParam::QmlUri, 1, 0, "RisipAccountConfiguration");
-    qmlRegisterType<RisipMedia>(RisipSettingsParam::QmlUri, 1, 0, "RisipMedia");
-    qmlRegisterType<RisipMessage>(RisipSettingsParam::QmlUri, 1, 0, "RisipMessage");
-    qmlRegisterType<RisipCallHistoryModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipCallHistoryModel");
-    qmlRegisterType<RisipBuddiesModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipBuddiesModel");
-    qmlRegisterType<RisipContactHistoryModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipContactHistoryModel");
-    qmlRegisterType<RisipPhoneContactsModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneContactsModel");
-    qmlRegisterType<RisipPhoneContact>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneContact");
-    qmlRegisterType<RisipPhoneNumber>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneNumber");
-    qmlRegisterType<HttpNetworkRequest>(RisipSettingsParam::QmlUri, 1, 0, "HttpNetworkRequest");
-    qmlRegisterType<RisipPhoneNumbersModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipPhoneNumbersModel");
-    qmlRegisterType<RisipCountryRatesModel>(RisipSettingsParam::QmlUri, 1, 0, "RisipCountryRatesModel");
+    qmlRegisterType<RisipEndpoint>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipEndpoint");
+    qmlRegisterType<RisipAccount>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipAccount");
+    qmlRegisterType<RisipBuddy>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipBuddy");
+    qmlRegisterType<RisipCall>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipCall");
+    qmlRegisterType<RisipAccountConfiguration>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipAccountConfiguration");
+    qmlRegisterType<RisipMedia>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMedia");
+    qmlRegisterType<RisipMessage>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMessage");
+    qmlRegisterType<RisipCallHistoryModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipCallHistoryModel");
+    qmlRegisterType<RisipBuddiesModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipBuddiesModel");
+    qmlRegisterType<RisipContactHistoryModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipContactHistoryModel");
+    qmlRegisterType<RisipPhoneContactsModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneContactsModel");
+    qmlRegisterType<RisipPhoneContact>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneContact");
+    qmlRegisterType<RisipPhoneNumber>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneNumber");
+    qmlRegisterType<HttpNetworkRequest>(RisipSettingsParam::risipQmlURI, 1, 0, "HttpNetworkRequest");
+    qmlRegisterType<RisipPhoneNumbersModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneNumbersModel");
+    qmlRegisterType<RisipCountryRatesModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipCountryRatesModel");
+    qmlRegisterType<RisipUserProfile>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipUserProfile");
+    qmlRegisterType<RisipMorApi>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorApi");
+    qmlRegisterType<RisipMorUser>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorUser");
+    qmlRegisterType<RisipMorDevice>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorDevice");
+    qmlRegisterType<RisipMorUserBalance>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorUserBalance");
 }
 
 RisipAccount *Risip::accountForUri(const QString &accountUri)

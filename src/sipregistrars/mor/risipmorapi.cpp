@@ -17,83 +17,81 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-
-#include "risipaccountprofile.h"
-#include "risipaccount.h"
-#include "utils/httpnetworkrequest.h"
 #include "risipmorapi.h"
 
-RisipMorApi *RisipMorApi::m_instance = NULL;
+#include "utils/httpnetworkrequest.h"
+#include "risipmoruser.h"
+#include "risipuserprofile.h"
+#include "risipmordevice.h"
+
+class RisipMorApi::Private
+{
+public:
+    int lcrId;
+    QString uniqueHash;
+    QString secretKey;
+    QString host;
+};
+
 RisipMorApi::RisipMorApi(QObject *parent)
     :QObject(parent)
+    ,m_data(new Private)
 {
-}
-
-RisipMorApi *RisipMorApi::instance()
-{
-    if(!m_instance)
-        m_instance = new RisipMorApi;
-    return m_instance;
+    //default values
+    m_data->secretKey = QString("masakerfare");
+    m_data->uniqueHash = QString("db1c570a60");
+    m_data->host = QString("148.251.48.171");
+    m_data->lcrId = 3;
 }
 
 RisipMorApi::~RisipMorApi()
 {
+    delete m_data;
+    m_data = NULL;
 }
 
-int RisipMorApi::status() const
+int RisipMorApi::lcrId() const
 {
-    return m_status;
+    return m_data->lcrId;
 }
 
-RisipAccountProfile *RisipMorApi::getUserProfile(const QString &username)
+QString RisipMorApi::uniqueHash() const
 {
-    return 0;
+    return m_data->uniqueHash;
 }
 
-void RisipMorApi::registerAccount(RisipAccountProfile *profile)
+void RisipMorApi::setUniqueHash(const QString &hash)
 {
-    if(profile && profile->valid()) {
-        HttpNetworkRequest *httpRequest = new HttpNetworkRequest(this);
-        httpRequest->setRisipData(profile);
-        connect(httpRequest, &HttpNetworkRequest::replyReady,
-                this, &RisipMorApi::accountRegstrationHandler);
-
-        profile->setStatus(RisipAccountProfile::Registering);
-        httpRequest->get();
+    if(m_data->uniqueHash != hash) {
+        m_data->uniqueHash = hash;
+        emit uniqueHashChanged(m_data->uniqueHash);
     }
 }
 
-void RisipMorApi::getUserBalance(const QString &username)
+QString RisipMorApi::secretKey() const
 {
-
+    return m_data->secretKey;
 }
 
-void RisipMorApi::getUserBalance(RisipAccountProfile *profile)
+void RisipMorApi::setSecretKey(const QString &key)
 {
-
+    if(m_data->secretKey != key) {
+        m_data->secretKey = key;
+        emit secretKeyChanged(m_data->secretKey);
+    }
 }
 
-void RisipMorApi::accountRegstrationHandler(const QByteArray &data)
+QString RisipMorApi::host() const
 {
-    HttpNetworkRequest *httpReply = qobject_cast<HttpNetworkRequest *>(sender());
-    RisipAccountProfile *profile = static_cast<RisipAccountProfile *>(httpReply->risipData());
-
-    qDebug()<<"HTTP reply " << data << httpReply->status() << " profile: " << profile->username();
-
-    httpReply->deleteLater();
+    return m_data->host;
 }
 
-void RisipMorApi::accountRegistrationError(int errorCode)
+void RisipMorApi::setHost(const QString &host)
 {
-    qDebug()<<"HTTP account registration error: " << errorCode;
+    if(m_data->host != host) {
+        m_data->host = host;
+        emit hostChanged(m_data->host);
+    }
 }
 
-void RisipMorApi::userBalanceUpdateHandler(const QByteArray &data)
-{
 
-}
-
-void RisipMorApi::userBalanceUpdateError(int errorCode)
-{
-
-}

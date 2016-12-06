@@ -35,7 +35,6 @@ SOURCES += src/app/main.cpp \
     src/risip/risipendpoint.cpp \
     src/risip/risipmessage.cpp \
     src/risip/risipaccountconfiguration.cpp \
-    src/risip/risipaccountprofile.cpp \
     src/risip/risipcallmanager.cpp \
     src/risip/risipcontactmanager.cpp \
     src/risip/models/risipmodels.cpp \
@@ -43,7 +42,7 @@ SOURCES += src/app/main.cpp \
     src/app/risipuiloader.cpp \
     src/app/applicationsettings.cpp \
     src/utils/httpnetworkrequest.cpp \
-    src/risip/risipgeopositionprovider.cpp \
+    src/risip/location/risipgeopositionprovider.cpp \
     src/risip/risipglobals.cpp \
     src/sipregistrars/mor/risipmorapi.cpp \
     src/risip/risipcontactimageprovider.cpp \
@@ -59,7 +58,12 @@ SOURCES += src/app/main.cpp \
     src/risip/models/risipcallhistorymodel.cpp \
     src/risip/models/risipphonecontactsmodel.cpp \
     src/risip/models/risipcountryratesmodel.cpp \
-    src/risip/models/risipphonenumbersmodel.cpp
+    src/risip/models/risipphonenumbersmodel.cpp \
+    src/risip/location/opencagedataapi.cpp \
+    src/sipregistrars/mor/risipmoruser.cpp \
+    src/sipregistrars/mor/risipmordevice.cpp \
+    src/sipregistrars/mor/risipmoruserbalance.cpp \
+    src/risip/risipuserprofile.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -69,7 +73,6 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipendpoint.h \
     src/risip/headers/risipmessage.h \
     src/risip/headers/risipaccountconfiguration.h \
-    src/risip/headers/risipaccountprofile.h \
     src/risip/headers/risipcallmanager.h \
     src/risip/headers/risipcontactmanager.h \
     src/risip/models/risipmodels.h \
@@ -79,7 +82,7 @@ HEADERS += src/risip/headers/risip.h \
     src/app/risipuiloader.h \
     src/app/applicationsettings.h \
     src/utils/httpnetworkrequest.h \
-    src/risip/headers/risipgeopositionprovider.h \
+    src/risip/location/risipgeopositionprovider.h \
     src/sipregistrars/mor/risipmorapi.h \
     src/risip/ios/risipioswifiprovider.h \
     src/risip/headers/risipcontactimageprovider.h \
@@ -95,7 +98,12 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/models/risipcallhistorymodel.h \
     src/risip/models/risipphonecontactsmodel.h \
     src/risip/models/risipcountryratesmodel.h \
-    src/risip/models/risipphonenumbersmodel.h
+    src/risip/models/risipphonenumbersmodel.h \
+    src/risip/location/opencagedataapi.h \
+    src/sipregistrars/mor/risipmoruser.h \
+    src/sipregistrars/mor/risipmordevice.h \
+    src/sipregistrars/mor/risipmoruserbalance.h \
+    src/risip/headers/risipuserprofile.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {

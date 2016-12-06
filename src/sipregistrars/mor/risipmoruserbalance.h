@@ -17,30 +17,34 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
-#ifndef RISIPRATEMANAGER_H
-#define RISIPRATEMANAGER_H
+#ifndef RISIPMORUSERBALANCE_H
+#define RISIPMORUSERBALANCE_H
 
 #include <QObject>
 
-class RisipCountryRatesModel;
-
-
-class RisipRateManager : public QObject
+class RisipMorUserBalance : public QObject
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(RisipCountryRatesModel * countryRatesModel READ countryRatesModel CONSTANT)
 
-    static RisipRateManager *instance();
-    ~RisipRateManager();
+    enum Status {
 
-    RisipCountryRatesModel *countryRatesModel() const;
+    };
+
+    Q_ENUM(Status)
+    Q_PROPERTY(int status READ status NOTIFY statusChanged)
+
+    explicit RisipMorUserBalance(QObject *parent = 0);
+    ~RisipMorUserBalance();
+
+    int status() const;
+
+Q_SIGNALS:
+    void statusChanged(int status);
 
 private:
-    explicit RisipRateManager(QObject *parent = 0);
-
-    static RisipRateManager *m_instance;
-    RisipCountryRatesModel *m_countryRatesModel;
+    class Private;
+    Private *m_data;
 };
 
-#endif // RISIPRATEMANAGER_H
+#endif // RISIPMORUSERBALANCE_H

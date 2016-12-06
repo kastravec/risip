@@ -107,28 +107,39 @@ Page {
 
     Rectangle {
         id: countryPickerPopup
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
+        anchors.margins: 10
         focus: true
         z: parent.z + 1
         visible: false
 
         ColumnLayout {
             anchors.fill: parent
+            anchors.topMargin: 15
             spacing: 20
 
             RowLayout {
+                spacing: 10
+
                 IconButton {
                     id: closeButton
-                    width: 20
-                    height: 20
+                    width: 16
+                    height: 16
                     defaultIcon: "qrc:/images/icons/128/CloseBlack.png"
                     activeIcon: "qrc:/images/icons/128/CloseRed.png"
 
                     onClicked: countryPickerPopup.visible = false;
                 }
 
-                Label { text: qsTr("Close") }
+                Label {
+                    text: qsTr("Close")
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: countryPickerPopup.visible = false;
+                    }
+                }
+
             }
 
             CountryListViewPage {

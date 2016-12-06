@@ -90,13 +90,6 @@ Page {
             height: 40
             radius: width *0.5
         }
-
-//        RisipButton {
-//            id: speakerButton
-//            Layout.preferredWidth: 60
-//            labelText.text: qsTr("Speaker")
-//            checkable: true
-//        }
     }
 
     states: [

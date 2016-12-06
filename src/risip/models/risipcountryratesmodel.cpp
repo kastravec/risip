@@ -85,5 +85,4 @@ QVariant RisipCountryRatesModel::data(const QModelIndex &index, int role) const
 void RisipCountryRatesModel::setCountryList(const QList<Country> list)
 {
     m_allCountries = list;
-    qDebug()<<"COUNTRY LIST SET TO MODEL : " <<m_allCountries.count();
 }

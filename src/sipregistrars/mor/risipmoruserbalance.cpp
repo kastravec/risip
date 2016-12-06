@@ -17,23 +17,28 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#include "risipmoruserbalance.h"
 
-import QtQuick 2.7
+class RisipMorUserBalance::Private
+{
+public:
+    int status;
+};
 
-AccountRegistrationForm {
-    id: root
+RisipMorUserBalance::RisipMorUserBalance(QObject *parent)
+    :QObject(parent)
+    ,m_data(new Private)
+{
 
-    signal accountRegistered
+}
 
-    firstPage.onContinueButtonClicked: {
-        stackView.push(secondPage);
-    }
+RisipMorUserBalance::~RisipMorUserBalance()
+{
+    delete m_data;
+    m_data = NULL;
+}
 
-    secondPage.onRegisterButtonClicked: {
-        root.accountRegistered();
-    }
-
-    secondPage.onBackClicked: {
-        stackView.pop();
-    }
+int RisipMorUserBalance::status() const
+{
+    return m_data->status;
 }

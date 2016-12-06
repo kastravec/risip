@@ -18,33 +18,23 @@
 **
 ************************************************************************************/
 
-#ifndef RISIPACCOUNTPROFILE_H
-#define RISIPACCOUNTPROFILE_H
+#ifndef RISIPUSERPROFILE_H
+#define RISIPUSERPROFILE_H
 
 #include <QObject>
 #include "risipglobals.h"
 
-class RisipAccountProfile : public QObject
+class RisipUserProfile : public QObject
 {
     Q_OBJECT
 
 public:
-    enum Status {
-        Ready = 1,
-        Registering,
-        Updating,
-        Empty,
-        NotCreated,
-        Error = -1
-    };
-
     enum DeviceType {
         SIP = 11,
         IAX2,
         Virtual
     };
 
-    Q_ENUM(Status)
     Q_ENUM(DeviceType)
     Q_PROPERTY(int userId READ userId NOTIFY userIdChanged)
     Q_PROPERTY(QString username READ username WRITE setUsername NOTIFY usernameChanged)
@@ -53,7 +43,8 @@ public:
     Q_PROPERTY(QString email READ email WRITE setEmail NOTIFY emailChanged)
     Q_PROPERTY(QString firstName READ firstName WRITE setFirstName NOTIFY firstNameChanged)
     Q_PROPERTY(QString lastName READ lastName WRITE setLastName NOTIFY lastNameChanged)
-    Q_PROPERTY(QString country READ country WRITE setCountry NOTIFY countryChanged)
+    Q_PROPERTY(QString countryCode READ countryCode WRITE setCountryCode NOTIFY countryCodeChanged)
+    Q_PROPERTY(QString countryPrefix READ countryPrefix WRITE setCountryPrefix NOTIFY countryPrefixChanged)
     Q_PROPERTY(QString city READ city WRITE setCity NOTIFY cityChanged)
     Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
     Q_PROPERTY(QString postCode READ postCode WRITE setPostCode NOTIFY postCodeChanged)
@@ -63,10 +54,9 @@ public:
     Q_PROPERTY(QString mobileNumber READ mobileNumber WRITE setMobileNumber NOTIFY mobileNumberChanged)
     Q_PROPERTY(int deviceType READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
     Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
-    Q_PROPERTY(int status READ status NOTIFY statusChanged)
 
-    explicit RisipAccountProfile(QObject *parent = 0);
-    ~RisipAccountProfile();
+    explicit RisipUserProfile(QObject *parent = 0);
+    ~RisipUserProfile();
 
     int userId() const;
     bool valid() const;
@@ -88,8 +78,11 @@ public:
     QString lastName() const;
     void setLastName(const QString &lastname);
 
-    QString country() const;
-    void setCountry(const QString &country);
+    QString countryCode() const;
+    void setCountryCode(const QString &code);
+
+    QString countryPrefix() const;
+    void setCountryPrefix(const QString &prefix);
 
     QString city() const;
     void setCity(const QString &city);
@@ -115,10 +108,10 @@ public:
     int deviceType() const;
     void setDeviceType(int type);
 
-    int status() const;
-    void setStatus(int status);
-
     Q_INVOKABLE void reset();
+
+    Country country() const;
+    void setCountry(Country country);
 
 Q_SIGNALS:
     void userIdChanged(int id);
@@ -128,7 +121,8 @@ Q_SIGNALS:
     void emailChanged(const QString &email);
     void firstNameChanged(const QString &firstname);
     void lastNameChanged(const QString &lastname);
-    void countryChanged(const QString &country);
+    void countryCodeChanged(const QString &countryCode);
+    void countryPrefixChanged(const QString &prefix);
     void cityChanged(const QString &city);
     void addressChanged(const QString &address);
     void postCodeChanged(const QString &postcode);
@@ -138,11 +132,10 @@ Q_SIGNALS:
     void mobileNumberChanged(const QString &mobile);
     void validChanged(bool valid);
     void deviceTypeChanged(int type);
-    void statusChanged(int status);
 
 private:
     class Private;
     Private *m_data;
 };
 
-#endif // RISIPACCOUNTPROFILE_H
+#endif // RISIPUSERPROFILE_H
