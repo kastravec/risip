@@ -90,7 +90,11 @@ void RisipMedia::setSipEndpoint(RisipEndpoint *endpoint)
         emit sipEndpointChanged(m_data->sipEndpoint);
 
         if(m_data->sipEndpoint) {
-            m_data->pjsipAudioManager = &(m_data->sipEndpoint->endpointInstance()->audDevManager());
+            try {
+                m_data->pjsipAudioManager = &(m_data->sipEndpoint->endpointInstance()->audDevManager());
+            } catch (Error &err) {
+                setError(err);
+            }
 
             try {
                 m_data->localAudioMedia = &m_data->pjsipAudioManager->getCaptureDevMedia();
@@ -259,6 +263,12 @@ void RisipMedia::startCallMedia()
     } catch (Error &err) {
         setError(err);
     }
+
+    m_data->callAudio->adjustTxLevel(1.5);
+    m_data->callAudio->adjustRxLevel(1.5);
+
+    m_data->localAudioMedia->adjustTxLevel(1.5);
+    m_data->localAudioMedia->adjustRxLevel(1.5);
 }
 
 void RisipMedia::setError(Error &error)

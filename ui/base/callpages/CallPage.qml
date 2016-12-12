@@ -26,7 +26,7 @@ CallPageForm {
     visible: false
 
     property RisipCall activeCall
-
+//    usernameLabel.text: activeCall.
     answerCallButton.onClicked: activeCall.answer();
     endCallButton.onClicked: activeCall.hangup();
     micButton.onCheckedChanged: {

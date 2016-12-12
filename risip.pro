@@ -4,8 +4,16 @@ TEMPLATE = app
 #CONFIG -= app_bundle
 CONFIG += exceptions c++11
 
+QT = gui \
+     core \
+     network \
+     qml \
+     quick \
+     quickcontrols2 \
+     positioning \
+     location
+
 android: QT += androidextras
-QT = gui core network qml quick quickcontrols2 positioning location
 
 ### DEFINES ###
 DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
@@ -17,13 +25,14 @@ INCLUDEPATH += $$PWD/src \
                $$PWD/src/risip/headers \
                $$PWD/src/utils \
                $$PWD/src/risip/models
+               $$PWD/src/modules
 
 # this include path depends on the directory of your pjsip headers/libs
 # it could be different directory names for different platform where you put the pjsip headers
 # e.g. Linux desktop -> pjsip/linux-desktop , Mac desktop -> pjsip/mac-desktop, Android-arm64 -> pjsip/android-arm64
 #INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
-INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
-INCLUDEPATH += $$PWD/pjsip/ios-arm64/include
+macx: INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
+android: INCLUDEPATH += $$PWD/pjsip/android-armeabi/include
 
 ### SOURCE & HEADER FILES ###
 SOURCES += src/app/main.cpp \
@@ -42,7 +51,6 @@ SOURCES += src/app/main.cpp \
     src/app/risipuiloader.cpp \
     src/app/applicationsettings.cpp \
     src/utils/httpnetworkrequest.cpp \
-    src/risip/location/risipgeopositionprovider.cpp \
     src/risip/risipglobals.cpp \
     src/sipregistrars/mor/risipmorapi.cpp \
     src/risip/risipcontactimageprovider.cpp \
@@ -59,11 +67,15 @@ SOURCES += src/app/main.cpp \
     src/risip/models/risipphonecontactsmodel.cpp \
     src/risip/models/risipcountryratesmodel.cpp \
     src/risip/models/risipphonenumbersmodel.cpp \
-    src/risip/location/opencagedataapi.cpp \
     src/sipregistrars/mor/risipmoruser.cpp \
     src/sipregistrars/mor/risipmordevice.cpp \
     src/sipregistrars/mor/risipmoruserbalance.cpp \
-    src/risip/risipuserprofile.cpp
+    src/risip/risipuserprofile.cpp \
+    src/modules/location/opencagedataapi.cpp \
+    src/modules/location/opencagedata.cpp \
+    src/modules/location/risiplocation.cpp \
+    src/modules/location/risipgeopositionprovider.cpp \
+    src/risip/android/risipandroidcontactaccessmanager.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -82,7 +94,6 @@ HEADERS += src/risip/headers/risip.h \
     src/app/risipuiloader.h \
     src/app/applicationsettings.h \
     src/utils/httpnetworkrequest.h \
-    src/risip/location/risipgeopositionprovider.h \
     src/sipregistrars/mor/risipmorapi.h \
     src/risip/ios/risipioswifiprovider.h \
     src/risip/headers/risipcontactimageprovider.h \
@@ -99,11 +110,15 @@ HEADERS += src/risip/headers/risip.h \
     src/risip/models/risipphonecontactsmodel.h \
     src/risip/models/risipcountryratesmodel.h \
     src/risip/models/risipphonenumbersmodel.h \
-    src/risip/location/opencagedataapi.h \
     src/sipregistrars/mor/risipmoruser.h \
     src/sipregistrars/mor/risipmordevice.h \
     src/sipregistrars/mor/risipmoruserbalance.h \
-    src/risip/headers/risipuserprofile.h
+    src/risip/headers/risipuserprofile.h \
+    src/modules/location/opencagedataapi.h \
+    src/modules/location/opencagedata.h \
+    src/modules/location/risiplocation.h \
+    src/modules/location/risipgeopositionprovider.h \
+    src/risip/android/risipandroidcontactaccessmanager.h
 
 #iOS headers and source files where ios specific functionality is implemented.
 ios {
@@ -119,28 +134,6 @@ OBJECTIVE_SOURCES += \
 
 macx {
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
-}
-
-linux {
-LIBS += -L$$PWD/pjsip/linux-desktop/lib \
-    -lpjsua2 \
-    -lpjsua \
-    -lpjsip-ua \
-    -lpjsip-simple \
-    -lpjsip \
-    -lpjmedia \
-    -lpjmedia-audiodev \
-    -lpjmedia \
-    -lpjmedia-codec \
-    -lpj \
-    -lpjnath \
-    -lilbccodec \
-    -lgsmcodec \
-    -lspeex \
-    -lresample \
-    -lsrtp \
-    -lpjlib-util \
-    -lg7221codec
 }
 
 ios {
@@ -216,6 +209,56 @@ LIBS += -L$$PWD/pjsip/mac-desktop/lib \
     -framework AudioUnit
 }
 
+android {
+LIBS += -L$$PWD/pjsip/android-armeabi \
+    #-lpjmedia-audiodev-arm-unknown-linux-androideabi \
+    #-lpjmedia-videodev-arm-unknown-linux-androideabi \
+    #-lpjsip-arm-unknown-linux-androideabi \
+    -lpjsua2-arm-unknown-linux-androideabi \
+    -lpjsua-arm-unknown-linux-androideabi \
+    -lpjsip-simple-arm-unknown-linux-androideabi \
+#    -lpjsdp-arm-unknown-linux-androideabi \
+    -lpjmedia-arm-unknown-linux-androideabi \
+    -lpjsip-arm-unknown-linux-androideabi \
+    -lpjmedia-audiodev-arm-unknown-linux-androideabi \
+    -lpjsip-ua-arm-unknown-linux-androideabi \
+    -lpjnath-arm-unknown-linux-androideabi \
+    -lpjmedia-codec-arm-unknown-linux-androideabi \
+    -lpj-arm-unknown-linux-androideabi \
+    -lpjmedia-arm-unknown-linux-androideabi \
+    -lilbccodec-arm-unknown-linux-androideabi \
+    -lgsmcodec-arm-unknown-linux-androideabi \
+    -lspeex-arm-unknown-linux-androideabi \
+    -lresample-arm-unknown-linux-androideabi \
+    -lsrtp-arm-unknown-linux-androideabi \
+    -lpj-arm-unknown-linux-androideabi \
+    -lpjlib-util-arm-unknown-linux-androideabi \
+    -lwebrtc-arm-unknown-linux-androideabi \
+    -lg7221codec-arm-unknown-linux-androideabi
+}
+
+#linux {
+#LIBS += -L$$PWD/pjsip/linux-desktop/lib \
+#    -lpjsua2 \
+#    -lpjsua \
+#    -lpjsip-ua \
+#    -lpjsip-simple \
+#    -lpjsip \
+#    -lpjmedia \
+#    -lpjmedia-audiodev \
+#    -lpjmedia \
+#    -lpjmedia-codec \
+#    -lpj \
+#    -lpjnath \
+#    -lilbccodec \
+#    -lgsmcodec \
+#    -lspeex \
+#    -lresample \
+#    -lsrtp \
+#    -lpjlib-util \
+#    -lg7221codec
+#}
+
 #win32 {
 #LIBS += -L$$PWD/pjsip/iphone-lib \
 #        -llibpjproject-i386-Win32-vc8-Release-Dynamic \
@@ -247,33 +290,6 @@ LIBS += -L$$PWD/pjsip/mac-desktop/lib \
 #        -lgdi32
 #}
 
-#android {
-#LIBS += -L$$PWD/pjsip/lib \
-#    #-lpjmedia-audiodev-arm-unknown-linux-androideabi \
-#    #-lpjmedia-videodev-arm-unknown-linux-androideabi \
-#    #-lpjsip-arm-unknown-linux-androideabi \
-#    -lpjsua2-arm-unknown-linux-androideabi \
-#    -lpjsua-arm-unknown-linux-androideabi \
-#    -lpjsip-simple-arm-unknown-linux-androideabi \
-#    -lpjsdp-arm-unknown-linux-androideabi \
-#    -lpjmedia-arm-unknown-linux-androideabi \
-#    -lpjsip-arm-unknown-linux-androideabi \
-#    -lpjmedia-audiodev-arm-unknown-linux-androideabi \
-#    -lpjsip-ua-arm-unknown-linux-androideabi \
-#    -lpjnath-arm-unknown-linux-androideabi \
-#    -lpjmedia-codec-arm-unknown-linux-androideabi \
-#    -lpj-arm-unknown-linux-androideabi \
-#    -lpjmedia-arm-unknown-linux-androideabi \
-#    -lilbccodec-arm-unknown-linux-androideabi \
-#    -lgsmcodec-arm-unknown-linux-androideabi \
-#    -lspeex-arm-unknown-linux-androideabi \
-#    -lresample-arm-unknown-linux-androideabi \
-#    -lsrtp-arm-unknown-linux-androideabi \
-#    -lpj-arm-unknown-linux-androideabi \
-#    -lpjlib-util-arm-unknown-linux-androideabi
-#    #-lg7221codec-arm-unknown-linux-androideabi \
-#}
-
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
@@ -289,19 +305,16 @@ RESOURCES += qml.qrc \
     risipconfigs.qrc \
     flagicons.qrc
 
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH = risip/
-
 DISTFILES += \
     README \
     utils/runOnMac.sh \
     LICENSE.GPLv3 \
     LICENSE.HEADER.GPLv3 \
     risip_backlog \
-    src/utils/SortFilterProxyModel/qpm.json \
-    src/utils/SortFilterProxyModel/SortFilterProxyModel.pri \
-    src/utils/SortFilterProxyModel/LICENSE \
-    src/utils/SortFilterProxyModel/README.md
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat
 
 OBJECTIVE_SOURCES += \
     src/risip/ios/risipioswifiprovider.mm

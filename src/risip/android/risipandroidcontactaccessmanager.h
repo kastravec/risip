@@ -17,44 +17,22 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#ifndef RISIPANDROIDCONTACTACCESSMANAGER_H
+#define RISIPANDROIDCONTACTACCESSMANAGER_H
 
-import QtQuick 2.7
+#include <QObject>
 
-import Risip 1.0
+class RisipPhoneContact;
 
-UserRegistrationForm {
-    id: root
+class RisipAndroidContactAccessManager : public QObject
+{
+    Q_OBJECT
+public:
+    explicit RisipAndroidContactAccessManager(QObject *parent = 0);
+    void fetchContactsFromDevice();
 
-    property RisipMorUser user: RisipMorUser {}
-    property RisipUserProfile profile: user.profile
+Q_SIGNALS:
+    void phoneContactDiscovered(RisipPhoneContact *phoneContact);
+};
 
-    signal accountRegistered
-
-    firstPage.onContinueButtonClicked: {
-        stackView.push(secondPage);
-    }
-
-    secondPage.onRegisterButtonClicked: {
-        root.accountRegistered();
-        // profile.username = secondPage.usernameInput.text;
-        // profile.password = secondPage.passwordInput.text;
-        // profile.email = secondPage.emailInput.text;
-        // profile.countryPrefix = firstPage.prefixLabel.text
-        // user.profile = root.profile;
-
-        // registers a user in the SIP server.
-        // user.registerUser();
-    }
-
-    secondPage.onBackClicked: {
-        stackView.pop();
-    }
-
-    Connections {
-        target: user
-
-        onStatusChanged: {
-//            console.log("Status of user is: " + status);
-        }
-    }
-}
+#endif // RISIPANDROIDCONTACTACCESSMANAGER_H

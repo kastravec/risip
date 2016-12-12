@@ -39,7 +39,7 @@ Item {
     property RisipAccount sipAccount: Risip.defaultAccount
     property RisipEndpoint sipEndpoint: Risip.sipEndpoint
 
-    Component.onCompleted: { sipEndpoint.start(); RisipGeoPositionProvider.start();  }
+    Component.onCompleted: { sipEndpoint.start(); }
     Component.onDestruction: { sipEndpoint.stop(); }
 
     Loader {
@@ -74,14 +74,6 @@ Item {
         onStatusChanged: {
 //            if(sipEndpoint.status === RisipEndpoint.Started)
 //                sipAccount.login();
-        }
-    }
-
-    Connections {
-        target: RisipGeoPositionProvider
-
-        onCountryCodeChanged: {
-            console.log("COUNTRY CODE: " + RisipGeoPositionProvider.countryCode);
         }
     }
 }

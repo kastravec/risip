@@ -59,11 +59,12 @@ Page {
             ColumnLayout {
                 anchors.fill: parent
 
-                SearchField {
+                LineEdit {
                     id: searchContactInput
                     height: 40
                     Layout.fillHeight: false
                     Layout.fillWidth: true
+                    showMagnifyIcon: true
                     placeholderText: qsTr("Search Contacts")
                 }
 

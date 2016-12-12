@@ -85,11 +85,15 @@ Page {
                 text: qsTr("+49")
                 Layout.alignment: Qt.AlignLeft
                 Layout.preferredWidth: 50
+                Layout.preferredHeight: 40
                 readOnly: true
             }
 
             TextField {
                 id: numberInput
+                Layout.fillWidth: true
+                Layout.preferredWidth: 200
+                Layout.preferredHeight: 40
                 horizontalAlignment: Text.AlignLeft
             }
         }

@@ -17,44 +17,39 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#ifndef RISIPLOCATION_H
+#define RISIPLOCATION_H
 
-import QtQuick 2.7
+#include <QObject>
+#include <QGeoCoordinate>
 
-import Risip 1.0
+class OpenCageData;
+class RisipLocation : public QObject
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(QGeoCoordinate currentCoordinates READ currentCoordinates NOTIFY currentCoordinatesChanged)
 
-UserRegistrationForm {
-    id: root
+    static RisipLocation *instance();
+    ~RisipLocation();
 
-    property RisipMorUser user: RisipMorUser {}
-    property RisipUserProfile profile: user.profile
+    QGeoCoordinate currentCoordinates() const;
 
-    signal accountRegistered
+public Q_SLOTS:
+    void updateCurrentLocation();
 
-    firstPage.onContinueButtonClicked: {
-        stackView.push(secondPage);
-    }
+Q_SIGNALS:
+    void currentCoordinatesChanged(const QGeoCoordinate &coordinates);
 
-    secondPage.onRegisterButtonClicked: {
-        root.accountRegistered();
-        // profile.username = secondPage.usernameInput.text;
-        // profile.password = secondPage.passwordInput.text;
-        // profile.email = secondPage.emailInput.text;
-        // profile.countryPrefix = firstPage.prefixLabel.text
-        // user.profile = root.profile;
+private Q_SLOTS:
+    void openCageDataReplyHandler(OpenCageData *data);
 
-        // registers a user in the SIP server.
-        // user.registerUser();
-    }
+private:
+    explicit RisipLocation(QObject *parent = 0);
+    static RisipLocation *m_instance;
 
-    secondPage.onBackClicked: {
-        stackView.pop();
-    }
+    class Private;
+    Private *m_data;
+};
 
-    Connections {
-        target: user
-
-        onStatusChanged: {
-//            console.log("Status of user is: " + status);
-        }
-    }
-}
+#endif // RISIPLOCATION_H

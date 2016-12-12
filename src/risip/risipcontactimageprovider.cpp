@@ -44,13 +44,8 @@ QPixmap RisipContactImageProvider::requestPixmap(const QString &id, QSize *size,
 
     RisipPhoneContact *phoneContact = RisipContactManager::instance()->contactForName(id);
     if(phoneContact) {
-        if(!profileIcon.loadFromData(phoneContact->contactImageData())) {
+        if(!profileIcon.loadFromData(phoneContact->contactImageData()))
             profileIcon.load(QString(":/images/icons/128/CircleBlack.png"));
-            QPainter painter(&profileIcon);
-            painter.begin(&profileIcon);
-            painter.drawText(profileIcon.rect(), phoneContact->initials().toUpper());
-            painter.end();
-        }
     }
 
     return profileIcon;

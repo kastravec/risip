@@ -48,10 +48,11 @@ Page {
         anchors.fill: root.contentItem
         anchors.topMargin: 10
 
-        SearchField {
+        LineEdit {
             id: countrySearchBox
             Layout.fillWidth: true
             height: 40
+            showMagnifyIcon: true
             placeholderText: qsTr("Search Country")
         }
 

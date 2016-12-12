@@ -71,33 +71,42 @@ Page {
 
     ColumnLayout {
         id: mainColumnLayout
+        width: parent.width *0.8
         anchors.verticalCenter: parent.verticalCenter
         spacing: 15
         anchors.horizontalCenter: parent.horizontalCenter
 
-        TextField {
+        LineEdit {
             id: usernameInput
+            height: 40
+            frameBorder: 0
             Layout.fillWidth: true
-            placeholderText: qsTr("SIP Username e.g tom")
+            placeholderText: qsTr("Username e.g tom")
         }
 
-        TextField {
+        LineEdit {
             id: passwordInput
+            height: 40
+            frameBorder: 0
             Layout.fillWidth: true
             placeholderText: qsTr("Password")
             echoMode: TextInput.Password
         }
 
-        TextField {
+        LineEdit {
             id: serverAddressInput
+            height: 40
+            frameBorder: 0
             Layout.fillWidth: true
-            placeholderText: qsTr("SIP Server address or IP")
+            placeholderText: qsTr("SIP Server")
         }
 
-        TextField {
+        LineEdit {
             id: proxyServerInput
+            height: 40
+            frameBorder: 0
             Layout.fillWidth: true
-            placeholderText: qsTr("Proxy Server or IP")
+            placeholderText: qsTr("Proxy Server")
         }
 
         ComboBox {
@@ -108,10 +117,12 @@ Page {
             currentIndex: 0
         }
 
-        TextField {
+        LineEdit {
             id: localPortInput
+            height: 40
+            frameBorder: 0
             Layout.fillWidth: true
-            placeholderText: qsTr("Local Port e.g -1 for random")
+            placeholderText: qsTr("Local Port - optionial")
         }
     }
 }

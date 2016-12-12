@@ -50,11 +50,13 @@ Page {
 
         Pane {
             id: loginForm
+            width: parent.width *0.80
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
 
             ColumnLayout {
                 id: inputLayout
+                width: parent.width
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
@@ -64,20 +66,25 @@ Page {
                     Layout.fillWidth: true
                 }
 
-                TextField {
+                LineEdit {
                     id: uernameInput
+                    height: 40
+                    frameBorder: 0
                     Layout.alignment: Qt.AlignHCenter
                     Layout.fillWidth: true
-                    placeholderText: qsTr("Enter your username")
+                    placeholderText: qsTr("Username")
+                    verticalBottomLine: true
                 }
 
-                TextField {
+                LineEdit {
                     id: passwordInput
+                    height: 40
+                    frameBorder: 0
                     Layout.alignment: Qt.AlignHCenter
                     Layout.fillWidth: true
                     echoMode: TextInput.Password
-
-                    placeholderText: qsTr("Enter your password")
+                    verticalBottomLine: true
+                    placeholderText: qsTr("Password")
                 }
             }
 

@@ -290,7 +290,7 @@ QString RisipCall::errorInfo() const
 void RisipCall::initializeMediaHandler()
 {
     if(!m_data->risipMedia)
-        setMedia(new RisipMedia);
+        setMedia(new RisipMedia(this));
 
     m_data->risipMedia->startCallMedia();
 }

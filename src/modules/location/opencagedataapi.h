@@ -22,10 +22,20 @@
 
 #include <QObject>
 
+#include <QGeoPositionInfo>
+
+class OpenCageData;
+
 class OpenCageDataAPI : public QObject
 {
     Q_OBJECT
 public:
+    enum Status {
+        Idle = 1,
+        Running,
+        Error = 0
+    };
+
     enum Format {
         Json = 1,
         GeoJson,
@@ -44,17 +54,20 @@ public:
         InternalServerError = 503
     };
 
+    Q_ENUM(Status)
+    Q_ENUM(Format)
+    Q_ENUM(ResponseCode)
+    Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString key READ key WRITE setKey NOTIFY keyChanged)
     Q_PROPERTY(QString apiVersion READ apiVersion WRITE setApiVersion NOTIFY apiVersionChanged)
     Q_PROPERTY(QString format READ format WRITE setFormat NOTIFY formatChanged)
     Q_PROPERTY(int responseCode READ responseCode NOTIFY responseCodeChanged)
-    Q_PROPERTY(double longitude READ longitude WRITE setLongitude NOTIFY longitudeChanged)
-    Q_PROPERTY(double latitude READ latitude WRITE setLatitude NOTIFY latitudeChanged)
-    Q_PROPERTY(QString countryCode READ countryCode WRITE setCountryCode NOTIFY countryCodeChanged)
-    Q_PROPERTY(QString city READ city NOTIFY cityChanged)
+    Q_PROPERTY(QString baseUrl READ baseUrl CONSTANT)
 
     explicit OpenCageDataAPI(QObject *parent = 0);
     ~OpenCageDataAPI();
+
+    int status() const;
 
     QString key() const;
     void setKey(const QString &key);
@@ -66,30 +79,22 @@ public:
     void setFormat(const QString &format);
 
     int responseCode() const;
+    QString baseUrl() const;
 
-    double longitude() const;
-    void setLongitude(double val);
-
-    double latitude() const;
-    void setLatitude(double val);
-
-    QString countryCode() const;
-    void setCountryCode(const QString &code);
-
-    QString city() const;
+public Q_SLOTS:
+    void reverseGeoPosition(const QGeoCoordinate &coordinates);
 
 Q_SIGNALS:
+    void statusChanged(int status);
     void keyChanged(const QString &key);
     void apiVersionChanged(const QString &version);
     void formatChanged(const QString &format);
     void responseCodeChanged(int code);
-    void longitudeChanged(double val);
-    void latitudeChanged(double val);
-    void countryCodeChanged(const QString &code);
-    void cityChanged(const QString &city);
+    void openCageDataReady(OpenCageData *data);
 
 private Q_SLOTS:
-    void networkResponseHandler(const QByteArray &data);
+    void reverseResponseHandler(const QByteArray &data);
+    void reverseResponseErrorHandler(int errorCode, const QByteArray &data);
 
 private:
     class Private;

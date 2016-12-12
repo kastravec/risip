@@ -29,7 +29,7 @@ Window {
     flags: Qt.SplashScreen
     visibility: Window.AutomaticVisibility
 
-    property int timeoutInterval: 2000
+    property int timeoutInterval: 1500
     signal timeout()
 
     Image {

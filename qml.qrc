@@ -37,7 +37,6 @@
         <file>ui/base/callpages/CallPageForm.qml</file>
         <file>ui/base/risipcomponents/Line.qml</file>
         <file>ui/base/risipcomponents/CountryListViewPage.qml</file>
-        <file>ui/base/risipcomponents/SearchField.qml</file>
         <file>ui/base/risipcomponents/IconButton.qml</file>
         <file>ui/base/risipcomponents/Arrow.qml</file>
         <file>ui/base/callpages/DialPageForm.qml</file>
@@ -45,5 +44,6 @@
         <file>ui/base/TechnicalProblemPageForm.qml</file>
         <file>ui/base/accountpages/UserRegistration.qml</file>
         <file>ui/base/accountpages/UserRegistrationForm.qml</file>
+        <file>ui/base/risipcomponents/LineEdit.qml</file>
     </qresource>
 </RCC>

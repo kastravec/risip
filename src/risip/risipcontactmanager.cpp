@@ -24,10 +24,11 @@
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
 #include "risipmodels.h"
-#include "ios/risipioscontactaccessmanager.h"
 #include "risipphonecontact.h"
 #include "risipphonenumber.h"
 #include "models/risipphonecontactsmodel.h"
+#include "ios/risipioscontactaccessmanager.h"
+#include "android/risipandroidcontactaccessmanager.h"
 
 #include <QDebug>
 
@@ -48,6 +49,10 @@ public:
     //responsible for fetching contacts from the ios device.
 #ifdef Q_OS_IOS
     RisipiOSContactAcessManager *m_iosContacts = NULL;
+#endif
+
+#ifdef Q_OS_ANDROID
+    RisipAndroidContactAccessManager *androidContactAccessManager = NULL;
 #endif
 
 };
@@ -302,6 +307,15 @@ void RisipContactManager::fetchPhoneContacts()
         m_data->m_iosContacts->fetchContactsFromDevice();
     }
 #endif
+
+#ifdef Q_OS_ANDROID
+    if(!m_data->androidContactAccessManager) {
+        m_data->androidContactAccessManager = new RisipAndroidContactAccessManager(this);
+
+//        m_data->androidContactAccessManager->fetchContactsFromDevice();
+    }
+#endif
+
 }
 
 RisipPhoneContact *RisipContactManager::contactForName(const QString &name)

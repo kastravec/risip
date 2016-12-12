@@ -227,8 +227,10 @@ PjsipCall *RisipAccount::incomingPjsipCall()
  */
 void RisipAccount::setIncomingPjsipCall(PjsipCall *call)
 {
-    if(m_data->incomingPjsipCall != call)
+    if(m_data->incomingPjsipCall != call) {
         m_data->incomingPjsipCall = call;
+        emit incomingCall();
+    }
 }
 
 /**

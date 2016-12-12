@@ -37,7 +37,8 @@
 
 #include "utils/httpnetworkrequest.h"
 
-#include "location/risipgeopositionprovider.h"
+#include "modules/location/risipgeopositionprovider.h"
+#include "modules/location/risiplocation.h"
 
 #include "models/risipcallhistorymodel.h"
 #include "models/risipcountryratesmodel.h"
@@ -143,6 +144,8 @@ Risip::Risip(QObject *parent)
 {
     m_data->m_defaultAccountAlways = true;
     RisipGlobals::instance()->initializeCountries();
+    RisipLocation::instance();
+//    RisipLocation::instance()->updateCurrentLocation();
 }
 
 Risip::~Risip()

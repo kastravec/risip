@@ -28,48 +28,197 @@ Page {
     property alias callButton: callButton
     property alias contactInput: contactInput
 
-    ColumnLayout {
-        anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 20
+    LineEdit {
+        id: contactInput
+        height: 40
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.bottom: phoneNumbersLayout.top
+        anchors.bottomMargin: 40
+        placeholderText: qsTr("Enter Name or Number")
+        Layout.preferredHeight: 40
+        frameBorder: 0
+        font.pointSize: 32
+        verticalBottomLine: true
+    }
 
-        TextField {
-            id: contactInput
-            placeholderText: qsTr("Someone you want to talk to ?")
-            Layout.preferredHeight: 40
-            Layout.preferredWidth: 322
-        }
+    GridLayout {
+        id: phoneNumbersLayout
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        columns: 3
+        rows: 4
+        rowSpacing: 25
+        columnSpacing: 60
 
         RisipButton {
-            id: callButton
-            text: qsTr("Call")
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            id: one
+            text: "1"
+            border.width: 0
+            font.bold: true
+            font.pointSize: 40
+
+            onClicked: contactInput.text += "1";
+
+            Line {
+                anchors.top: one.bottom
+            }
+
+        }
+        RisipButton {
+            id: two
+            text: "2"
+            border.width: 0
+            font.bold: true
+            font.pointSize: 40
+
+            onClicked: contactInput.text += "2";
+
+            Line {
+                anchors.top: two.bottom
+            }
+        }
+        RisipButton {
+            id: three
+            text: "3"
+            border.width: 0
+            font.bold: true
+            font.pointSize: 40
+
+            onClicked: contactInput.text += "3";
+
+            Line {
+                anchors.top: three.bottom
+            }
+        }
+        RisipButton {
+            id: four
+            text: "4"
+            Layout.fillWidth: true
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "4";
+
+            Line {
+                anchors.top: four.bottom
+            }
+        }
+        RisipButton {
+            id: five
+            text: "5"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "5";
+
+            Line {
+                anchors.top: five.bottom
+            }
+        }
+        RisipButton {
+            id: six
+            text: "6"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "6";
+
+            Line {
+                anchors.top: six.bottom
+            }
+        }
+        RisipButton {
+            id: seven
+            text: "7"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "7";
+
+            Line {
+                anchors.top: seven.bottom
+            }
+        }
+        RisipButton {
+            id: eight
+            text: "8"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "8";
+
+            Line {
+                anchors.top: eight.bottom
+            }
+        }
+        RisipButton {
+            id: nine
+            text: "9"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "9";
+
+            Line {
+                anchors.top: nine.bottom
+            }
+        }
+        RisipButton {
+            id: star
+            text: "*"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "*";
+
+            Line {
+                anchors.top: star.bottom
+            }
+        }
+        RisipButton {
+            id: zero
+            text: "0"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "0";
+
+            Line {
+                anchors.top: zero.bottom
+            }
+        }
+        RisipButton {
+            id: hash
+            text: "#"
+            font.bold: true
+            font.pointSize: 40
+            border.width: 0
+
+            onClicked: contactInput.text += "#";
+
+            Line {
+                anchors.top: hash.bottom
+            }
         }
     }
 
-    RowLayout {
-        y: 527
-        anchors.right: parent.right
-        anchors.rightMargin: 10
-        anchors.left: parent.left
-        anchors.leftMargin: 10
+    RisipButton {
+        id: callButton
+        width: 80
+        text: qsTr("Call")
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 10
-
-        Label {
-            id: label1
-            text: qsTr("Note: ")
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-            font.pointSize: 12
-        }
-
-        TextArea {
-            id: textArea1
-            text: qsTr("Simply enter the username of the contact you want to call of the same SIP registrar. ")
-            font.pointSize: 11
-            font.italic: true
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            wrapMode: Text.WordWrap
-        }
+        anchors.bottomMargin: 30
+        anchors.horizontalCenter: parent.horizontalCenter
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
     }
 }

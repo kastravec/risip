@@ -42,9 +42,6 @@ public:
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(int updateInterval READ updateInterval WRITE setUpdateInterval NOTIFY updateIntervalChanged)
     Q_PROPERTY(QGeoCoordinate currentCoordinates READ currentCoordinates NOTIFY currentCoordinatesChanged)
-    Q_PROPERTY(QString countryCode READ countryCode NOTIFY countryCodeChanged)
-    Q_PROPERTY(QString country READ country NOTIFY countryChanged)
-    Q_PROPERTY(QString city READ city NOTIFY cityChanged)
 
     static RisipGeoPositionProvider *instance();
     ~RisipGeoPositionProvider();
@@ -53,9 +50,6 @@ public:
     int updateInterval() const;
     void setUpdateInterval(int interval);
     QGeoCoordinate currentCoordinates() const;
-    QString countryCode() const;
-    QString country() const;
-    QString city() const;
 
 public Q_SLOTS:
     void start();
@@ -65,30 +59,18 @@ Q_SIGNALS:
     void statusChanged(int status);
     void updateIntervalChanged(int interval);
     void currentCoordinatesChanged(const QGeoCoordinate &coordinate);
-    void countryCodeChanged(const QString &code);
-    void countryChanged(const QString &country);
-    void cityChanged(const QString &city);
 
 private Q_SLOTS:
     void geoPositionUpdateHandler(const QGeoPositionInfo &info);
     void errorHandler(QGeoPositionInfoSource::Error positioningError);
-    void geoLocationReverseHandler();
-    void geoLocationReverseErrorHandler(int error, const QString &errorString = QString());
 
 private:
     explicit RisipGeoPositionProvider(QObject *parent = 0);
     void setStatus(int status);
 
     static RisipGeoPositionProvider *m_instance;
-    QGeoPositionInfoSource *m_geoPositionInfoSource;
-    QGeoPositionInfo m_geoInfo;
-    QGeoCodingManager *m_geoCodeManager;
-    QGeoCodeReply *m_geoCodeReply;
-    int m_status;
-    int m_updateInterval;
-    QString m_countryCode;
-    QString m_country;
-    QString m_city;
+    class Private;
+    Private *m_data;
 };
 
 #endif // RISIPGEOPOSITIONPROVIDER_H

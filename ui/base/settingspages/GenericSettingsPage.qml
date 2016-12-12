@@ -33,10 +33,10 @@ Page {
         id: toolBar
         focus: true
 
-//        background: Rectangle {
-//            implicitHeight: 40
-//            color: "#ffffff"
-//        }
+        background: Rectangle {
+            implicitHeight: 40
+            color: "#ffffff"
+        }
 
         Arrow {
             id: backIcon
@@ -57,10 +57,7 @@ Page {
                 color: "#ffffff"
             }
 
-            onClicked: {
-                console.log("Settings clicked..!");
-                root.backClicked();
-            }
+            onClicked: { root.backClicked(); }
         }
 
     }

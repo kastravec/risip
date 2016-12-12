@@ -316,6 +316,8 @@ void HttpNetworkRequest::sendMultipartRequest(const QString &httpVerb, QHttpMult
  */
 void HttpNetworkRequest::networkResponseHandler()
 {
+//    qDebug()<<"RAW HTTP REPLY " << m_data->httpResponse->readAll();
+
     m_data->lastResponseData = m_data->httpResponse->readAll();
     if(m_data->httpResponse->error() == QNetworkReply::NoError) {
         emit replyReady(m_data->lastResponseData);

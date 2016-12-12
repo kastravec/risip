@@ -24,22 +24,32 @@ import QtQuick.Layouts 1.3
 
 Rectangle {
     id: root
-    width: parent.width
+    width: 100
 
-    property alias text: searchInput.text
+    property alias textInput: textInput
+    property alias text: textInput.text
     property alias placeholderText: placeHolder.text
+    property alias showMagnifyIcon: searchIcon.visible
+    property int frameBorder: 1
+    property alias font: textInput.font
+    property alias echoMode: textInput.echoMode
+    property alias horizontalAlignment: textInput.horizontalAlignment
+    property alias verticalBottomLine: verticalLine.visible
 
     Rectangle {
         id: frame
-        border.width: 1
+        border.width: frameBorder
         width: parent.width - 20
         height: parent.height - 5
         anchors.centerIn: parent
+
+        Line { id: verticalLine; anchors.top: parent.bottom; }
 
         Image {
             id: searchIcon
             width: 22
             height: 22
+            visible: false
             source: "qrc:/images/icons/128/MagnifyingGlassBlack.png"
             anchors.left: parent.left
             anchors.leftMargin: 10
@@ -47,7 +57,7 @@ Rectangle {
         }
 
         TextInput {
-            id: searchInput
+            id: textInput
             anchors.left: searchIcon.right
             anchors.leftMargin: 10
             anchors.right: clearIcon.left
@@ -57,9 +67,13 @@ Rectangle {
 
             Text {
                 id: placeHolder
-                text: qsTr("Search")
                 opacity: 0.5
-                anchors.centerIn: searchInput
+                anchors.centerIn: textInput
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: textInput.focus = true;
+                }
             }
 
             onTextChanged: {
@@ -78,15 +92,12 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 10
-
+            visible: false
             MouseArea {
                 anchors.fill: parent
                 anchors.margins: 20
-                onPressed: { clearIcon.source = "qrc:/images/icons/128/CancelRed.png"; }
-                onReleased: { clearIcon.source = "qrc:/images/icons/128/CancelBlack.png"; }
-                onClicked:{
-                    searchInput.clear();
-                }
+                onClicked: textInput.remove(textInput.length -1, textInput.length);
+                onPressAndHold: textInput.clear();
             }
         }
     }
@@ -102,6 +113,12 @@ Rectangle {
             PropertyChanges {
                 target: placeHolder
                 visible: false
+            }
+
+            PropertyChanges {
+                target: clearIcon
+                visible: true
+                source: "qrc:/images/icons/128/CancelRed.png";
             }
 
             PropertyChanges {

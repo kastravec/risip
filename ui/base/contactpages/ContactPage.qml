@@ -35,33 +35,45 @@ Page {
 
     header: ToolBar {
         focus: true
-        RowLayout {
-            spacing: 2
+        //        background: Rectangle {
+        //            implicitHeight: 40
+        ////            color: "#ffffff"
+        //        }
+
+        Row{
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
 
             Arrow {
                 orientation: "left"
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                Layout.alignment: Qt.AlignVCenter
             }
 
             Label {
                 text: qsTr("Contacts")
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: { root.backClicked(); }
                 }
+
+                Layout.alignment: Qt.AlignVCenter
             }
+        }
 
-            Label {
-                text: qsTr("Favorite")
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+        Label {
+            text: qsTr("Favorite")
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            //                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { root.favoriteClicked(); }
-                }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { root.favoriteClicked(); }
             }
+        }
 
-        } //end of toolbar layout
+        // } //end of toolbar layout
 
     } // end of header
 
@@ -78,6 +90,11 @@ Page {
             height: 80
             radius: width * 0.5
             Layout.alignment: Qt.AlignHCenter
+
+            Text {
+                text: phoneContact.initials
+                anchors.centerIn: parent
+            }
 
             Image {
                 id: contactIcon

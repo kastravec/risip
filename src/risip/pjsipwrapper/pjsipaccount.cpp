@@ -90,7 +90,6 @@ void PjsipAccount::onIncomingCall(OnIncomingCallParam &prm)
         return;
 
     m_risipAccount->setIncomingPjsipCall(new PjsipCall(*m_risipAccount->pjsipAccount(), prm.callId));
-    m_risipAccount->incomingCall();
 }
 
 void PjsipAccount::onIncomingSubscribe(OnIncomingSubscribeParam &prm)
