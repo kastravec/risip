@@ -72,8 +72,15 @@ Rectangle {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: textInput.focus = true;
+                    onClicked: textInput.forceActiveFocus();
                 }
+            }
+
+            onActiveFocusChanged: {
+                if(textInput.activeFocus)
+                    placeHolder.visible = false;
+                else
+                    placeHolder.visible = true;
             }
 
             onTextChanged: {
