@@ -79,8 +79,6 @@ Rectangle {
             onActiveFocusChanged: {
                 if(textInput.activeFocus)
                     placeHolder.visible = false;
-                else
-                    placeHolder.visible = true;
             }
 
             onTextChanged: {

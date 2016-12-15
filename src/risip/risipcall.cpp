@@ -39,14 +39,13 @@
 class RisipCall::Private
 {
 public:
+    int callType;
+    int callDirection;
     RisipAccount *account;
     RisipBuddy *buddy;
-    RisipPhoneNumber *phoneNumber;
+    QDateTime timestamp;
     RisipMedia *risipMedia;
     PjsipCall *pjsipCall;
-    int callType;
-    QDateTime timestamp;
-    int callDirection;
     Error error;
 };
 
@@ -56,7 +55,6 @@ RisipCall::RisipCall(QObject *parent)
 {
     m_data->account = NULL;
     m_data->buddy = NULL;
-    m_data->phoneNumber = NULL;
     m_data->risipMedia = NULL;
     m_data->pjsipCall = NULL;
     m_data->callType = RisipCall::Sip;
@@ -96,21 +94,6 @@ void RisipCall::setBuddy(RisipBuddy *buddy)
     }
 
     setCallType(Sip);
-}
-
-RisipPhoneNumber *RisipCall::phoneNumber() const
-{
-    return m_data->phoneNumber;
-}
-
-void RisipCall::setPhoneNumber(RisipPhoneNumber *number)
-{
-    if(m_data->phoneNumber != number) {
-        m_data->phoneNumber = number;
-        emit phoneNumberChanged(m_data->phoneNumber);
-    }
-
-    setCallType(Pstn);
 }
 
 RisipMedia *RisipCall::media() const
@@ -257,12 +240,12 @@ void RisipCall::setCallDirection(int direction)
  *
  * Retuns the duration of the call in milliseconds.
  */
-int RisipCall::callDuration() const
+long RisipCall::callDuration() const
 {
     if(!m_data->pjsipCall)
-        return 0;
+        return 0.0;
 
-    return (int)m_data->pjsipCall->getInfo().connectDuration.msec;
+    return m_data->pjsipCall->getInfo().connectDuration.msec;
 }
 
 int RisipCall::errorCode() const
@@ -352,7 +335,7 @@ void RisipCall::call()
 {
     if(m_data->callType == Undefined
             || !m_data->account
-            || (!m_data->buddy && !m_data->phoneNumber))
+            || !m_data->buddy)
         return;
 
     if(m_data->account->status() != RisipAccount::SignedIn)
@@ -363,19 +346,10 @@ void RisipCall::call()
     setPjsipCall(new PjsipCall(*m_data->account->pjsipAccount()));
     CallOpParam prm(true);
 
-    QString callee;
-    if(m_data->callType == Pstn && m_data->phoneNumber) {
-        callee = RisipGlobals::formatToSip(m_data->phoneNumber->fullNumber(),
-                                           m_data->account->configuration()->serverAddress());
-    } else if(m_data->callType == Sip && m_data->buddy) {
-        callee = m_data->buddy->uri();
-    }
-    if(!callee.isNull()) {
-        try {
-            m_data->pjsipCall->makeCall(callee.toStdString(), prm);
-        } catch (Error err) {
-            setError(err);
-        }
+    try {
+        m_data->pjsipCall->makeCall(m_data->buddy->uri().toStdString(), prm);
+    } catch (Error err) {
+        setError(err);
     }
 }
 

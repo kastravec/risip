@@ -1,3 +1,4 @@
+INCLUDEPATH += $$PWD/../pjsip/ios-64/include
 
 #iOS headers and source files where ios specific functionality is implemented.
 HEADERS += src/risip/ios/risipioscontactaccessmanager.h
@@ -7,7 +8,7 @@ OBJECTIVE_SOURCES += \
     src/risip/ios/risipioscontactaccessmanager.mm \
     src/risip/ios/risipioswifiprovider.mm
 
-LIBS += -L$$PWD/pjsip/ios-64/lib \
+LIBS += -L$$PWD/../pjsip/ios-64/lib \
     -lpjsua2-arm64-apple-darwin_ios \
     -lpjsua-arm64-apple-darwin_ios \
     -lpjsip-ua-arm64-apple-darwin_ios \

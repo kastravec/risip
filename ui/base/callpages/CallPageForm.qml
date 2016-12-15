@@ -31,44 +31,34 @@ Page {
     property alias usernameLabel: usernameLabel
     property alias statusLabel: statusLabel
     property alias micButton: micButton
+    property alias callDurationLabel: callDurationLabel
     hoverEnabled: true
 
     Label {
-        id: statusLabel
-        text: qsTr("status")
-        font.pointSize: 15
-        font.italic: true
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-    }
-
-    Label {
         id: usernameLabel
-        text: "User"
         font.bold: true
         font.pointSize: 20
-        anchors.bottom: statusLabel.top
+        anchors.bottom: callStatusLayout.top
         anchors.bottomMargin: 50
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
-    RowLayout {
-        id: callButtonLayout
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 25
+    ColumnLayout {
+        id: callStatusLayout
+        spacing: 15
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 20
+        anchors.verticalCenter: parent.verticalCenter
 
-        RisipButton {
-            id: answerCallButton
-            Layout.preferredWidth: 80
-            text: qsTr("Answer")
+        Label {
+            id: statusLabel
+            text: qsTr("status")
+            font.pointSize: 15
+            font.italic: true
         }
 
-        RisipButton {
-            id: endCallButton
-            Layout.preferredWidth: 80
-            text: qsTr("End")
+        Label {
+            id: callDurationLabel
+            text: qsTr("00:00")
         }
     }
 
@@ -89,6 +79,26 @@ Page {
             width: 40
             height: 40
             radius: width *0.5
+        }
+    }
+
+    RowLayout {
+        id: callButtonLayout
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 25
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 20
+
+        RisipButton {
+            id: answerCallButton
+            Layout.preferredWidth: 80
+            text: qsTr("Answer")
+        }
+
+        RisipButton {
+            id: endCallButton
+            Layout.preferredWidth: 80
+            text: qsTr("End")
         }
     }
 

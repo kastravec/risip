@@ -83,7 +83,7 @@ QVariant RisipCallHistoryModel::data(const QModelIndex &index, int role) const
     case CallDirectionRole:
         return call->callDirection();
     case CallDurationRole:
-        return call->callDuration();
+        return (qlonglong)call->callDuration();
     case CallTimestampRole:
         return call->timestamp();
     case CallContactRole:

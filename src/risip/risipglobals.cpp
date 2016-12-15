@@ -119,49 +119,44 @@ bool Country::operator==(const Country &country)
     return (code == country.code);
 }
 
-class RisipConfigisLoader: public QRunnable
+RisipConfigisLoader::RisipConfigisLoader()
+    :QRunnable()
+{}
+
+RisipConfigisLoader::~RisipConfigisLoader()
+{}
+
+void RisipConfigisLoader::run()
 {
-public:
-    RisipConfigisLoader()
-        :QRunnable()
-    {}
+    //loading country list
+    QFile file(QString(":/configs/countries"));
+    if(file.open(QFile::ReadOnly)) {
+        QString countryLine;
+        QTextStream streamReader(&file);
+        QHash<QString, Country> countries;
 
-    ~RisipConfigisLoader()
-    {}
+        Country country;
+        while (streamReader.readLineInto(&countryLine)) {
 
-private:
-    void run()
-    {
-        //loading country list
-        QFile file(QString(":/configs/countries"));
-        if(file.open(QFile::ReadOnly)) {
-            QString countryLine;
-            QTextStream streamReader(&file);
-            QHash<QString, Country> countries;
+            country.countryId = countryLine.left(countryLine.indexOf(";")).trimmed();
 
-            Country country;
-            while (streamReader.readLineInto(&countryLine)) {
+            countryLine.remove(0, countryLine.indexOf(";") +1);
+            country.name = countryLine.left(countryLine.indexOf(";")).trimmed();
 
-                country.countryId = countryLine.left(countryLine.indexOf(";")).trimmed();
+            countryLine.remove(0, countryLine.indexOf(";") +1);
+            country.prefix = countryLine.left(countryLine.indexOf(";")).trimmed();
 
-                countryLine.remove(0, countryLine.indexOf(";") +1);
-                country.name = countryLine.left(countryLine.indexOf(";")).trimmed();
+            countryLine.remove(0, countryLine.indexOf(";") +1);
+            country.code = countryLine.left(countryLine.indexOf(";")).trimmed().toLower();
 
-                countryLine.remove(0, countryLine.indexOf(";") +1);
-                country.prefix = countryLine.left(countryLine.indexOf(";")).trimmed();
-
-                countryLine.remove(0, countryLine.indexOf(";") +1);
-                country.code = countryLine.left(countryLine.indexOf(";")).trimmed().toLower();
-
-                countries.insert(country.prefix, country);
-            }
-
-            RisipGlobals::instance()->setCountryList(countries);
-        } else {
-            qDebug()<<"Configs files cannot be found nor be read!!";
+            countries.insert(country.prefix, country);
         }
+
+        RisipGlobals::instance()->setCountryList(countries);
+    } else {
+        qDebug()<<"Configs files cannot be found nor be read!!";
     }
-};
+}
 
 QHash<QString, Country> RisipGlobals::m_allCountries;
 bool RisipGlobals::m_countriesIntialized = false;

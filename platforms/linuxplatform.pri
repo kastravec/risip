@@ -1,7 +1,7 @@
-INCLUDEPATH += $$PWD/pjsip/linux-desktop/include
+INCLUDEPATH += $$PWD/../pjsip/linux-desktop/include
 
 #linux {
-#LIBS += -L$$PWD/pjsip/linux-desktop/lib \
+#LIBS += -L$$PWD/../pjsip/linux-desktop/lib \
 #    -lpjsua2 \
 #    -lpjsua \
 #    -lpjsip-ua \

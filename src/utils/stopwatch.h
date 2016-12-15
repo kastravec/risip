@@ -17,20 +17,43 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#ifndef STOPWATCH_H
+#define STOPWATCH_H
 
-import QtQuick 2.7
+#include <QObject>
 
-Rectangle {
-    id: root
-    width: 24
-    height: 16
+class StopWatch : public QObject
+{
+    Q_OBJECT
+public:
 
-    property string code
+    enum Status {
+        Running = 1,
+        Idle = 0
+    };
 
-    Image {
-        id: countryFlagIcon
-        width: root.width
-        height: root.height
-        source: "image://countryFlags/" + root.code
-    }
-}
+    Q_ENUM(Status)
+    Q_PROPERTY(int status READ status NOTIFY statusChanged)
+    Q_PROPERTY(qint64 elapsedTime READ elapsedTime NOTIFY elapsedTimeChanged)
+
+    explicit StopWatch(QObject *parent = 0);
+    ~StopWatch();
+
+    int status() const;
+    qint64 elapsedTime() const;
+
+public Q_SLOTS:
+    void start();
+    void stop();
+    void reset();
+
+Q_SIGNALS:
+    void statusChanged(int status);
+    void elapsedTimeChanged(qint64 time);
+
+private:
+    class Private;
+    Private *m_data;
+};
+
+#endif // STOPWATCH_H

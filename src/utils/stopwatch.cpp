@@ -17,20 +17,57 @@
 **    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 **
 ************************************************************************************/
+#include "stopwatch.h"
 
-import QtQuick 2.7
+#include <QElapsedTimer>
 
-Rectangle {
-    id: root
-    width: 24
-    height: 16
+class StopWatch::Private
+{
+public:
+    int status;
+    QElapsedTimer elapsedTimer;
+    qint64 elapsedTime;
+};
 
-    property string code
+StopWatch::StopWatch(QObject *parent)
+    :QObject(parent)
+    ,m_data(new Private)
+{
+    m_data->elapsedTime = 0.0;
+}
 
-    Image {
-        id: countryFlagIcon
-        width: root.width
-        height: root.height
-        source: "image://countryFlags/" + root.code
-    }
+StopWatch::~StopWatch()
+{
+    delete m_data;
+    m_data = NULL;
+}
+
+int StopWatch::status() const
+{
+    return m_data->status;
+}
+
+qint64 StopWatch::elapsedTime() const
+{
+    return m_data->elapsedTime;
+}
+
+void StopWatch::start()
+{
+    m_data->elapsedTime = 0.0;
+    m_data->status = Running;
+    m_data->elapsedTimer.start();
+    emit statusChanged(Running);
+}
+
+void StopWatch::stop()
+{
+    m_data->elapsedTime = m_data->elapsedTimer.elapsed();
+    m_data->status = Idle;
+    emit statusChanged(Idle);
+}
+
+void StopWatch::reset()
+{
+    m_data->elapsedTime = 0.0;
 }

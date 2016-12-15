@@ -33,12 +33,12 @@
 class RisipBuddy::Private
 {
 public:
+    Error error;
     PjsipBuddy *pjsipBuddy;
     RisipAccount *account;
     BuddyConfig buddyConfig;
     QString contact;
     int type;
-    Error error;
 };
 
 RisipBuddy::RisipBuddy(QObject *parent)
@@ -157,6 +157,12 @@ bool RisipBuddy::valid() const
         return false;
 
     return true;
+}
+
+void RisipBuddy::setContactNumber(const QString &number)
+{
+    setContact(number);
+    setType(Pstn);
 }
 
 void RisipBuddy::create()

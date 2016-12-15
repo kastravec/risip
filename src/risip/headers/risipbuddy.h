@@ -32,6 +32,7 @@ class RisipAccount;
 class RisipMessage;
 class RisipCall;
 class RisipBuddy;
+class RisipPhoneNumber;
 class PjsipBuddy;
 
 class RisipBuddy : public QObject
@@ -50,6 +51,7 @@ public:
     enum Type {
         Internal = 1,
         ExternalSIP,
+        Pstn,
         Undefined = -1
     };
 
@@ -80,6 +82,7 @@ public:
     void setType(int type);
 
     bool valid() const;
+    Q_INVOKABLE void setContactNumber(const QString &number);
 
 public Q_SLOTS:
     void create();

@@ -19,6 +19,8 @@
 ************************************************************************************/
 
 import QtQuick 2.7
+
+import "../risipcomponents"
 import Risip 1.0
 
 CallPageForm {
@@ -26,9 +28,12 @@ CallPageForm {
     visible: false
 
     property RisipCall activeCall
-//    usernameLabel.text: activeCall.
+
+    callDurationLabel.text: stopWatch.elapsedTimeText;
+
     answerCallButton.onClicked: activeCall.answer();
     endCallButton.onClicked: activeCall.hangup();
+
     micButton.onCheckedChanged: {
         if(micButton.checked)
             activeCall.media.micVolume = 0.0;
@@ -36,34 +41,31 @@ CallPageForm {
             activeCall.media.micVolume = 1.0;
     }
 
-    Component.onCompleted: {
-        if(activeCall) {
-            if(activeCall.callType === RisipCall.Sip)
-                usernameLabel.text = activeCall.buddy.contact;
-            else if(activeCall.callType === RisipCall.Pstn)
-                usernameLabel.text = activeCall.phoneNumber.fullNumber
-        }
+    RisipTimer {
+        id: stopWatch
     }
-
-
 
     Connections {
         target: RisipCallManager
 
         onIncomingCall: {
             //first hangup if any call is active
-            if(activeCall)
-                activeCall.hangup();
+            if(callPage.activeCall)
+                callPage.activeCall.hangup();
 
             callPage.activeCall = call;
             callPage.state = "incoming";
             callPage.visible = true;
+            callPage.usernameLabel.text = callPage.activeCall.buddy.contact
+            console.log("A CALL FROM : " + callPage.activeCall.buddy.contact);
         }
 
         onOutgoingCall: {
             callPage.activeCall = call;
             callPage.state = "outgoing"
             callPage.visible = true;
+            callPage.usernameLabel.text = callPage.activeCall.buddy.contact
+            console.log("CALLING : " + callPage.activeCall.buddy.contact);
         }
     }
 
@@ -82,11 +84,13 @@ CallPageForm {
                 statusLabel.text = "Call connected, enjoy!";
                 callPage.state = "incall";
                 callPage.visible = true;
+                stopWatch.start();
                 break;
             case RisipCall.CallDisconnected:
                 console.log("CALL CallDisconnected");
                 statusLabel.text = "Call disconnected, good bye!";
                 callPage.visible = false;
+                stopWatch.stop();
                 break;
             case RisipCall.CallEarly:
             case RisipCall.ConnectingToCall:
@@ -105,6 +109,7 @@ CallPageForm {
                 console.log("CALL NULL");
                 statusLabel.text = "...";
                 callPage.visible = false;
+                stopWatch.stop();
                 break;
             }
         }

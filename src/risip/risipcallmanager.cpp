@@ -162,7 +162,7 @@ RisipCall *RisipCallManager::activeCall()
     return m_data->m_activeCall;
 }
 
-RisipCall *RisipCallManager::makeSIPCall(const QString &contact)
+RisipCall *RisipCallManager::callSIPContact(const QString &contact)
 {
     RisipBuddy *buddy = m_data->m_activeAccount->findBuddy(
                 RisipGlobals::formatToSip(contact, m_data->m_activeAccount->configuration()->serverAddress()));
@@ -201,33 +201,14 @@ RisipCall *RisipCallManager::callBuddy(RisipBuddy *buddy)
 RisipCall *RisipCallManager::callPhone(const QString &number)
 {
     if(number.isNull())
-        return new RisipCall(this);
+        return NULL;
 
-    RisipPhoneNumber *phoneNumber = RisipContactManager::instance()->phoneNumberForNumber(number);
-    if(phoneNumber)
-        return callRisipPhoneNumber(phoneNumber);
+    RisipBuddy *buddy = new RisipBuddy(this);
+    buddy->setAccount(activeAccount());
+    buddy->setContact(number);
+    buddy->setType(RisipBuddy::Pstn);
 
-    return new RisipCall(this);
-}
-
-RisipCall *RisipCallManager::callRisipPhoneNumber(RisipPhoneNumber *number)
-{
-    if(!number)
-        return new RisipCall(this);
-
-    qDebug()<<"CALLING NUMBER :  " << number->fullNumber();
-
-    RisipCall *call = new RisipCall(this);
-    call->setPhoneNumber(number);
-    call->setAccount(m_data->m_activeAccount);
-    call->call();
-    emit outgoingCall(call);
-
-    //adding call record for the active account.
-    qobject_cast<RisipCallHistoryModel *>(m_data->m_activeCallHistoryModel)->addCallRecord(call);
-    setActiveCall(call);
-
-    return call;
+    return callBuddy(buddy);
 }
 
 /**

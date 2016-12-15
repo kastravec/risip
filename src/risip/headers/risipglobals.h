@@ -82,6 +82,16 @@ struct Country {
     Rate rate;
 };
 
+class RisipConfigisLoader: public QRunnable
+{
+public:
+    RisipConfigisLoader();
+    ~RisipConfigisLoader();
+
+private:
+    void run();
+};
+
 class RisipGlobals : public QObject
 {
     Q_OBJECT

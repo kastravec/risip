@@ -45,5 +45,6 @@
         <file>ui/base/accountpages/UserRegistration.qml</file>
         <file>ui/base/accountpages/UserRegistrationForm.qml</file>
         <file>ui/base/risipcomponents/LineEdit.qml</file>
+        <file>ui/base/risipcomponents/RisipTimer.qml</file>
     </qresource>
 </RCC>

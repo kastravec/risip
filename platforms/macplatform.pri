@@ -1,8 +1,11 @@
-INCLUDEPATH += $$PWD/pjsip/mac-desktop/include
+INCLUDEPATH += $$PWD/../pjsip/mac-desktop/include
 
+QMAKE_MAC_SDK = macosx10.12
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+QMAKE_CXXFLAGS += -mmacosx-version-min=10.12
+QMAKE_LFLAGS += -mmacosx-version-min=10.12
 
-LIBS += -L$$PWD/pjsip/mac-desktop/lib \
+LIBS += -L$$PWD/../pjsip/mac-desktop/lib \
 #    -lpjsua2 \
 #    -lpjsua \
 #    -lpjsip-ua \

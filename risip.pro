@@ -1,7 +1,7 @@
 TARGET = risip
 TEMPLATE = app
 
-#CONFIG -= app_bundle
+CONFIG += app_bundle
 CONFIG += exceptions c++11
 
 QT = gui \
@@ -26,23 +26,23 @@ INCLUDEPATH += $$PWD/src \
                $$PWD/src/modules
 
 macx {
-include(macplatform.pri)
+include(platforms/macplatform.pri)
 }
 
 ios {
-include(iosplatform.pri)
+include(platforms/iosplatform.pri)
 }
 
 android {
-include(androidplatform.pri)
+include(platforms/androidplatform.pri)
 }
 
 linux {
-include(linuxplatform.pri)
+include(platforms/linuxplatform.pri)
 }
 
 win32 {
-include(winplatform.pri)
+include(platforms/winplatform.pri)
 }
 
 RESOURCES += ui.qrc \
@@ -91,7 +91,8 @@ SOURCES += src/app/main.cpp \
     src/modules/location/opencagedata.cpp \
     src/modules/location/risiplocation.cpp \
     src/modules/location/risipgeopositionprovider.cpp \
-    src/risip/android/risipandroidcontactaccessmanager.cpp
+    src/risip/android/risipandroidcontactaccessmanager.cpp \
+    src/utils/stopwatch.cpp
 
 HEADERS += src/risip/headers/risip.h \
     src/risip/headers/risipaccount.h \
@@ -134,7 +135,8 @@ HEADERS += src/risip/headers/risip.h \
     src/modules/location/opencagedata.h \
     src/modules/location/risiplocation.h \
     src/modules/location/risipgeopositionprovider.h \
-    src/risip/android/risipandroidcontactaccessmanager.h
+    src/risip/android/risipandroidcontactaccessmanager.h \
+    src/utils/stopwatch.h
 
 DISTFILES += \
     README \
@@ -145,5 +147,12 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.jar \
     android/gradlew \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    platforms/android/AndroidManifest.xml \
+    platforms/android/gradle/wrapper/gradle-wrapper.jar \
+    platforms/android/gradlew \
+    platforms/android/res/values/libs.xml \
+    platforms/android/build.gradle \
+    platforms/android/gradle/wrapper/gradle-wrapper.properties \
+    platforms/android/gradlew.bat
 

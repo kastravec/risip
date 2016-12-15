@@ -64,16 +64,15 @@ public:
     Q_ENUM(CallType)
     Q_ENUM(CallDirection)
     Q_ENUM(Status)
-    Q_PROPERTY(int callType READ callType WRITE setCallType NOTIFY callTypeChanged)
+    Q_PROPERTY(int callType READ callType NOTIFY callTypeChanged)
     Q_PROPERTY(RisipAccount * account READ account WRITE setAccount NOTIFY accountChanged)
     Q_PROPERTY(RisipBuddy * buddy READ buddy WRITE setBuddy NOTIFY buddyChanged)
-    Q_PROPERTY(RisipPhoneNumber * phoneNumber READ phoneNumber WRITE setPhoneNumber NOTIFY phoneNumberChanged)
     Q_PROPERTY(RisipMedia * media READ media NOTIFY mediaChanged)
     Q_PROPERTY(int callId READ callId NOTIFY callIdChanged)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QDateTime timestamp READ timestamp NOTIFY timestampChanged)
     Q_PROPERTY(int callDirection READ callDirection NOTIFY callDirectionChanged)
-    Q_PROPERTY(int callDuration READ callDuration NOTIFY callDurationChanged)
+    Q_PROPERTY(long callDuration READ callDuration CONSTANT)
     Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
     Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
@@ -87,9 +86,6 @@ public:
     RisipBuddy *buddy() const;
     void setBuddy(RisipBuddy *buddy);
 
-    RisipPhoneNumber *phoneNumber() const;
-    void setPhoneNumber(RisipPhoneNumber *number);
-
     int callType() const;
     void setCallType(int type);
 
@@ -98,7 +94,7 @@ public:
     int status() const;
     QDateTime timestamp() const;
     int callDirection() const;
-    int callDuration() const;
+    long callDuration() const;
     int errorCode() const;
     QString errorMessage();
     QString errorInfo() const;
@@ -112,14 +108,12 @@ public Q_SLOTS:
 Q_SIGNALS:
     void accountChanged(RisipAccount *account);
     void buddyChanged(RisipBuddy *buddy);
-    void phoneNumberChanged(RisipPhoneNumber *number);
     void mediaChanged(RisipMedia *media);
     void callIdChanged(int callId);
     void callTypeChanged(int type);
     void statusChanged(int status);
     void timestampChanged(QDateTime timestamp);
     void callDirectionChanged(int direction);
-    void callDurationChanged(int duration);
     void errorCodeChanged(int code);
     void errorMessageChanged(const QString &message);
     void errorInfoChanged(const QString &info);

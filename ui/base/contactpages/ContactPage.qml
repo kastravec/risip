@@ -35,10 +35,10 @@ Page {
 
     header: ToolBar {
         focus: true
-        //        background: Rectangle {
-        //            implicitHeight: 40
-        ////            color: "#ffffff"
-        //        }
+                background: Rectangle {
+                    implicitHeight: 40
+                    color: "#ffffff"
+                }
 
         Row{
             anchors.verticalCenter: parent.verticalCenter
@@ -133,11 +133,10 @@ Page {
             id: phoneNumberFrame
             width: parent.width
             height: phoneNumberBox.height + 15
-            property RisipPhoneNumber phoneNumber: RisipContactManager.phoneNumberForNumber(fullNumber)
 
             CountryFlag {
                 id: countryFlagIcon
-                countryCode: phoneNumber.countryCode
+                code: countryCode
                 anchors.right:  phoneNumberBox.left
                 anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
@@ -146,10 +145,10 @@ Page {
             RisipButton {
                 id: phoneNumberBox
                 height: 40
-                text: fullNumber
+                text: "+" + fullNumber
                 anchors.centerIn: parent
                 border.width: 0
-                onClicked: RisipCallManager.callRisipPhoneNumber(phoneNumber);
+                onClicked: RisipCallManager.callPhone(fullNumber);
             }
 
         } //end of delegate
