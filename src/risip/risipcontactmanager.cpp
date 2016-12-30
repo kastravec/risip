@@ -348,7 +348,7 @@ void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *contact)
 {
     if(contact) {
         if(!contact->fullName().trimmed().isEmpty()) {
-            m_data->m_phoneContacts.insert(contact->fullName(), contact);
+            m_data->m_phoneContacts[contact->fullName()] = contact;
             m_data->m_phoneContactsModel->addContact(contact);
 
             QList<RisipPhoneNumber *> numbers = contact->phoneNumberList();

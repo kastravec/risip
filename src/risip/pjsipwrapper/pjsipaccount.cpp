@@ -99,6 +99,8 @@ void PjsipAccount::onIncomingSubscribe(OnIncomingSubscribeParam &prm)
 
 void PjsipAccount::onInstantMessage(OnInstantMessageParam &prm)
 {
+    qDebug()<< "Incoming IM : " << QString::fromStdString(prm.fromUri) << QString::fromStdString(prm.msgBody);
+
     //creating the account if needed or simply reuse it
     RisipBuddy *buddy = m_risipAccount->findBuddy(QString::fromStdString(prm.fromUri));
     if(!buddy) {

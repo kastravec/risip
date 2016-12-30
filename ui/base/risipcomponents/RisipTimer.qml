@@ -24,6 +24,10 @@ Timer {
         }
     }
 
+    onRunningChanged: {
+        if(!root.running)
+            reset();
+    }
 
     function reset() {
         root.elapsedTime = 0;

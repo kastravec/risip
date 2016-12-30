@@ -65,7 +65,6 @@ Page {
             text: qsTr("Favorite")
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            //                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
             MouseArea {
                 anchors.fill: parent
@@ -145,7 +144,7 @@ Page {
             RisipButton {
                 id: phoneNumberBox
                 height: 40
-                text: "+" + fullNumber
+                text:  fullNumber
                 anchors.centerIn: parent
                 border.width: 0
                 onClicked: RisipCallManager.callPhone(fullNumber);

@@ -144,7 +144,7 @@ void RisipCall::setPjsipCall(PjsipCall *call)
         m_data->pjsipCall->setRisipCall(this);
     }
 
-    emit statusChanged(status());
+    emit statusChanged();
 }
 
 /**
@@ -310,7 +310,7 @@ void RisipCall::hangup()
             || !m_data->pjsipCall->isActive()) {
         qDebug()<<"no call exists/active";
 
-        emit statusChanged(status());
+        emit statusChanged();
         return;
     }
 
@@ -321,7 +321,7 @@ void RisipCall::hangup()
         setError(err);
     }
 
-    emit statusChanged(status());
+    emit statusChanged();
     RisipCallManager::instance()->setActiveCall(NULL);
 }
 

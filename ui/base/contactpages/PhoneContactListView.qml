@@ -128,17 +128,6 @@ Page {
                 anchors.left: contactIconBox.right
                 textFormat: Text.PlainText
             }
-
-            Text {
-                id: countryLabel
-                text: qsTr(" Country")
-                font.pointSize: 9
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 10
-                anchors.leftMargin: 10
-                anchors.left: contactIconBox.right
-                textFormat: Text.PlainText
-            }
         }
     }
 }

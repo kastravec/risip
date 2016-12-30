@@ -111,7 +111,7 @@ Q_SIGNALS:
     void mediaChanged(RisipMedia *media);
     void callIdChanged(int callId);
     void callTypeChanged(int type);
-    void statusChanged(int status);
+    void statusChanged();
     void timestampChanged(QDateTime timestamp);
     void callDirectionChanged(int direction);
     void errorCodeChanged(int code);

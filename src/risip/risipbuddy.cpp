@@ -222,7 +222,7 @@ RisipMessage *RisipBuddy::sendInstantMessage(QString message)
         return risipMessage;
     }
 
-    return new RisipMessage();
+    return NULL;
 }
 
 void RisipBuddy::sendInstantMessage(RisipMessage *message)

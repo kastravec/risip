@@ -57,7 +57,6 @@ CallPageForm {
             callPage.state = "incoming";
             callPage.visible = true;
             callPage.usernameLabel.text = callPage.activeCall.buddy.contact
-            console.log("A CALL FROM : " + callPage.activeCall.buddy.contact);
         }
 
         onOutgoingCall: {
@@ -65,7 +64,6 @@ CallPageForm {
             callPage.state = "outgoing"
             callPage.visible = true;
             callPage.usernameLabel.text = callPage.activeCall.buddy.contact
-            console.log("CALLING : " + callPage.activeCall.buddy.contact);
         }
     }
 
@@ -79,34 +77,31 @@ CallPageForm {
         }
 
         onStatusChanged: {
-            switch (status) {
+            switch (activeCall.status) {
             case RisipCall.CallConfirmed:
-                statusLabel.text = "Call connected, enjoy!";
+                statusLabel.text = "Connected!";
                 callPage.state = "incall";
                 callPage.visible = true;
                 stopWatch.start();
                 break;
             case RisipCall.CallDisconnected:
-                console.log("CALL CallDisconnected");
-                statusLabel.text = "Call disconnected, good bye!";
+                statusLabel.text = "Disconnected";
                 callPage.visible = false;
                 stopWatch.stop();
                 break;
             case RisipCall.CallEarly:
+                statusLabel.text = "Ringing..";
+                break;
             case RisipCall.ConnectingToCall:
-                console.log("CALL ConnectingToCall + CallEarly");
-                statusLabel.text = "connecting to call.."
+                statusLabel.text = "Connecting..";
                 break;
             case RisipCall.IncomingCallStarted:
-                console.log("CALL IncomingCallStarted");
-                statusLabel.text = "is calling you..!"
+                statusLabel.text = "Incoming call!"
                 break;
             case RisipCall.OutgoingCallStarted:
-                console.log("CALL OutgoingCallStarted");
                 statusLabel.text = "Calling.."
                 break;
             case RisipCall.Null:
-                console.log("CALL NULL");
                 statusLabel.text = "...";
                 callPage.visible = false;
                 stopWatch.stop();

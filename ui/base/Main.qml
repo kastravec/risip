@@ -72,8 +72,8 @@ Item {
         target: sipEndpoint
 
         onStatusChanged: {
-//            if(sipEndpoint.status === RisipEndpoint.Started)
-//                sipAccount.login();
+            if(sipEndpoint.status === RisipEndpoint.Started)
+                console.log("RISIP Engine started!");
         }
     }
 }

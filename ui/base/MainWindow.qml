@@ -80,6 +80,11 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
+    RisipBuddy {
+        id: petiBuddy
+        contact: "toptop"
+    }
+
     Connections {
         target: accountRegistrationLoader.item
 
@@ -127,10 +132,17 @@ ApplicationWindow {
             if(sipAccount.status === RisipAccount.SignedIn) {
                 loginPageLoader.active = false;
                 mainPageLoader.item.visible = true;
+                sipAccount.addBuddy(petiBuddy);
+                petiBuddy.sendInstantMessage("koooott");
             } else if(Risip.defaultAccount.status === RisipAccount.SignedOut) {
                 loginPageLoader.active = true;
                 mainPageLoader.item.visible = false;
             }
+        }
+
+        onIncomingMessage: {
+            var msg = message;
+            console.log(msg.messageBody);
         }
     }
 }
