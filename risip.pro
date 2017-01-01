@@ -19,10 +19,10 @@
 ###################################################################################
 
 TARGET = risip
-TEMPLATE = app
+TEMPLATE = lib
 
-CONFIG += app_bundle
 CONFIG += exceptions c++11
+CONFIG += static
 
 QT = gui \
      core \
@@ -34,136 +34,137 @@ QT = gui \
      location
 
 ### DEFINES ###
-DEFINES += PJ_IS_LITTLE_ENDIAN=1 \
+DEFINES += RISIP_SDK \
+           PJ_IS_LITTLE_ENDIAN=1 \
            PJ_IS_BIG_ENDIAN=0 \
            PJ_AUTOCONF
 
 ### INCLUDES ###
 INCLUDEPATH += $$PWD/src \
-               $$PWD/src/risip/headers \
-               $$PWD/src/utils \
-               $$PWD/src/risip/models
-               $$PWD/src/modules
+               $$PWD/src/risipsdk \
+               $$PWD/src/risipsdk/headers \
+               $$PWD/src/risipsdk/headers/models \
+               $$PWD/src/risipsdk/headers/apploader \
+               $$PWD/src/risipsdk/headers/location \
+               $$PWD/src/risipsdk/headers/sipprovision \
+               $$PWD/src/risipsdk/headers/utils
 
 macx {
-include(platforms/macplatform.pri)
+include(platforms/macos/macplatform.pri)
 }
 
 ios {
-include(platforms/iosplatform.pri)
+include(platforms/ios/iosplatform.pri)
 }
 
 android {
-include(platforms/androidplatform.pri)
+include(platforms/android-platform/androidplatform.pri)
 }
 
 linux {
-include(platforms/linuxplatform.pri)
+include(platforms/linux/linuxplatform.pri)
 }
 
 win32 {
-include(platforms/winplatform.pri)
+include(platforms/win/winplatform.pri)
 }
 
-RESOURCES += ui.qrc \
-             images.qrc \
+RESOURCES += \
              risipconfigs.qrc \
              flagicons.qrc
 
 ### SOURCE & HEADER FILES ###
-SOURCES += src/app/main.cpp \
-    src/risip/risip.cpp \
-    src/risip/risipaccount.cpp \
-    src/risip/risipcall.cpp \
-    src/risip/risipbuddy.cpp \
-    src/risip/risipmedia.cpp \
-    src/risip/risipendpoint.cpp \
-    src/risip/risipmessage.cpp \
-    src/risip/risipaccountconfiguration.cpp \
-    src/risip/risipcallmanager.cpp \
-    src/risip/risipcontactmanager.cpp \
-    src/risip/models/risipmodels.cpp \
-    src/risip/risipphonecontact.cpp \
-    src/app/risipuiloader.cpp \
-    src/app/applicationsettings.cpp \
-    src/utils/httpnetworkrequest.cpp \
-    src/risip/risipglobals.cpp \
-    src/sipregistrars/mor/risipmorapi.cpp \
-    src/risip/risipcontactimageprovider.cpp \
-    src/risip/risipcountryflagimageprovider.cpp \
-    src/risip/risipratemanager.cpp \
-    src/utils/qqmlsortfilterproxymodel.cpp \
-    src/risip/pjsipwrapper/pjsipaccount.cpp \
-    src/risip/pjsipwrapper/pjsipcall.cpp \
-    src/risip/pjsipwrapper/pjsipbuddy.cpp \
-    src/risip/pjsipwrapper/pjsipendpoint.cpp \
-    src/risip/risipphonenumber.cpp \
-    src/risip/models/risipabstractbuddymodel.cpp \
-    src/risip/models/risipcallhistorymodel.cpp \
-    src/risip/models/risipphonecontactsmodel.cpp \
-    src/risip/models/risipcountryratesmodel.cpp \
-    src/risip/models/risipphonenumbersmodel.cpp \
-    src/sipregistrars/mor/risipmoruser.cpp \
-    src/sipregistrars/mor/risipmordevice.cpp \
-    src/sipregistrars/mor/risipmoruserbalance.cpp \
-    src/risip/risipuserprofile.cpp \
-    src/modules/location/opencagedataapi.cpp \
-    src/modules/location/opencagedata.cpp \
-    src/modules/location/risiplocation.cpp \
-    src/modules/location/risipgeopositionprovider.cpp \
-    src/risip/android/risipandroidcontactaccessmanager.cpp \
-    src/utils/stopwatch.cpp
+SOURCES += src/risipsdk/risip.cpp \
+    src/risipsdk/risipaccount.cpp \
+    src/risipsdk/risipcall.cpp \
+    src/risipsdk/risipbuddy.cpp \
+    src/risipsdk/risipmedia.cpp \
+    src/risipsdk/risipendpoint.cpp \
+    src/risipsdk/risipmessage.cpp \
+    src/risipsdk/risipaccountconfiguration.cpp \
+    src/risipsdk/risipcallmanager.cpp \
+    src/risipsdk/risipcontactmanager.cpp \
+    src/risipsdk/models/risipmodels.cpp \
+    src/risipsdk/risipphonecontact.cpp \
+    src/risipsdk/risipglobals.cpp \
+    src/risipsdk/risipcontactimageprovider.cpp \
+    src/risipsdk/risipcountryflagimageprovider.cpp \
+    src/risipsdk/risipratemanager.cpp \
+    src/risipsdk/pjsipwrapper/pjsipaccount.cpp \
+    src/risipsdk/pjsipwrapper/pjsipcall.cpp \
+    src/risipsdk/pjsipwrapper/pjsipbuddy.cpp \
+    src/risipsdk/pjsipwrapper/pjsipendpoint.cpp \
+    src/risipsdk/risipphonenumber.cpp \
+    src/risipsdk/models/risipabstractbuddymodel.cpp \
+    src/risipsdk/models/risipcallhistorymodel.cpp \
+    src/risipsdk/models/risipphonecontactsmodel.cpp \
+    src/risipsdk/models/risipcountryratesmodel.cpp \
+    src/risipsdk/models/risipphonenumbersmodel.cpp \
+    src/risipsdk/android/risipandroidcontactaccessmanager.cpp \
+    src/risipsdk/apploader/risipapplicationsettings.cpp \
+    src/risipsdk/apploader/risipuiloader.cpp \
+    src/risipsdk/risipuserprofile.cpp \
+    src/risipsdk/sipprovision/risipmoruser.cpp \
+    src/risipsdk/sipprovision/risipmordevice.cpp \
+    src/risipsdk/sipprovision/risipmoruserbalance.cpp \
+    src/risipsdk/sipprovision/risipmorapi.cpp \
+    src/risipsdk/location/opencagedataapi.cpp \
+    src/risipsdk/location/opencagedata.cpp \
+    src/risipsdk/location/risiplocation.cpp \
+    src/risipsdk/location/risipgeopositionprovider.cpp \
+    src/risipsdk/utils/qqmlsortfilterproxymodel.cpp \
+    src/risipsdk/utils/httpnetworkrequest.cpp \
+    src/risipsdk/utils/stopwatch.cpp
 
-HEADERS += src/risip/headers/risip.h \
-    src/risip/headers/risipaccount.h \
-    src/risip/headers/risipcall.h \
-    src/risip/headers/risipbuddy.h \
-    src/risip/headers/risipmedia.h \
-    src/risip/headers/risipendpoint.h \
-    src/risip/headers/risipmessage.h \
-    src/risip/headers/risipaccountconfiguration.h \
-    src/risip/headers/risipcallmanager.h \
-    src/risip/headers/risipcontactmanager.h \
-    src/risip/models/risipmodels.h \
-    src/risip/headers/risipglobals.h \
-    src/risip/headers/risipphonecontact.h \
-    src/risip/ios/risipcallkprovider.h \
-    src/app/risipuiloader.h \
-    src/app/applicationsettings.h \
-    src/utils/httpnetworkrequest.h \
-    src/sipregistrars/mor/risipmorapi.h \
-    src/risip/ios/risipioswifiprovider.h \
-    src/risip/headers/risipcontactimageprovider.h \
-    src/risip/headers/risipcountryflagimageprovider.h \
-    src/risip/headers/risipratemanager.h \
-    src/utils/qqmlsortfilterproxymodel.h \
-    src/risip/pjsipwrapper/pjsipaccount.h \
-    src/risip/pjsipwrapper/pjsipcall.h \
-    src/risip/pjsipwrapper/pjsipbuddy.h \
-    src/risip/pjsipwrapper/pjsipendpoint.h \
-    src/risip/headers/risipphonenumber.h \
-    src/risip/models/risipabstractbuddymodel.h \
-    src/risip/models/risipcallhistorymodel.h \
-    src/risip/models/risipphonecontactsmodel.h \
-    src/risip/models/risipcountryratesmodel.h \
-    src/risip/models/risipphonenumbersmodel.h \
-    src/sipregistrars/mor/risipmoruser.h \
-    src/sipregistrars/mor/risipmordevice.h \
-    src/sipregistrars/mor/risipmoruserbalance.h \
-    src/risip/headers/risipuserprofile.h \
-    src/modules/location/opencagedataapi.h \
-    src/modules/location/opencagedata.h \
-    src/modules/location/risiplocation.h \
-    src/modules/location/risipgeopositionprovider.h \
-    src/risip/android/risipandroidcontactaccessmanager.h \
-    src/utils/stopwatch.h
+HEADERS += src/risipsdk/headers/risip.h \
+    src/risipsdk/headers/risipaccount.h \
+    src/risipsdk/headers/risipcall.h \
+    src/risipsdk/headers/risipbuddy.h \
+    src/risipsdk/headers/risipmedia.h \
+    src/risipsdk/headers/risipendpoint.h \
+    src/risipsdk/headers/risipmessage.h \
+    src/risipsdk/headers/risipaccountconfiguration.h \
+    src/risipsdk/headers/risipcallmanager.h \
+    src/risipsdk/headers/risipcontactmanager.h \
+    src/risipsdk/headers/models/risipmodels.h \
+    src/risipsdk/headers/risipglobals.h \
+    src/risipsdk/headers/risipphonecontact.h \
+    src/risipsdk/headers/risipuserprofile.h \
+    src/risipsdk/ios/risipcallkprovider.h \
+    src/risipsdk/ios/risipioswifiprovider.h \
+    src/risipsdk/headers/risipcontactimageprovider.h \
+    src/risipsdk/headers/risipcountryflagimageprovider.h \
+    src/risipsdk/headers/risipratemanager.h \
+    src/risipsdk/pjsipwrapper/pjsipaccount.h \
+    src/risipsdk/pjsipwrapper/pjsipcall.h \
+    src/risipsdk/pjsipwrapper/pjsipbuddy.h \
+    src/risipsdk/pjsipwrapper/pjsipendpoint.h \
+    src/risipsdk/headers/risipphonenumber.h \
+    src/risipsdk/headers/models/risipabstractbuddymodel.h \
+    src/risipsdk/headers/models/risipcallhistorymodel.h \
+    src/risipsdk/headers/models/risipphonecontactsmodel.h \
+    src/risipsdk/headers/models/risipcountryratesmodel.h \
+    src/risipsdk/headers/models/risipphonenumbersmodel.h \
+    src/risipsdk/android/risipandroidcontactaccessmanager.h \
+    src/risipsdk/headers/apploader/risipapplicationsettings.h \
+    src/risipsdk/headers/apploader/risipuiloader.h \
+    src/risipsdk/headers/sipprovision/risipmoruser.h \
+    src/risipsdk/headers/sipprovision/risipmordevice.h \
+    src/risipsdk/headers/sipprovision/risipmoruserbalance.h \
+    src/risipsdk/headers/sipprovision/risipmorapi.h \
+    src/risipsdk/headers/location/opencagedataapi.h \
+    src/risipsdk/headers/location/opencagedata.h \
+    src/risipsdk/headers/location/risiplocation.h \
+    src/risipsdk/headers/location/risipgeopositionprovider.h \
+    src/risipsdk/headers/utils/httpnetworkrequest.h \
+    src/risipsdk/headers/utils/qqmlsortfilterproxymodel.h \
+    src/risipsdk/headers/utils/stopwatch.h \
+    src/risipsdk/headers/risipsdkglobal.h
 
 DISTFILES += \
     README \
-    utils/runOnMac.sh \
     LICENSE.GPLv3 \
     LICENSE.HEADER.GPLv3 \
-    risip_backlog \
     android/gradle/wrapper/gradle-wrapper.jar \
     android/gradlew \
     android/gradle/wrapper/gradle-wrapper.properties \
