@@ -23,6 +23,7 @@ TEMPLATE = lib
 
 CONFIG += exceptions c++11
 CONFIG += static
+CONFIG += create_prl
 
 QT = gui \
      core \

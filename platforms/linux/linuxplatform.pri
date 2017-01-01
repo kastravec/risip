@@ -19,26 +19,46 @@
 ###################################################################################
 DESTDIR = $$PWD/bin
 
-INCLUDEPATH += $$PWD/pjsip/linux/include
+INCLUDEPATH += $$PWD/pjsip/include
 
-#linux {
-#LIBS += -L$$PWD/../pjsip/linux-desktop/lib \
-#    -lpjsua2 \
-#    -lpjsua \
-#    -lpjsip-ua \
-#    -lpjsip-simple \
-#    -lpjsip \
-#    -lpjmedia \
-#    -lpjmedia-audiodev \
-#    -lpjmedia \
-#    -lpjmedia-codec \
-#    -lpj \
-#    -lpjnath \
-#    -lilbccodec \
-#    -lgsmcodec \
-#    -lspeex \
-#    -lresample \
-#    -lsrtp \
-#    -lpjlib-util \
-#    -lg7221codec
-#}
+# static linking with PJSIP
+#LIBS += -L$$PWD/pjsip/lib \
+#    -lpjsua2-x86_64-unknown-linux-gnu \
+#    -lpjsua-x86_64-unknown-linux-gnu \
+#    -lpjsip-ua-x86_64-unknown-linux-gnu \
+#    -lpjsip-simple-x86_64-unknown-linux-gnu \
+#    -lpjsip-x86_64-unknown-linux-gnu \
+#    -lpjmedia-x86_64-unknown-linux-gnu \
+#    -lpjmedia-audiodev-x86_64-unknown-linux-gnu \
+#    -lpjmedia-x86_64-unknown-linux-gnu \
+#    -lpjmedia-codec-x86_64-unknown-linux-gnu \
+#    -lpj-x86_64-unknown-linux-gnu \
+#    -lpjnath-x86_64-unknown-linux-gnu \
+#    -lilbccodec-x86_64-unknown-linux-gnu \
+#    -lgsmcodec-x86_64-unknown-linux-gnu \
+#    -lspeex-x86_64-unknown-linux-gnu \
+#    -lresample-x86_64-unknown-linux-gnu \
+#    -lsrtp-x86_64-unknown-linux-gnu \
+#    -lpjlib-util-x86_64-unknown-linux-gnu \
+#    -lg7221codec-x86_64-unknown-linux-gnu
+
+# dynamic linking with PJSIP
+LIBS += -L$$PWD/pjsip/lib \
+    -lpjsua2 \
+    -lpjsua \
+    -lpjsip-ua \
+    -lpjsip-simple \
+    -lpjsip \
+    -lpjmedia \
+    -lpjmedia-audiodev \
+    -lpjmedia \
+    -lpjmedia-codec \
+    -lpj \
+    -lpjnath \
+    -lilbccodec \
+    -lgsmcodec \
+    -lspeex \
+    -lresample \
+    -lsrtp \
+    -lpjlib-util \
+    -lg7221codec

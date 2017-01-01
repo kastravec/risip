@@ -159,7 +159,6 @@ Risip::Risip(QObject *parent)
     m_data->m_defaultAccountAlways = true;
     RisipGlobals::instance()->initializeCountries();
     RisipLocation::instance();
-//    RisipLocation::instance()->updateCurrentLocation();
 }
 
 Risip::~Risip()
@@ -279,7 +278,7 @@ void Risip::registerToQml()
     qmlRegisterType<RisipMorDevice>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorDevice");
     qmlRegisterType<RisipMorUserBalance>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorUserBalance");
     qmlRegisterType<StopWatch>(RisipSettingsParam::risipQmlURI, 1, 0, "StopWatch");
-    qmlRegisterType<QQmlSortFilterProxyModel>(RisipSettingsParam::risipQmlURI, 0, 1, "SortFilterProxyModel");
+    qmlRegisterType<QQmlSortFilterProxyModel>(RisipSettingsParam::risipQmlURI, 1, 0, "SortFilterProxyModel");
 }
 
 RisipAccount *Risip::accountForUri(const QString &accountUri)
