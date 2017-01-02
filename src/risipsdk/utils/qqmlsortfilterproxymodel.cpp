@@ -1,4 +1,8 @@
 #include "qqmlsortfilterproxymodel.h"
+#include <QQmlContext>
+#include <QtQml>
+
+#include <QDebug>
 
 QQmlSortFilterProxyModel::QQmlSortFilterProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent),
