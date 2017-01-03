@@ -21,7 +21,7 @@ DESTDIR = $$PWD/bin
 
 INCLUDEPATH += $$PWD/pjsip/ios-64/include
 
-QMAKE_IOS_DEPLOYMENT_TARGET = 10.1
+#QMAKE_IOS_DEPLOYMENT_TARGET = 10.1
 
 QMAKE_CXXFLAGS = -miphoneos-version-min=9.0
 QMAKE_LFLAGS += -miphoneos-version-min=9.0

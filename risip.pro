@@ -102,7 +102,6 @@ SOURCES += src/risipsdk/risip.cpp \
     src/risipsdk/models/risipphonenumbersmodel.cpp \
     src/risipsdk/android/risipandroidcontactaccessmanager.cpp \
     src/risipsdk/apploader/risipapplicationsettings.cpp \
-    src/risipsdk/apploader/risipuiloader.cpp \
     src/risipsdk/risipuserprofile.cpp \
     src/risipsdk/sipprovision/risipmoruser.cpp \
     src/risipsdk/sipprovision/risipmordevice.cpp \
@@ -147,7 +146,6 @@ HEADERS += src/risipsdk/headers/risip.h \
     src/risipsdk/headers/models/risipphonenumbersmodel.h \
     src/risipsdk/android/risipandroidcontactaccessmanager.h \
     src/risipsdk/headers/apploader/risipapplicationsettings.h \
-    src/risipsdk/headers/apploader/risipuiloader.h \
     src/risipsdk/headers/sipprovision/risipmoruser.h \
     src/risipsdk/headers/sipprovision/risipmordevice.h \
     src/risipsdk/headers/sipprovision/risipmoruserbalance.h \
