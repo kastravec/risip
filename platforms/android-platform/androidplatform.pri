@@ -25,7 +25,7 @@ INCLUDEPATH += $$PWD/pjsip/armeabi/include
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DISTFILES += \
-        src/risipsdk/android/com/risip/phonecontacts/RisipAndroidContacts.java
+        $$PWD/../../src/risipsdk/android/com/risip/phonecontacts/RisipAndroidContacts.java
 
 LIBS += -L$$PWD/pjsip/armeabi/lib \
     #-lpjmedia-audiodev-arm-unknown-linux-androideabi \

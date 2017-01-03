@@ -21,13 +21,18 @@ DESTDIR = $$PWD/bin
 
 INCLUDEPATH += $$PWD/pjsip/ios-64/include
 
+QMAKE_IOS_DEPLOYMENT_TARGET = 10.1
+
+QMAKE_CXXFLAGS = -miphoneos-version-min=9.0
+QMAKE_LFLAGS += -miphoneos-version-min=9.0
+
 #iOS headers and source files where ios specific functionality is implemented.
-HEADERS += src/risipsdk/ios/risipioscontactaccessmanager.h
+HEADERS += $$PWD/../../src/risipsdk/ios/risipioscontactaccessmanager.h
 
 OBJECTIVE_SOURCES += \
-    src/risipsdk/ios/risipcallkitprovider.mm \
-    src/risipsdk/ios/risipioscontactaccessmanager.mm \
-    src/risipsdk/ios/risipioswifiprovider.mm
+    $$PWD/../../src/risipsdk/ios/risipcallkitprovider.mm \
+    $$PWD/../../src/risipsdk/ios/risipioscontactaccessmanager.mm \
+    $$PWD/../../src/risipsdk/ios/risipioswifiprovider.mm
 
 LIBS += -L$$PWD/pjsip/ios-64/lib \
     -lpjsua2-arm64-apple-darwin_ios \
