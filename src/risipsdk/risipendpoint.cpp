@@ -223,10 +223,6 @@ void RisipEndpoint::start()
         return;
     }
 
-    //FIXME do not call this here - better handling
-    Risip::instance()->readSettings();
-    emit statusChanged(status());
-
     //FIXME Codec priorities
     //TODO Codecs settings page
     Endpoint::instance().codecSetPriority("PCMA/8000", 215);
@@ -245,6 +241,8 @@ void RisipEndpoint::start()
                 << QString::fromStdString(codecInfo->desc)
                 << codecInfo->priority;
     }
+
+    emit statusChanged(status());
 }
 
 /**

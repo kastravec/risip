@@ -53,7 +53,6 @@
 #include "sipprovision/risipmoruserbalance.h"
 
 #include "apploader/risipapplicationsettings.h"
-#include "apploader/risipuiloader.h"
 
 #include <QQmlEngine>
 #include <QSettings>
@@ -163,9 +162,6 @@ Risip::Risip(QObject *parent)
 
 Risip::~Risip()
 {
-    //FIXME do not call this here - better handling
-    saveSettings();
-
     while (!m_data->m_accounts.isEmpty())
         delete m_data->m_accounts.take(m_data->m_accounts.keys().takeFirst());
 
