@@ -1,5 +1,5 @@
 ##################################################################################
-#    Copyright (C) 2016  Petref Saraci
+#    Copyright (C) 2016 - 2017 Petref Saraci
 #    http://risip.io
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,15 +20,13 @@
 DESTDIR = $$PWD/bin
 CONFIG += app_bundle
 
-INCLUDEPATH += $$PWD/pjsip/include
-
 QMAKE_MAC_SDK = macosx10.12
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 QMAKE_CXXFLAGS += -mmacosx-version-min=10.12
 QMAKE_LFLAGS += -mmacosx-version-min=10.12
 
 # static linking with PJSIP
-LIBS += -L$$PWD/pjsip/lib \
+LIBS += -L$$PWD/../../pjsip/macos-64/staticlibs \
     -lpjsua2-x86_64-apple-darwin15.6.0 \
     -lpjsua-x86_64-apple-darwin15.6.0 \
     -lpjsip-simple-x86_64-apple-darwin15.6.0 \
@@ -55,7 +53,7 @@ LIBS += -L$$PWD/pjsip/lib \
     -framework AudioUnit
 
 # dynamic linking with PJSIP
-#LIBS += -L$$PWD/pjsip/lib \
+#LIBS += -L$$PWD../../macos-64/dylibs \
 #    -lpjsua2 \
 #    -lpjsua \
 #    -lpjsip-ua \

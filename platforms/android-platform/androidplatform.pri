@@ -20,7 +20,6 @@
 DESTDIR = $$PWD/bin
 
 QT += androidextras
-INCLUDEPATH += $$PWD/pjsip/armeabi/include
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

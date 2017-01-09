@@ -1,5 +1,5 @@
 ##################################################################################
-#    Copyright (C) 2016  Petref Saraci
+#    Copyright (C) 2016 - 2017  Petref Saraci
 #    http://risip.io
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,8 @@
 ###################################################################################
 DESTDIR = $$PWD/bin
 
-INCLUDEPATH += $$PWD/pjsip/include
-
 # static linking with PJSIP
-#LIBS += -L$$PWD/pjsip/lib \
+#LIBS += -L$$PWD/../../pjsip/linux-64/staticlibs \
 #    -lpjsua2-x86_64-unknown-linux-gnu \
 #    -lpjsua-x86_64-unknown-linux-gnu \
 #    -lpjsip-ua-x86_64-unknown-linux-gnu \
@@ -43,7 +41,7 @@ INCLUDEPATH += $$PWD/pjsip/include
 #    -lg7221codec-x86_64-unknown-linux-gnu
 
 # dynamic linking with PJSIP
-LIBS += -L$$PWD/pjsip/lib \
+LIBS += -L$$PWD/../../pjsip/linux-64/dylibs \
     -lpjsua2 \
     -lpjsua \
     -lpjsip-ua \

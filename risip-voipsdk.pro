@@ -1,5 +1,5 @@
 ##################################################################################
-#    Copyright (C) 2016  Petref Saraci
+#    Copyright (C) 2016 - 2017  Petref Saraci
 #    http://risip.io
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #
 ###################################################################################
 
-TARGET = risip
+TARGET = risip-voip
 TEMPLATE = lib
 
 CONFIG += exceptions c++11
@@ -48,6 +48,8 @@ INCLUDEPATH += $$PWD/src \
                $$PWD/src/risipsdk/headers/location \
                $$PWD/src/risipsdk/headers/sipprovision \
                $$PWD/src/risipsdk/headers/utils
+
+INCLUDEPATH += $$PWD/pjsip/include
 
 macx {
 include(platforms/macos/macplatform.pri)

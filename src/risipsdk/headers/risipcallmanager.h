@@ -49,15 +49,17 @@ public:
     RisipCall *activeCall();
     void setActiveCall(RisipCall *call);
 
+    //history related methods
     QAbstractItemModel *activeCallHistoryModel() const;
     void setActiveCallHistoryModel(QAbstractItemModel *model);
-
     QQmlListProperty<QAbstractItemModel> callHistoryModels();
+    Q_INVOKABLE QAbstractItemModel *historyCallModelForAccount(const QString &account) const;
 
-    Q_INVOKABLE QAbstractItemModel *callHistoryModelForAccount(const QString &account) const;
+    //call related methods
     Q_INVOKABLE RisipCall *callSIPContact(const QString &contact);
     Q_INVOKABLE RisipCall *callBuddy(RisipBuddy *buddy);
     Q_INVOKABLE RisipCall *callPhone(const QString &number);
+    Q_INVOKABLE RisipCall *callExternalSIP(const QString &uri);
 
     void createModelsForAccount(RisipAccount *account);
     void removeModelsForAccount(const RisipAccount *account);

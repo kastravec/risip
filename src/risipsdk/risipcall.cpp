@@ -32,6 +32,7 @@
 #include "pjsipwrapper/pjsipaccount.h"
 #include "pjsipwrapper/pjsipcall.h"
 
+#include <QTimer>
 #include <QCoreApplication>
 
 #include <QDebug>
@@ -64,6 +65,7 @@ RisipCall::RisipCall(QObject *parent)
 RisipCall::~RisipCall()
 {
     setPjsipCall(NULL);
+    disconnect(this);
     delete m_data;
     m_data = NULL;
 }
@@ -273,7 +275,7 @@ QString RisipCall::errorInfo() const
 void RisipCall::initializeMediaHandler()
 {
     if(!m_data->risipMedia)
-        setMedia(new RisipMedia(this));
+        setMedia(new RisipMedia);
 
     m_data->risipMedia->startCallMedia();
 }
@@ -348,6 +350,27 @@ void RisipCall::call()
 
     try {
         m_data->pjsipCall->makeCall(m_data->buddy->uri().toStdString(), prm);
+    } catch (Error err) {
+        setError(err);
+    }
+}
+
+void RisipCall::callExternalSIP(const QString &uri)
+{
+    setCallType(RisipCall::Sip);
+    if(!m_data->account && uri.isEmpty())
+        return;
+
+    if(m_data->account->status() != RisipAccount::SignedIn)
+        return;
+
+    setCallDirection(RisipCall::Outgoing);
+    createTimestamp();
+    setPjsipCall(new PjsipCall(*m_data->account->pjsipAccount()));
+    CallOpParam prm(true);
+
+    try {
+        m_data->pjsipCall->makeCall(uri.toStdString(), prm);
     } catch (Error err) {
         setError(err);
     }

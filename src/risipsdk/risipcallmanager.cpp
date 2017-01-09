@@ -105,7 +105,7 @@ QQmlListProperty<QAbstractItemModel> RisipCallManager::callHistoryModels()
     return QQmlListProperty<QAbstractItemModel>(this, models);
 }
 
-QAbstractItemModel *RisipCallManager::callHistoryModelForAccount(const QString &account) const
+QAbstractItemModel *RisipCallManager::historyCallModelForAccount(const QString &account) const
 {
     if(m_data->m_callHistoryModels.contains(account))
         return qobject_cast<RisipCallHistoryModel *>(m_data->m_callHistoryModels[account]);
@@ -149,8 +149,8 @@ void RisipCallManager::setActiveAccount(RisipAccount *account)
         connect(m_data->m_activeAccount, &RisipAccount::incomingCall,
                 this, &RisipCallManager::accountIncomingCall, Qt::UniqueConnection);
 
-        if(callHistoryModelForAccount(m_data->m_activeAccount->configuration()->uri()))
-            setActiveCallHistoryModel(callHistoryModelForAccount(m_data->m_activeAccount->configuration()->uri()));
+        if(historyCallModelForAccount(m_data->m_activeAccount->configuration()->uri()))
+            setActiveCallHistoryModel(historyCallModelForAccount(m_data->m_activeAccount->configuration()->uri()));
         //TODO what if call history model does not exists?
 
         emit activeAccountChanged(m_data->m_activeAccount);
@@ -209,6 +209,21 @@ RisipCall *RisipCallManager::callPhone(const QString &number)
     buddy->setType(RisipBuddy::Pstn);
 
     return callBuddy(buddy);
+}
+
+RisipCall *RisipCallManager::callExternalSIP(const QString &uri)
+{
+    RisipCall * call = new RisipCall(this);
+    call->setAccount(m_data->m_activeAccount);
+    call->callExternalSIP(uri);
+
+    emit outgoingCall(call);
+
+    //adding call record for the active account.
+    qobject_cast<RisipCallHistoryModel *>(m_data->m_activeCallHistoryModel)->addCallRecord(call);
+    setActiveCall(call);
+
+    return call;
 }
 
 /**

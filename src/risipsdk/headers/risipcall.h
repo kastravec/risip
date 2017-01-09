@@ -104,6 +104,7 @@ public Q_SLOTS:
     void answer();
     void hangup();
     void call();
+    void callExternalSIP(const QString &uri);
     void hold(bool hold);
 
 Q_SIGNALS:

@@ -52,8 +52,8 @@ void PjsipCall::onCallState(OnCallStateParam &prm)
     // emit a status change signal otherwise
     if(!isActive())
         m_risipCall->setPjsipCall(NULL);
-
-    m_risipCall->statusChanged();
+    else
+        m_risipCall->statusChanged();
 }
 
 void PjsipCall::onCallTsxState(OnCallTsxStateParam &prm)
