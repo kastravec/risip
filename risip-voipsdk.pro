@@ -29,9 +29,7 @@ QT = gui \
      network \
      qml \
      quick \
-     quickcontrols2 \
-     positioning \
-     location
+     quickcontrols2
 
 ### DEFINES ###
 DEFINES += RISIP_SDK \
@@ -45,7 +43,6 @@ INCLUDEPATH += $$PWD/src \
                $$PWD/src/risipsdk/headers \
                $$PWD/src/risipsdk/headers/models \
                $$PWD/src/risipsdk/headers/apploader \
-               $$PWD/src/risipsdk/headers/location \
                $$PWD/src/risipsdk/headers/sipprovision \
                $$PWD/src/risipsdk/headers/utils
 
@@ -110,10 +107,6 @@ SOURCES += src/risipsdk/risip.cpp \
     src/risipsdk/sipprovision/risipmordevice.cpp \
     src/risipsdk/sipprovision/risipmoruserbalance.cpp \
     src/risipsdk/sipprovision/risipmorapi.cpp \
-    src/risipsdk/location/opencagedataapi.cpp \
-    src/risipsdk/location/opencagedata.cpp \
-    src/risipsdk/location/risiplocation.cpp \
-    src/risipsdk/location/risipgeopositionprovider.cpp \
     src/risipsdk/utils/qqmlsortfilterproxymodel.cpp \
     src/risipsdk/utils/httpnetworkrequest.cpp \
     src/risipsdk/utils/stopwatch.cpp
@@ -154,10 +147,6 @@ HEADERS += src/risipsdk/headers/risip.h \
     src/risipsdk/headers/sipprovision/risipmordevice.h \
     src/risipsdk/headers/sipprovision/risipmoruserbalance.h \
     src/risipsdk/headers/sipprovision/risipmorapi.h \
-    src/risipsdk/headers/location/opencagedataapi.h \
-    src/risipsdk/headers/location/opencagedata.h \
-    src/risipsdk/headers/location/risiplocation.h \
-    src/risipsdk/headers/location/risipgeopositionprovider.h \
     src/risipsdk/headers/utils/httpnetworkrequest.h \
     src/risipsdk/headers/utils/qqmlsortfilterproxymodel.h \
     src/risipsdk/headers/utils/stopwatch.h \

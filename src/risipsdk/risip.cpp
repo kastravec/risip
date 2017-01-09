@@ -38,8 +38,6 @@
 #include "utils/stopwatch.h"
 #include "utils/qqmlsortfilterproxymodel.h"
 
-#include "location/risipgeopositionprovider.h"
-
 #include "models/risipcallhistorymodel.h"
 #include "models/risipcountryratesmodel.h"
 #include "models/risipphonecontactsmodel.h"
@@ -114,14 +112,6 @@ static QObject *risipContactManagerSingletonProvider(QQmlEngine *engine, QJSEngi
     Q_UNUSED(scriptEngine)
 
     return RisipContactManager::instance();
-}
-
-static QObject *risipGeoPositionProviderSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
-{
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    return RisipGeoPositionProvider::instance();
 }
 
 static QObject *risipRateManagerSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -243,8 +233,7 @@ void Risip::registerToQml()
                                                "RisipCallManager", risipCallManagerSingletonProvider);
     qmlRegisterSingletonType<RisipContactManager>(RisipSettingsParam::risipQmlURI, 1, 0,
                                                "RisipContactManager", risipContactManagerSingletonProvider);
-    qmlRegisterSingletonType<RisipGeoPositionProvider>(RisipSettingsParam::risipQmlURI, 1, 0,
-                                               "RisipGeoPositionProvider", risipGeoPositionProviderSingletonProvider);
+
     qmlRegisterSingletonType<RisipRateManager>(RisipSettingsParam::risipQmlURI, 1, 0,
                                                "RisipRateManager", risipRateManagerSingletonProvider);
     qmlRegisterSingletonType<RisipApplicationSettings>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipApplicationSettings",
