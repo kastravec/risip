@@ -1,4 +1,5 @@
-Copyright (C) 2016  Petref Saraci
+Copyright (C) 2016 - 2017  Petref Saraci
+ http://risip.io
  petref.saraci@risip.io
 
  This program is free software: you can redistribute it and/or modify
@@ -16,57 +17,37 @@ Copyright (C) 2016  Petref Saraci
  A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 
 
-* What is Risip? *
+## What is Risip VoIP SDK? ##
 
-Risip software provides a set of APIs, headers, source files and other utilities acting as interface the Pjsip library.
+Risip VoIP SDK provides a set of APIs, headers, source files and other utilities for creating and enabling RTC audio/video applications. 
 
-* How do I start? *
+Risip VoIP uses:
+- Pjsip
+- Qt
 
-1. Download the latest Qt open source package and follow the instructions. (http://qt.io)
+Risip SDK APIs are for pure QML based applications and/or just with Qt/C++
 
-Install Qt and make sure everything is running smoothly with QtCreator IDE.
 
-2. Use (build/compile) PJSIP
+## How do I start? How do I use Risip SDK in my Qt application? ##
+
+**1. Download the latest Qt open source package and follow the instructions**. (http://qt.io)
+
+Install Qt for your platforms that that you want to build apps for (Desktop,  and make sure everything is running smoothly with QtCreator IDE.
+
+**2. Install Pjsip library**.
 
 Risip provides Pjsip binaries for all supported platforms (Win, OSX, Linux, Android, iOS) and they can be found in the Download section of this repository. The link can be found here:
 
 **https://bitbucket.org/psaraci/risip/downloads**
 
+Inside the **risip-voipsdk** root folder, create a new folder and name it **pjsip**. 
+Inside the **pjsip** folder, place the pjsip **include** directory and the pjsip **libraries** for each respective platform.
 
-Otherwise:
-Use always the latest PJSIP available, download and follow the compilation and build steps provided by the PJSIP team.
-Pjsip build instruction: https://trac.pjsip.org/repos/wiki/Getting-Started
-Pjsip website: http://pjsip.org/
-Pjsip documentation: https://trac.pjsip.org/repos/
+For a complete example see risipsdk-demo and risipapp repositories and the respective wikis.
 
-Follow the instruction carefully and here are some notes to take care in particular:
--do not forget --prefix when you run configure for Pjsip, in this way you can install libs and headers of Pjsip
- in a seperate folder for each target platform.
--do not forget -arch flag for the architecture for iPhone or TARGET_ABI for android and so forth
--do not forget static/shared flags when configuring Pjsip, by default it is all static build for PJSIP
--do not forget to enable config_site.h file under PJSIP/src/pjsip-lib/include (follow steps: https://trac.pjsip.org/repos/wiki/Getting-Started)
+You can always download and use any latest version of Pjsip, build it yourself and use the libs in Risip SDK.
 
-3. QtCreator to load the Risip project.
+**3. Use QtCreator to load and build the Risip SDK project**.
 
 You may use QtCreator to compile/build risip for all desktop platforms and Android, but for iOS you may need
 to use XCode too.
-
-Note:
-Once you have build PJSIP and the libs and headers from pjsip are available, then copy them inside directory of risip.
-For more details on where and which directory names to be used, please refer to the .pro project file in order to understand these details.
-- do not forget Defines - just use the risip project file as sample
-- do not forget Mac/iOS Frameworks or libs, same on Android and so forth
-
-4. ----- Use some SIP server to start testing --------
-
-There are many free SIP services out there that offer fantastic and reliable SIP routing.
-For simplicity it is highly recommended to use the http://sip2ip.info service. Create a SIP account at the sip2sip.info and then use Risip to start making calls to other sip2sip.info users.
-
-NOTE: when adding a sip2sip.info account to Risip , always add the sip2sip.info proxy too.
-
-Example:
-SIP accounts
-- username: userA
-- URI : sip:userA@sip2sip.info
-- registar/server: sip2sip.info
-- proxy: proxy.sipthor.net
