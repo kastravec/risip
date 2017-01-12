@@ -30,7 +30,7 @@ class RisipEndpoint;
 class RisipAccountConfiguration;
 class PjsipEndpoint;
 
-class RISIP_SDK_EXPORT RisipEndpoint : public QObject
+class RISIP_VOIPSDK_EXPORT RisipEndpoint : public QObject
 {
     Q_OBJECT
 public:

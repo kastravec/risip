@@ -32,7 +32,7 @@ class RisipPhoneContactsModel;
 class RisipPhoneContact;
 class RisipPhoneNumber;
 
-class RISIP_SDK_EXPORT RisipContactManager : public QObject
+class RISIP_VOIPSDK_EXPORT RisipContactManager : public QObject
 {
     Q_OBJECT
 public:

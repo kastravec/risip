@@ -18,11 +18,33 @@
 #
 ###################################################################################
 
+macx {
+include(platforms/macos/macplatform.pri)
+}
+
+ios {
+include(platforms/ios/iosplatform.pri)
+}
+
+android {
+include(platforms/android-platform/androidplatform.pri)
+}
+
+linux {
+include(platforms/linux/linuxplatform.pri)
+}
+
+win32 {
+include(platforms/win/winplatform.pri)
+}
+
 TARGET = risip-voip
 TEMPLATE = lib
 
 CONFIG += exceptions c++11
 CONFIG += create_prl
+CONFIG += qt
+CONFIG += dll
 
 QT = gui \
      core \
@@ -47,26 +69,6 @@ INCLUDEPATH += $$PWD/src \
                $$PWD/src/risipsdk/headers/utils
 
 INCLUDEPATH += $$PWD/pjsip/include
-
-macx {
-include(platforms/macos/macplatform.pri)
-}
-
-ios {
-include(platforms/ios/iosplatform.pri)
-}
-
-android {
-include(platforms/android-platform/androidplatform.pri)
-}
-
-linux {
-include(platforms/linux/linuxplatform.pri)
-}
-
-win32 {
-include(platforms/win/winplatform.pri)
-}
 
 RESOURCES += \
              risipconfigs.qrc \
@@ -160,11 +162,9 @@ DISTFILES += \
     android/gradlew \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat \
-    platforms/android/AndroidManifest.xml \
     platforms/android/gradle/wrapper/gradle-wrapper.jar \
     platforms/android/gradlew \
     platforms/android/res/values/libs.xml \
-    platforms/android/build.gradle \
     platforms/android/gradle/wrapper/gradle-wrapper.properties \
     platforms/android/gradlew.bat
 

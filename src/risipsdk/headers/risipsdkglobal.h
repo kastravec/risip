@@ -22,10 +22,10 @@
 
 #include <QtCore/qglobal.h>
 
-#if defined(RISIP_SDK)
-#  define RISIP_SDK_EXPORT Q_DECL_EXPORT
+#if defined(RISIP_VOIPSDK_EXPORT)
+#  define RISIP_VOIPSDK_EXPORT Q_DECL_EXPORT
 #else
-#  define RISIP_SDK_EXPORT Q_DECL_IMPORT
+#  define RISIP_VOIPSDK_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // RISIPSDKGLOBAL_H

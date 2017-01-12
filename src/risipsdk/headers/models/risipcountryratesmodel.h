@@ -24,7 +24,7 @@
 #include "risipglobals.h"
 #include <QAbstractListModel>
 
-class RISIP_SDK_EXPORT RisipCountryRatesModel: public QAbstractListModel
+class RISIP_VOIPSDK_EXPORT RisipCountryRatesModel: public QAbstractListModel
 {
     Q_OBJECT
 

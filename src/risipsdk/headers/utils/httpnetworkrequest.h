@@ -30,7 +30,7 @@
 
 class QHttpMultiPart;
 
-class RISIP_SDK_EXPORT NetworkAccessManager : public QNetworkAccessManager
+class RISIP_VOIPSDK_EXPORT NetworkAccessManager : public QNetworkAccessManager
 {
 public:
     static NetworkAccessManager *instance();

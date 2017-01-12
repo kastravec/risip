@@ -19,7 +19,9 @@
 ###################################################################################
 DESTDIR = $$PWD/bin
 
-#QMAKE_IOS_DEPLOYMENT_TARGET = 10.1
+QMAKE_IOS_DEPLOYMENT_TARGET = 10.2
+
+#QMAKE_MAC_SDK = macosx10.12
 
 QMAKE_CXXFLAGS = -miphoneos-version-min=9.0
 QMAKE_LFLAGS += -miphoneos-version-min=9.0

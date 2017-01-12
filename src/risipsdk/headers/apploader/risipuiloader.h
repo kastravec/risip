@@ -26,7 +26,7 @@
 class QQmlApplicationEngine;
 class RisipApplicationSettings;
 
-class RISIP_SDK_EXPORT RisipUiLoader : public QObject
+class RISIP_VOIPSDK_EXPORT RisipUiLoader : public QObject
 {
     Q_OBJECT
 

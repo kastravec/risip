@@ -31,7 +31,7 @@ class RisipCall;
 class RisipCallHistoryModel;
 class RisipPhoneNumber;
 
-class RISIP_SDK_EXPORT RisipCallManager : public QObject
+class RISIP_VOIPSDK_EXPORT RisipCallManager : public QObject
 {
     Q_OBJECT
 public:

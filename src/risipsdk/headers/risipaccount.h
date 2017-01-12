@@ -40,7 +40,7 @@ class RisipUserProfile;
 class PjsipCall;
 class PjsipAccount;
 
-class RISIP_SDK_EXPORT RisipAccount: public QObject
+class RISIP_VOIPSDK_EXPORT RisipAccount: public QObject
 {
     Q_OBJECT
 

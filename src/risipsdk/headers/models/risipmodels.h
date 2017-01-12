@@ -23,7 +23,7 @@
 #include "risipsdkglobal.h"
 #include "risipabstractbuddymodel.h"
 
-class RISIP_SDK_EXPORT RisipBuddiesModel: public RisipAbstractBuddyModel
+class RISIP_VOIPSDK_EXPORT RisipBuddiesModel: public RisipAbstractBuddyModel
 {
     Q_OBJECT
 public:
@@ -31,7 +31,7 @@ public:
     ~RisipBuddiesModel();
 };
 
-class RISIP_SDK_EXPORT RisipContactHistoryModel: public RisipAbstractBuddyModel
+class RISIP_VOIPSDK_EXPORT RisipContactHistoryModel: public RisipAbstractBuddyModel
 {
     Q_OBJECT
 public:

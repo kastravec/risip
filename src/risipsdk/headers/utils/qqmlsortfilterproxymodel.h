@@ -5,7 +5,7 @@
 #include <QSortFilterProxyModel>
 #include <QQmlExpression>
 
-class RISIP_SDK_EXPORT QQmlSortFilterProxyModel : public QSortFilterProxyModel
+class RISIP_VOIPSDK_EXPORT QQmlSortFilterProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)

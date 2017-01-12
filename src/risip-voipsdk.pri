@@ -12,9 +12,7 @@ QT = gui \
      network \
      qml \
      quick \
-     quickcontrols2 \
-     positioning \
-     location
+     quickcontrols2
 
 INCLUDEPATH += $$PWD/risipsdk/headers \
                $$PWD/risipsdk/headers/models \

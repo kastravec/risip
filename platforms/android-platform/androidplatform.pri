@@ -21,12 +21,12 @@ DESTDIR = $$PWD/bin
 
 QT += androidextras
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+#ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DISTFILES += \
         $$PWD/../../src/risipsdk/android/com/risip/phonecontacts/RisipAndroidContacts.java
 
-LIBS += -L$$PWD/pjsip/armeabi/lib \
+LIBS += -L$$PWD/../../pjsip/android-armeabi/staticlibs \
     #-lpjmedia-audiodev-arm-unknown-linux-androideabi \
     #-lpjmedia-videodev-arm-unknown-linux-androideabi \
     #-lpjsip-arm-unknown-linux-androideabi \

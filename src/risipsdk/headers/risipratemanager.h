@@ -26,7 +26,7 @@
 class RisipCountryRatesModel;
 
 
-class RISIP_SDK_EXPORT RisipRateManager : public QObject
+class RISIP_VOIPSDK_EXPORT RisipRateManager : public QObject
 {
     Q_OBJECT
 public:

@@ -29,7 +29,7 @@ using namespace pj;
 class RisipCall;
 class RisipEndpoint;
 
-class RISIP_SDK_EXPORT RisipMedia : public QObject
+class RISIP_VOIPSDK_EXPORT RisipMedia : public QObject
 {
     Q_OBJECT
 public:
