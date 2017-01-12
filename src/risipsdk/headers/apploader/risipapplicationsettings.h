@@ -24,7 +24,7 @@
 #include <QObject>
 #include <QSettings>
 
-class RISIP_SDK_EXPORT RisipApplicationSettings : public QObject
+class RISIP_VOIPSDK_EXPORT RisipApplicationSettings : public QObject
 {
     Q_OBJECT
 

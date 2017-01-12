@@ -25,7 +25,7 @@
 
 class RisipPhoneContact;
 
-class RISIP_SDK_EXPORT RisipPhoneNumber : public QObject
+class RISIP_VOIPSDK_EXPORT RisipPhoneNumber : public QObject
 {
     Q_OBJECT
 public:

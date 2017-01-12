@@ -26,7 +26,7 @@
 class RisipAccount;
 class RisipBuddy;
 
-class RISIP_SDK_EXPORT RisipAbstractBuddyModel: public QAbstractListModel
+class RISIP_VOIPSDK_EXPORT RisipAbstractBuddyModel: public QAbstractListModel
 {
     Q_OBJECT
 public:

@@ -34,7 +34,7 @@ class RisipPhoneNumber;
 class RisipAccount;
 class PjsipCall;
 
-class RISIP_SDK_EXPORT RisipCall : public QObject
+class RISIP_VOIPSDK_EXPORT RisipCall : public QObject
 {
     Q_OBJECT
 

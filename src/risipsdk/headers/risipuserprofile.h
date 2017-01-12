@@ -25,7 +25,7 @@
 #include <QObject>
 #include "risipglobals.h"
 
-class RISIP_SDK_EXPORT RisipUserProfile : public QObject
+class RISIP_VOIPSDK_EXPORT RisipUserProfile : public QObject
 {
     Q_OBJECT
 

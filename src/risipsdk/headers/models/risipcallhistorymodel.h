@@ -26,7 +26,7 @@
 class RisipAccount;
 class RisipCall;
 
-class RISIP_SDK_EXPORT RisipCallHistoryModel : public QAbstractListModel
+class RISIP_VOIPSDK_EXPORT RisipCallHistoryModel : public QAbstractListModel
 {
     Q_OBJECT
 public:

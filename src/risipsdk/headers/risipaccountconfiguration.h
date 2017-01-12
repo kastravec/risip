@@ -23,7 +23,7 @@
 #include "risipsdkglobal.h"
 #include "risipaccount.h"
 
-class RISIP_SDK_EXPORT RisipAccountConfiguration : public QObject
+class RISIP_VOIPSDK_EXPORT RisipAccountConfiguration : public QObject
 {
     Q_OBJECT
 public:

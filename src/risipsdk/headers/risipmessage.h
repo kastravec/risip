@@ -28,7 +28,7 @@ using namespace pj;
 class RisipBuddy;
 class RisipAccount;
 
-class RISIP_SDK_EXPORT RisipMessage : public QObject
+class RISIP_VOIPSDK_EXPORT RisipMessage : public QObject
 {
     Q_OBJECT
 

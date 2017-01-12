@@ -36,7 +36,7 @@ class RisipBuddy;
 class RisipPhoneNumber;
 class PjsipBuddy;
 
-class RISIP_SDK_EXPORT RisipBuddy : public QObject
+class RISIP_VOIPSDK_EXPORT RisipBuddy : public QObject
 {
     Q_OBJECT
 public:

@@ -23,7 +23,7 @@
 #include "risipsdkglobal.h"
 #include <QObject>
 
-class RISIP_SDK_EXPORT StopWatch : public QObject
+class RISIP_VOIPSDK_EXPORT StopWatch : public QObject
 {
     Q_OBJECT
 public:
