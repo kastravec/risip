@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/home/petref/projects/pjsip-desktop
+exec_prefix=${prefix}
+libdir=/home/petref/projects/pjsip-desktop/lib
+includedir=/home/petref/projects/pjsip-desktop/include
+
+Name: libpjproject
+Description: Multimedia communication library
+URL: http://www.pjsip.org
+Version: 2.5.5
+Libs: -L${libdir} -lpjsua2 -lstdc++ -lpjsua -lpjsip-ua -lpjsip-simple -lpjsip -lpjmedia-codec -lpjmedia -lpjmedia-videodev -lpjmedia-audiodev -lpjmedia -lpjnath -lpjlib-util  -lsrtp -lresample -lgsmcodec -lspeex -lilbccodec -lg7221codec -lyuv  -lpj -lm -lrt -lpthread  -lasound  
+Cflags: -I${includedir} -I/home/petref/projects/pjsip-desktop/include -DPJ_AUTOCONF=1	-O2 -DPJ_IS_BIG_ENDIAN=0 -DPJ_IS_LITTLE_ENDIAN=1 -fPIC
