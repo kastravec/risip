@@ -25,8 +25,10 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 QMAKE_CXXFLAGS += -mmacosx-version-min=10.12
 QMAKE_LFLAGS += -mmacosx-version-min=10.12
 
+INCLUDEPATH += $$PWD/pjsip/include
+
 # static linking with PJSIP
-LIBS += -L$$PWD/../../pjsip/macos-64/staticlibs \
+LIBS += -L$$PWD/pjsip/staticlibs \
     -lpjsua2-x86_64-apple-darwin15.6.0 \
     -lpjsua-x86_64-apple-darwin15.6.0 \
     -lpjsip-simple-x86_64-apple-darwin15.6.0 \

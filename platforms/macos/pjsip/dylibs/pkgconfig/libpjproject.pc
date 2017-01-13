@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/Users/psaraci/tools/MetaVoIP1/pjproject-2.5.5/lib-desktop
+exec_prefix=${prefix}
+libdir=/Users/psaraci/tools/MetaVoIP1/pjproject-2.5.5/lib-desktop/lib
+includedir=/Users/psaraci/tools/MetaVoIP1/pjproject-2.5.5/lib-desktop/include
+
+Name: libpjproject
+Description: Multimedia communication library
+URL: http://www.pjsip.org
+Version: 2.5.5
+Libs: -L${libdir} -lpjsua2 -lstdc++ -lpjsua -lpjsip-ua -lpjsip-simple -lpjsip -lpjmedia-codec -lpjmedia -lpjmedia-videodev -lpjmedia-audiodev -lpjmedia -lpjnath -lpjlib-util  -lsrtp -lresample -lgsmcodec -lspeex -lilbccodec -lg7221codec -lyuv  -lpj -lssl -lcrypto -lm -lpthread  -framework CoreAudio -framework CoreServices -framework AudioUnit -framework AudioToolbox -framework Foundation -framework AppKit -framework AVFoundation -framework CoreGraphics -framework QuartzCore -framework CoreVideo -framework CoreMedia  
+Cflags: -I${includedir} -I/Users/psaraci/tools/MetaVoIP1/pjproject-2.5.5/lib-desktop/include -DPJ_AUTOCONF=1	-O2 -DPJ_IS_BIG_ENDIAN=0 -DPJ_IS_LITTLE_ENDIAN=1 -fPIC

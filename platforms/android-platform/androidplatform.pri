@@ -23,6 +23,8 @@ QT += androidextras
 
 #ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
+INCLUDEPATH += $$PWD/../../pjsip/android-armeabi/include
+
 DISTFILES += \
         $$PWD/../../src/risipsdk/android/com/risip/phonecontacts/RisipAndroidContacts.java
 
