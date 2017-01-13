@@ -34,7 +34,7 @@ OBJECTIVE_SOURCES += \
     $$PWD/../../src/risipsdk/ios/risipioscontactaccessmanager.mm \
     $$PWD/../../src/risipsdk/ios/risipioswifiprovider.mm
 
-LIBS += -L$$PWD/../../pjsip/ios-64/staticlibs \
+LIBS += -L$$PWD/pjsip/staticlibs \
     -lpjsua2-arm64-apple-darwin_ios \
     -lpjsua-arm64-apple-darwin_ios \
     -lpjsip-ua-arm64-apple-darwin_ios \

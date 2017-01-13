@@ -17,10 +17,11 @@
 #    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 #
 ###################################################################################
-DESTDIR = $$PWD/bin
+
+INCLUDEPATH += $$PWD/pjsip/include
 
 # static linking with PJSIP
-#LIBS += -L$$PWD/../../pjsip/linux-64/staticlibs \
+#LIBS += -L$$PWD/pjsip/staticlibs \
 #    -lpjsua2-x86_64-unknown-linux-gnu \
 #    -lpjsua-x86_64-unknown-linux-gnu \
 #    -lpjsip-ua-x86_64-unknown-linux-gnu \
@@ -41,7 +42,7 @@ DESTDIR = $$PWD/bin
 #    -lg7221codec-x86_64-unknown-linux-gnu
 
 # dynamic linking with PJSIP
-LIBS += -L$$PWD/../../pjsip/linux-64/dylibs \
+LIBS += -L$$PWD/pjsip/dylibs \
     -lpjsua2 \
     -lpjsua \
     -lpjsip-ua \

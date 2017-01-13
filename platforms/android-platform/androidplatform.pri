@@ -23,12 +23,12 @@ QT += androidextras
 
 #ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-INCLUDEPATH += $$PWD/../../pjsip/android-armeabi/include
+INCLUDEPATH += $$PWD/pjsip/include
 
 DISTFILES += \
         $$PWD/../../src/risipsdk/android/com/risip/phonecontacts/RisipAndroidContacts.java
 
-LIBS += -L$$PWD/../../pjsip/android-armeabi/staticlibs \
+LIBS += -L$$PWD/pjsip/staticlibs \
     #-lpjmedia-audiodev-arm-unknown-linux-androideabi \
     #-lpjmedia-videodev-arm-unknown-linux-androideabi \
     #-lpjsip-arm-unknown-linux-androideabi \
