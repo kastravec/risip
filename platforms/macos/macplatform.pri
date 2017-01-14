@@ -17,7 +17,9 @@
 #    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 #
 ###################################################################################
-DESTDIR = $$PWD/bin
+
+message("Running the mac-platform settings!")
+
 CONFIG += app_bundle
 
 QMAKE_MAC_SDK = macosx10.12

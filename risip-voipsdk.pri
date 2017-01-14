@@ -1,10 +1,9 @@
-macx {
+macx:!iphoneos: {
 include($$PWD/platforms/macos/macplatform.pri)
 CONFIG += app_bundle
-
 }
 
-ios {
+iphoneos {
 include($$PWD/platforms/ios/iosplatform.pri)
 }
 
@@ -12,7 +11,7 @@ android {
 include($$PWD/platforms/android-platform/androidplatform.pri)
 }
 
-linux:!android {
+linux:!android:!macx {
 include($$PWD/platforms/linux/linuxplatform.pri)
 }
 

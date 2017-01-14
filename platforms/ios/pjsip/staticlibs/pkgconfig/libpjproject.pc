@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/Users/psaraci/tools/pjsip-iphone-libs
+exec_prefix=${prefix}
+libdir=/Users/psaraci/tools/pjsip-iphone-libs/lib
+includedir=/Users/psaraci/tools/pjsip-iphone-libs/include
+
+Name: libpjproject
+Description: Multimedia communication library
+URL: http://www.pjsip.org
+Version: 2.5.5
+Libs: -L${libdir} -lpjsua2-arm64-apple-darwin_ios -lstdc++ -lpjsua-arm64-apple-darwin_ios -lpjsip-ua-arm64-apple-darwin_ios -lpjsip-simple-arm64-apple-darwin_ios -lpjsip-arm64-apple-darwin_ios -lpjmedia-codec-arm64-apple-darwin_ios -lpjmedia-arm64-apple-darwin_ios -lpjmedia-videodev-arm64-apple-darwin_ios -lpjmedia-audiodev-arm64-apple-darwin_ios -lpjmedia-arm64-apple-darwin_ios -lpjnath-arm64-apple-darwin_ios -lpjlib-util-arm64-apple-darwin_ios  -lsrtp-arm64-apple-darwin_ios -lresample-arm64-apple-darwin_ios -lgsmcodec-arm64-apple-darwin_ios -lspeex-arm64-apple-darwin_ios -lilbccodec-arm64-apple-darwin_ios -lg7221codec-arm64-apple-darwin_ios -lyuv-arm64-apple-darwin_ios  -lpj-arm64-apple-darwin_ios -lm -lpthread  -framework CoreAudio -framework CoreFoundation -framework AudioToolbox -framework CFNetwork -framework UIKit -framework UIKit -framework AVFoundation -framework CoreGraphics -framework QuartzCore -framework CoreVideo -framework CoreMedia -framework OpenGLES
+Cflags: -I${includedir} -I/Users/psaraci/tools/pjsip-iphone-libs/include -DPJ_AUTOCONF=1	-O2 -Wno-unused-label -DPJ_SDK_NAME="iPhoneOS10.2.sdk" -arch arm64 -isysroot /Applications/XCode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.2.sdk -DPJ_IS_BIG_ENDIAN=0 -DPJ_IS_LITTLE_ENDIAN=1

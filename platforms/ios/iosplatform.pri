@@ -17,14 +17,20 @@
 #    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 #
 ###################################################################################
-DESTDIR = $$PWD/bin
 
-QMAKE_IOS_DEPLOYMENT_TARGET = 10.2
+message("Running the ios-platform settings!")
+
+#QMAKE_IOS_DEPLOYMENT_TARGET = 10.2
 
 #QMAKE_MAC_SDK = macosx10.12
 
-QMAKE_CXXFLAGS = -miphoneos-version-min=9.0
+QMAKE_CXXFLAGS += -miphoneos-version-min=9.0
 QMAKE_LFLAGS += -miphoneos-version-min=9.0
+
+#QMAKE_CXXFLAGS -= -fembed-bitcode
+#QMAKE_LFLAGS -= -fembed-bitcode
+
+INCLUDEPATH += $$PWD/pjsip/include
 
 #iOS headers and source files where ios specific functionality is implemented.
 HEADERS += $$PWD/../../src/risipsdk/ios/risipioscontactaccessmanager.h
