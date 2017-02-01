@@ -355,7 +355,7 @@ void RisipCall::call()
     }
 }
 
-void RisipCall::callExternalSIP(const QString &uri)
+void RisipCall::invite(const QString &uri)
 {
     setCallType(RisipCall::Sip);
     if(!m_data->account && uri.isEmpty())
@@ -374,6 +374,21 @@ void RisipCall::callExternalSIP(const QString &uri)
     } catch (Error err) {
         setError(err);
     }
+}
+
+void RisipCall::reinvite()
+{
+
+}
+
+void RisipCall::transferDirect(const QString &destUri)
+{
+
+}
+
+void RisipCall::transferAttendedCall(const QString &destUri)
+{
+
 }
 
 /**

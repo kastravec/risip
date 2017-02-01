@@ -94,11 +94,9 @@ void RisipPhoneContactsModel::addContact(RisipPhoneContact *contact)
     if(!contact)
         return;
 
-    if(!m_phoneContacts.contains(contact)) {
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_phoneContacts.append(contact);
-        endInsertRows();
-    }
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_phoneContacts.append(contact);
+    endInsertRows();
 }
 
 void RisipPhoneContactsModel::removeContact(RisipPhoneContact *contact)

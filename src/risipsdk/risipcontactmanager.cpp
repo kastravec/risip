@@ -75,8 +75,6 @@ RisipContactManager::RisipContactManager(QObject *parent)
     m_data->m_activeContactHistoryModel = NULL;
     m_data->m_phoneContactsModel = new RisipPhoneContactsModel(this);
     m_data->m_activePhoneContact = NULL;
-
-    fetchPhoneContacts();
 }
 
 RisipContactManager::~RisipContactManager()
@@ -172,7 +170,7 @@ void RisipContactManager::setActiveBuddiesModel(RisipBuddiesModel *model)
  */
 RisipContactHistoryModel *RisipContactManager::activeContactHistory() const
 {
-        return m_data->m_activeContactHistoryModel;
+    return m_data->m_activeContactHistoryModel;
 }
 
 void RisipContactManager::setActiveContactHistory(RisipContactHistoryModel *history)
@@ -217,7 +215,7 @@ QList<RisipPhoneContact *> RisipContactManager::phoneContactList() const
  */
 RisipPhoneContactsModel *RisipContactManager::phoneContactsModel() const
 {
-     return m_data->m_phoneContactsModel;
+    return m_data->m_phoneContactsModel;
 }
 
 /**
@@ -312,7 +310,7 @@ void RisipContactManager::fetchPhoneContacts()
     if(!m_data->androidContactAccessManager) {
         m_data->androidContactAccessManager = new RisipAndroidContactAccessManager(this);
 
-//        m_data->androidContactAccessManager->fetchContactsFromDevice();
+        //        m_data->androidContactAccessManager->fetchContactsFromDevice();
     }
 #endif
 
@@ -348,12 +346,15 @@ void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *contact)
 {
     if(contact) {
         if(!contact->fullName().trimmed().isEmpty()) {
-            m_data->m_phoneContacts[contact->fullName()] = contact;
-            m_data->m_phoneContactsModel->addContact(contact);
+            if(!m_data->m_phoneContacts.contains(contact->fullName().trimmed())) {
+                m_data->m_phoneContacts[contact->fullName().trimmed()] = contact;
+                m_data->m_phoneContactsModel->addContact(contact);
 
-            QList<RisipPhoneNumber *> numbers = contact->phoneNumberList();
-            for(int i=0; i<numbers.count(); ++i)
-                m_data->m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
+                QList<RisipPhoneNumber *> numbers = contact->phoneNumberList();
+                for(int i=0; i<numbers.count(); ++i)
+                    m_data->m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
+            }
         }
+
     }
 }

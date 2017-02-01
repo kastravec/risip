@@ -71,6 +71,9 @@ public:
     Q_INVOKABLE bool readSettings();
     Q_INVOKABLE bool saveSettings();
     Q_INVOKABLE bool resetSettings();
+    Q_INVOKABLE void accessPhoneContacts();
+    Q_INVOKABLE void accessPhoneMedia();
+    Q_INVOKABLE void accessPhoneLocation();
 
 Q_SIGNALS:
     void accountsChanged();

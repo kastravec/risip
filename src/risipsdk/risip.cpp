@@ -400,3 +400,19 @@ bool Risip::resetSettings()
     settings.sync();
     return true;
 }
+
+void Risip::accessPhoneContacts()
+{
+    RisipContactManager::instance()->fetchPhoneContacts();
+}
+
+void Risip::accessPhoneMedia()
+{
+    RisipMedia media;
+    media.loopAudioTest();
+}
+
+void Risip::accessPhoneLocation()
+{
+
+}

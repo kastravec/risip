@@ -104,7 +104,10 @@ public Q_SLOTS:
     void answer();
     void hangup();
     void call();
-    void callExternalSIP(const QString &uri);
+    void invite(const QString &uri);
+    void reinvite();
+    void transferDirect(const QString &destUri);
+    void transferAttendedCall(const QString &destUri);
     void hold(bool hold);
 
 Q_SIGNALS:

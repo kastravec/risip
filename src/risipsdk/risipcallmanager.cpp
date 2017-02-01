@@ -215,7 +215,7 @@ RisipCall *RisipCallManager::callExternalSIP(const QString &uri)
 {
     RisipCall * call = new RisipCall(this);
     call->setAccount(m_data->m_activeAccount);
-    call->callExternalSIP(uri);
+    call->invite(uri);
 
     emit outgoingCall(call);
 

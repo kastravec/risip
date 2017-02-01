@@ -85,7 +85,9 @@ Q_SIGNALS:
 
 private:
     void setError(Error &error);
+    void loopAudioTest();
 
+    friend class Risip;
     class Private;
     Private *m_data;
 };

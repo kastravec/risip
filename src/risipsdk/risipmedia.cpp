@@ -288,3 +288,10 @@ void RisipMedia::setError(Error &error)
         emit errorInfoChanged(QString::fromStdString(m_data->error.info(true)));
     }
 }
+
+void RisipMedia::loopAudioTest()
+{
+    AudioMedia& cap_med = Endpoint::instance().audDevManager().getCaptureDevMedia();
+    AudioMedia& play_med = Endpoint::instance().audDevManager().getPlaybackDevMedia();
+    cap_med.startTransmit(play_med);
+}
