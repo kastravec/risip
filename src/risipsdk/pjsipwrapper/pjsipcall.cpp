@@ -43,22 +43,14 @@ PjsipCall::~PjsipCall()
 void PjsipCall::onCallState(OnCallStateParam &prm)
 {
     Q_UNUSED(prm)
-    if(m_risipCall == NULL) {
-        qDebug()<<"risip call wrapper not set!!";
-        return;
-    }
-
-    //if call is no longer active then set to NULL
-    // emit a status change signal otherwise
-    if(!isActive())
-        m_risipCall->setPjsipCall(NULL);
-    else
+    if(m_risipCall != NULL)
         m_risipCall->statusChanged();
 }
 
 void PjsipCall::onCallTsxState(OnCallTsxStateParam &prm)
 {
-    Q_UNUSED(prm)
+    if(m_risipCall != NULL)
+        m_risipCall->setLastResponseCode(prm.e.body.tsxState.tsx.statusCode);
 }
 
 /**

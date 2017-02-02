@@ -28,12 +28,10 @@
 #include "risipphonecontact.h"
 #include "risipphonenumber.h"
 #include "risipglobals.h"
+#include "risip.h"
 
 #include "pjsipwrapper/pjsipaccount.h"
 #include "pjsipwrapper/pjsipcall.h"
-
-#include <QTimer>
-#include <QCoreApplication>
 
 #include <QDebug>
 
@@ -48,6 +46,7 @@ public:
     RisipMedia *risipMedia;
     PjsipCall *pjsipCall;
     Error error;
+    int lastSipResponseCode;
 };
 
 RisipCall::RisipCall(QObject *parent)
@@ -60,12 +59,13 @@ RisipCall::RisipCall(QObject *parent)
     m_data->pjsipCall = NULL;
     m_data->callType = RisipCall::Sip;
     m_data->callDirection = Unknown;
+    m_data->lastSipResponseCode = Risip::PJSIP_SC_OK;
 }
 
 RisipCall::~RisipCall()
 {
-    setPjsipCall(NULL);
     disconnect(this);
+
     delete m_data;
     m_data = NULL;
 }
@@ -136,8 +136,10 @@ int RisipCall::callId() const
  */
 void RisipCall::setPjsipCall(PjsipCall *call)
 {
-    delete m_data->pjsipCall;
-    m_data->pjsipCall = NULL;
+    if(m_data->pjsipCall != NULL) {
+        delete m_data->pjsipCall;
+        m_data->pjsipCall = NULL;
+    }
 
     m_data->pjsipCall = call;
     setMedia(NULL);
@@ -195,10 +197,12 @@ int RisipCall::status() const
             return RisipCall::IncomingCallStarted;
         case PJSIP_INV_STATE_NULL:
             return RisipCall::Null;
+        default:
+            return RisipCall::Null;
         }
+    } else {
+        return RisipCall::Null;
     }
-
-    return RisipCall::Null;
 }
 
 QDateTime RisipCall::timestamp() const
@@ -263,6 +267,19 @@ QString RisipCall::errorMessage()
 QString RisipCall::errorInfo() const
 {
     return QString::fromStdString(m_data->error.info(true));
+}
+
+int RisipCall::lastResponseCode() const
+{
+    return m_data->lastSipResponseCode;
+}
+
+void RisipCall::setLastResponseCode(int response)
+{
+    if(m_data->lastSipResponseCode != response) {
+        m_data->lastSipResponseCode = response;
+        emit lastResponseCodeChanged(response);
+    }
 }
 
 /**
@@ -459,6 +476,5 @@ void RisipCall::setError(const Error &error)
         emit errorCodeChanged(m_data->error.status);
         emit errorMessageChanged(QString::fromStdString(m_data->error.reason));
         emit errorInfoChanged(QString::fromStdString(m_data->error.info(true)));
-        QCoreApplication::processEvents();
     }
 }

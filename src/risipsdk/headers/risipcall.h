@@ -77,6 +77,7 @@ public:
     Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
     Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
+    Q_PROPERTY(int lastResponseCode READ lastResponseCode NOTIFY lastResponseCodeChanged)
 
     RisipCall(QObject *parent = 0);
     ~RisipCall();
@@ -99,6 +100,7 @@ public:
     int errorCode() const;
     QString errorMessage();
     QString errorInfo() const;
+    int lastResponseCode() const;
 
 public Q_SLOTS:
     void answer();
@@ -122,6 +124,7 @@ Q_SIGNALS:
     void errorCodeChanged(int code);
     void errorMessageChanged(const QString &message);
     void errorInfoChanged(const QString &info);
+    void lastResponseCodeChanged(int response);
 
 private:
     PjsipCall *pjsipCall() const;
@@ -132,6 +135,7 @@ private:
     void initializeMediaHandler();
     void setMedia(RisipMedia *med);
     void setError(const Error &error);
+    void setLastResponseCode(int response);
 
     friend class RisipCallManager;
     friend class RisipMedia;

@@ -68,6 +68,7 @@ public:
     Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
     Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
+    Q_PROPERTY(int lastResponseCode WRITE setLastResponseCode NOTIFY lastResponseCodeChanged)
 
     RisipAccount(QObject *parent = 0);
     ~RisipAccount();
@@ -99,6 +100,7 @@ public:
     int errorCode() const;
     QString errorMessage() const;
     QString errorInfo() const;
+    int lastResponseCode() const;
 
     Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
     Q_INVOKABLE void addBuddy(const QString &buddyUri);
@@ -119,6 +121,7 @@ Q_SIGNALS:
     void errorCodeChanged(int code);
     void errorMessageChanged(const QString &message);
     void errorInfoChanged(const QString &info);
+    void lastResponseCodeChanged(int response);
 
 public Q_SLOTS:
     void login();
@@ -131,6 +134,7 @@ private:
     void setIncomingPjsipCall(PjsipCall *call);
     void setStatus(int status);
     void setError(const Error &error);
+    void setLastResponseCode(int response);
 
     friend class RisipBuddy;
     friend class RisipCall;

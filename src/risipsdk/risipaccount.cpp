@@ -28,6 +28,7 @@
 #include "risipuserprofile.h"
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
+#include "risip.h"
 
 #include "pjsipwrapper/pjsipaccount.h"
 #include "pjsipwrapper/pjsipbuddy.h"
@@ -47,6 +48,7 @@ public:
     PjsipCall *incomingPjsipCall;
     QList<RisipBuddy *> allBuddies;
     Error error;
+    int lastSipResponseCode;
 };
 
 /**
@@ -65,6 +67,7 @@ RisipAccount::RisipAccount(QObject *parent)
     m_data->autoSignIn = true;
     m_data->status = NotCreated;
     m_data->incomingPjsipCall = NULL;
+    m_data->lastSipResponseCode = Risip::PJSIP_SC_OK;
 }
 
 RisipAccount::~RisipAccount()
@@ -205,6 +208,34 @@ QString RisipAccount::errorInfo() const
 }
 
 /**
+ * @brief RisipAccount::lastResponseCode
+ * @return SIP response code
+ *
+ * This property holds the last SIP response code received.
+ * Use this to properly handle sessions, i.e registration
+ */
+int RisipAccount::lastResponseCode() const
+{
+    return m_data->lastSipResponseCode;
+}
+
+/**
+ * @brief RisipAccount::setLastResponseCode
+ * @param response SIP response code received
+ *
+ * Internal API
+ *
+ * Internal callback function for updating the response code property
+ */
+void RisipAccount::setLastResponseCode(int response)
+{
+    if(m_data->lastSipResponseCode != response) {
+        m_data->lastSipResponseCode = response;
+        emit lastResponseCodeChanged(response);
+    }
+}
+
+/**
  * @brief RisipAccount::incomingPjsipCall
  * @return
  *
@@ -227,10 +258,8 @@ PjsipCall *RisipAccount::incomingPjsipCall()
  */
 void RisipAccount::setIncomingPjsipCall(PjsipCall *call)
 {
-    if(m_data->incomingPjsipCall != call) {
-        m_data->incomingPjsipCall = call;
-        emit incomingCall();
-    }
+    m_data->incomingPjsipCall = call;
+    emit incomingCall();
 }
 
 /**

@@ -100,6 +100,7 @@ public:
 
     void initializeCountries();
 
+
     static RisipGlobals *instance();
     static QString formatToSip(const QString &contact, const QString &server);
     static QList<Country> countries();

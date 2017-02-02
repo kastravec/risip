@@ -48,25 +48,26 @@ PjsipAccount::~PjsipAccount()
 
 void PjsipAccount::onRegState(OnRegStateParam &prm)
 {
-    Q_UNUSED(prm);
-    AccountInfo accountInfo = getInfo();
-
-    switch (accountInfo.regStatus) {
-    case PJSIP_SC_OK:
-        if(accountInfo.regIsActive)
-            m_risipAccount->setStatus(RisipAccount::SignedIn);
-        else
-            m_risipAccount->setStatus(RisipAccount::SignedOut);
-        break;
-    case PJSIP_SC_TRYING:
-        if(accountInfo.regIsActive)
-            m_risipAccount->setStatus(RisipAccount::UnRegistering);
-        else
-            m_risipAccount->setStatus(RisipAccount::Registering);
-        break;
-    default:
-        m_risipAccount->setStatus(RisipAccount::AccountError);
-        break;
+    if(m_risipAccount != NULL) {
+        m_risipAccount->setLastResponseCode(prm.code);
+        AccountInfo accountInfo = getInfo();
+        switch (accountInfo.regStatus) {
+        case PJSIP_SC_OK:
+            if(accountInfo.regIsActive)
+                m_risipAccount->setStatus(RisipAccount::SignedIn);
+            else
+                m_risipAccount->setStatus(RisipAccount::SignedOut);
+            break;
+        case PJSIP_SC_TRYING:
+            if(accountInfo.regIsActive)
+                m_risipAccount->setStatus(RisipAccount::UnRegistering);
+            else
+                m_risipAccount->setStatus(RisipAccount::Registering);
+            break;
+        default:
+            m_risipAccount->setStatus(RisipAccount::AccountError);
+            break;
+        }
     }
 }
 
