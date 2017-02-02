@@ -342,19 +342,30 @@ RisipPhoneNumber *RisipContactManager::phoneNumberForNumber(const QString &numbe
     return NULL;
 }
 
-void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *contact)
+void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *newContact)
 {
-    if(contact) {
-        if(!contact->fullName().trimmed().isEmpty()) {
-            if(!m_data->m_phoneContacts.contains(contact->fullName().trimmed())) {
-                m_data->m_phoneContacts[contact->fullName().trimmed()] = contact;
-                m_data->m_phoneContactsModel->addContact(contact);
+    if(newContact) {
+        QString contactFullname = newContact->fullName().trimmed();
+        if(!contactFullname.isEmpty()) {
+            if(!m_data->m_phoneContacts.contains(contactFullname)) {
+                RisipPhoneContact *newPhoneContact = new RisipPhoneContact(this);
+                newPhoneContact->setFullName(contactFullname);
+                newPhoneContact->setContactId(newContact->contactId());
+                newPhoneContact->setContactImageData(newContact->contactImageData());
+                newPhoneContact->setEmail(newContact->email());
 
-                QList<RisipPhoneNumber *> numbers = contact->phoneNumberList();
-                for(int i=0; i<numbers.count(); ++i)
+                m_data->m_phoneContacts[contactFullname] = newPhoneContact;
+                m_data->m_phoneContactsModel->addContact(newPhoneContact);
+
+                QList<RisipPhoneNumber *> numbers = newContact->phoneNumberList();
+                for(int i=0; i<numbers.count(); ++i) {
+                    numbers[i]->setParent(newPhoneContact);
+                    newPhoneContact->addPhoneNumber(numbers[i]);
                     m_data->m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
+                }
             }
         }
 
+        newContact->deleteLater();
     }
 }

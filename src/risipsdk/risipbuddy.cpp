@@ -68,6 +68,14 @@ void RisipBuddy::setAccount(RisipAccount *acc)
 {
     if(m_data->account != acc) {
         m_data->account = acc;
+
+        if(!m_data->contact.isEmpty() && m_data->account)
+            setUri(QString("<sip:")
+                   + m_data->contact
+                   + QString("@")
+                   + m_data->account->configuration()->serverAddress()
+                   + QString(">"));
+
         emit accountChanged(m_data->account);
     }
 }
@@ -103,8 +111,7 @@ void RisipBuddy::setContact(const QString contact)
     if(m_data->contact != contact) {
         m_data->contact = contact;
 
-        if(type() == Internal
-                || type() == ExternalSIP) {
+        if(type() == Internal) {
             if(!m_data->contact.isEmpty() && m_data->account)
                 setUri(QString("<sip:")
                        + m_data->contact

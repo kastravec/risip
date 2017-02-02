@@ -80,6 +80,8 @@ SOURCES += $$PWD/src/risipsdk/risip.cpp \
     $$PWD/src/risipsdk/sipprovision/risipmoruserbalance.cpp \
     $$PWD/src/risipsdk/sipprovision/risipmorapi.cpp \
     $$PWD/src/risipsdk/utils/qqmlsortfilterproxymodel.cpp \
+    $$PWD/src/risipsdk/utils/filter.cpp \
+    $$PWD/src/risipsdk/utils/sorter.cpp \
     $$PWD/src/risipsdk/utils/httpnetworkrequest.cpp \
     $$PWD/src/risipsdk/utils/stopwatch.cpp
 
@@ -121,6 +123,8 @@ HEADERS += $$PWD/src/risipsdk/headers/risip.h \
     $$PWD/src/risipsdk/headers/sipprovision/risipmorapi.h \
     $$PWD/src/risipsdk/headers/utils/httpnetworkrequest.h \
     $$PWD/src/risipsdk/headers/utils/qqmlsortfilterproxymodel.h \
+    $$PWD/src/risipsdk/headers/utils/filter.h \
+    $$PWD/src/risipsdk/headers/utils/sorter.h \
     $$PWD/src/risipsdk/headers/utils/stopwatch.h \
     $$PWD/src/risipsdk/headers/risipsdkglobal.h
 

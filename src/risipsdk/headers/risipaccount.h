@@ -68,7 +68,7 @@ public:
     Q_PROPERTY(int errorCode READ errorCode NOTIFY errorCodeChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
     Q_PROPERTY(QString errorInfo READ errorInfo NOTIFY errorInfoChanged)
-    Q_PROPERTY(int lastResponseCode WRITE setLastResponseCode NOTIFY lastResponseCodeChanged)
+    Q_PROPERTY(int lastResponseCode READ lastResponseCode NOTIFY lastResponseCodeChanged)
 
     RisipAccount(QObject *parent = 0);
     ~RisipAccount();
@@ -83,7 +83,7 @@ public:
     void setSipEndPoint(RisipEndpoint *endpoint);
 
     int presence() const;
-    void setPresence(int prs);
+    void setPresence(int new_presence);
 
     QString presenceNote() const;
     void setPresenceNote(const QString &note);

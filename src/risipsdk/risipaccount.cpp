@@ -42,7 +42,8 @@ public:
     RisipUserProfile *profile;
     RisipAccountConfiguration *configuration;
     RisipEndpoint *sipEndpoint;
-    PresenceStatus presence;
+    PresenceStatus presence_pjsip;
+    int presence_risip;
     bool autoSignIn;
     int status;
     PjsipCall *incomingPjsipCall;
@@ -68,6 +69,7 @@ RisipAccount::RisipAccount(QObject *parent)
     m_data->status = NotCreated;
     m_data->incomingPjsipCall = NULL;
     m_data->lastSipResponseCode = Risip::PJSIP_SC_OK;
+    m_data->presence_risip = RisipBuddy::Online;
 }
 
 RisipAccount::~RisipAccount()
@@ -352,7 +354,7 @@ int RisipAccount::presence() const
     if(m_data->pjsipAccount != NULL
             && (status() == SignedIn || status() == SignedOut)) {
 
-        switch (m_data->presence.activity) {
+        switch (m_data->presence_pjsip.activity) {
         case PJRPID_ACTIVITY_AWAY:
             return RisipBuddy::Away;
         case PJRPID_ACTIVITY_BUSY:
@@ -368,62 +370,54 @@ int RisipAccount::presence() const
     return RisipBuddy::Unknown;
 }
 
-void RisipAccount::setPresence(int prs)
+void RisipAccount::setPresence(int new_presence)
 {
     if(m_data->pjsipAccount == NULL)
         return;
 
-    switch (prs) {
+    switch (new_presence) {
     case RisipBuddy::Online:
-        if(m_data->presence.status != PJSUA_BUDDY_STATUS_ONLINE) {
-            m_data->presence.status = PJSUA_BUDDY_STATUS_ONLINE;
-            emit presenceChanged(presence());
-        }
+        m_data->presence_pjsip.status = PJSUA_BUDDY_STATUS_ONLINE;
         break;
     case RisipBuddy::Offline:
-        if(m_data->presence.status != PJSUA_BUDDY_STATUS_OFFLINE) {
-            m_data->presence.status = PJSUA_BUDDY_STATUS_OFFLINE;
-            emit presenceChanged(presence());
-        }
+        m_data->presence_pjsip.status = PJSUA_BUDDY_STATUS_OFFLINE;
         break;
     case RisipBuddy::Away:
-        if(m_data->presence.activity != PJRPID_ACTIVITY_AWAY) {
-            m_data->presence.activity = PJRPID_ACTIVITY_AWAY;
-            emit presenceChanged(presence());
-        }
+        m_data->presence_pjsip.activity = PJRPID_ACTIVITY_AWAY;
         break;
     case RisipBuddy::Busy:
-        if(m_data->presence.activity != PJRPID_ACTIVITY_BUSY) {
-            m_data->presence.activity = PJRPID_ACTIVITY_BUSY;
-            emit presenceChanged(presence());
-        }
+        m_data->presence_pjsip.activity = PJRPID_ACTIVITY_BUSY;
         break;
     }
 
-    qDebug()<<"SETTING PRESENCE: " <<m_data->presence.status;
-    try {
-        m_data->pjsipAccount->setOnlineStatus(m_data->presence);
-    } catch (Error &err) {
-        setError(err);
+    if(m_data->presence_risip != new_presence) {
+        qDebug()<<"SETTING PRESENCE: " <<m_data->presence_pjsip.status;
+        try {
+            m_data->pjsipAccount->setOnlineStatus(m_data->presence_pjsip);
+        } catch (Error &err) {
+            setError(err);
+        }
+
+        emit presenceChanged(new_presence);
     }
 }
 
 QString RisipAccount::presenceNote() const
 {
     if(m_data->pjsipAccount != NULL)
-        return QString::fromStdString(m_data->presence.note);
+        return QString::fromStdString(m_data->presence_pjsip.note);
 
     return QString();
 }
 
 void RisipAccount::setPresenceNote(const QString &note)
 {
-    if(QString::fromStdString(m_data->presence.note) != note) {
-        m_data->presence.note = note.toStdString();
+    if(QString::fromStdString(m_data->presence_pjsip.note) != note) {
+        m_data->presence_pjsip.note = note.toStdString();
         emit presenceNoteChanged(note);
 
         try {
-            m_data->pjsipAccount->setOnlineStatus(m_data->presence);
+            m_data->pjsipAccount->setOnlineStatus(m_data->presence_pjsip);
         } catch (Error &err) {
             setError(err);
         }

@@ -261,7 +261,7 @@ void Risip::registerToQml()
     qmlRegisterType<RisipMorDevice>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorDevice");
     qmlRegisterType<RisipMorUserBalance>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorUserBalance");
     qmlRegisterType<StopWatch>(RisipSettingsParam::risipQmlURI, 1, 0, "StopWatch");
-    qmlRegisterType<QQmlSortFilterProxyModel>(RisipSettingsParam::risipQmlURI, 1, 0, "SortFilterProxyModel");
+    qmlRegisterType<qqsfpm::QQmlSortFilterProxyModel>(RisipSettingsParam::risipQmlURI, 1, 0, "SortFilterProxyModel");
 }
 
 RisipAccount *Risip::accountForUri(const QString &accountUri)

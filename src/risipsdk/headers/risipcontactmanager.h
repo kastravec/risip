@@ -86,7 +86,7 @@ Q_SIGNALS:
     void phoneContactsModelChanged(RisipPhoneContactsModel *model);
 
 private Q_SLOTS:
-    void phoneContactDiscovered(RisipPhoneContact *contact);
+    void phoneContactDiscovered(RisipPhoneContact *newContact);
 
 private:
     explicit RisipContactManager(QObject *parent = 0);

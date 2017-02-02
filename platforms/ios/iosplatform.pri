@@ -26,9 +26,8 @@ message("Running the ios-platform settings!")
 
 QMAKE_CXXFLAGS += -miphoneos-version-min=9.0
 QMAKE_LFLAGS += -miphoneos-version-min=9.0
-
-#QMAKE_CXXFLAGS -= -fembed-bitcode
-#QMAKE_LFLAGS -= -fembed-bitcode
+QMAKE_CXXFLAGS -= -fembed-bitcode-marker -fembed-bitcode
+QMAKE_LFLAGS -= -fembed-bitcode-marker -fembed-bitcode
 
 INCLUDEPATH += $$PWD/pjsip/include
 
@@ -59,6 +58,8 @@ LIBS += -L$$PWD/pjsip/staticlibs \
     -lresample-arm64-apple-darwin_ios \
     -lsrtp-arm64-apple-darwin_ios \
     -lpjlib-util-arm64-apple-darwin_ios \
+#    -lwebrtc-arm64-apple-darwin_ios \
+#    -lyuv-arm64-apple-darwin_ios \
     -framework CoreFoundation \
     -framework CFNetwork \
     -framework Contacts \
