@@ -33,6 +33,9 @@ public:
 
 Q_SIGNALS:
     void phoneContactDiscovered(RisipPhoneContact *phoneContact);
+
+private:
+    void parseXML(const QString &xml);
 };
 
 #endif // RISIPANDROIDCONTACTACCESSMANAGER_H

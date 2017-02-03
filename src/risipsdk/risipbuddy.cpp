@@ -211,21 +211,13 @@ RisipMessage *RisipBuddy::sendInstantMessage(QString message)
 {
     if(m_data->pjsipBuddy == NULL
             || m_data->account == NULL)
-        return new RisipMessage();
+        return NULL;
 
-    if(m_data->account->status() == RisipAccount::SignedIn) {
+    if(m_data->account->status() == RisipAccount::SignedIn
+            && m_data->pjsipBuddy->isValid()) {
         RisipMessage *risipMessage = new RisipMessage;
-        risipMessage->setBuddy(this);
         risipMessage->setMessageBody(message);
-        risipMessage->setStatus(RisipMessage::Pending);
-        risipMessage->setDirection(RisipMessage::Outgoing);
-
-        try {
-            m_data->pjsipBuddy->sendInstantMessage(risipMessage->messageParamForSend());
-        } catch (Error &err) {
-            qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
-        }
-
+        sendInstantMessage(risipMessage);
         return risipMessage;
     }
 
@@ -235,16 +227,22 @@ RisipMessage *RisipBuddy::sendInstantMessage(QString message)
 void RisipBuddy::sendInstantMessage(RisipMessage *message)
 {
     if(m_data->pjsipBuddy == NULL
-            || m_data->account == NULL)
+            || m_data->account == NULL
+            || message == NULL)
         return;
 
-    if(m_data->account->status() == RisipAccount::SignedIn) {
+    if(m_data->account->status() == RisipAccount::SignedIn
+            && m_data->pjsipBuddy->isValid()) {
         message->setBuddy(this);
         message->setStatus(RisipMessage::Pending);
+        message->setDirection(RisipMessage::Outgoing);
+
+        qDebug()<<"SENDING INSTANT MESSAGE: " << uri() << message->messageBody();
+
         try {
             m_data->pjsipBuddy->sendInstantMessage(message->messageParamForSend());
         } catch (Error &err) {
-            qDebug()<<"Error sending instant message to : " << uri() <<QString::fromStdString(err.info(true));
+            setError(err);
         }
     }
 }

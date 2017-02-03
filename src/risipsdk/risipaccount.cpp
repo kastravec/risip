@@ -316,10 +316,10 @@ void RisipAccount::addRisipBuddy(RisipBuddy *buddy)
     if(!buddy)
         return;
 
+    buddy->setAccount(this);
     if(findBuddy(buddy->uri()))
         return;
 
-    buddy->setAccount(this);
     buddy->create();
 
     //FIXME check if no model found

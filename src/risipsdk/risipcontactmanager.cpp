@@ -29,6 +29,7 @@
 #include "models/risipphonecontactsmodel.h"
 #include "ios/risipioscontactaccessmanager.h"
 #include "android/risipandroidcontactaccessmanager.h"
+#include <QCoreApplication>
 
 #include <QDebug>
 
@@ -310,7 +311,10 @@ void RisipContactManager::fetchPhoneContacts()
     if(!m_data->androidContactAccessManager) {
         m_data->androidContactAccessManager = new RisipAndroidContactAccessManager(this);
 
-        //        m_data->androidContactAccessManager->fetchContactsFromDevice();
+        connect(m_data->androidContactAccessManager, &RisipAndroidContactAccessManager::phoneContactDiscovered,
+                this, &RisipContactManager::phoneContactDiscovered, Qt::QueuedConnection);
+
+        m_data->androidContactAccessManager->fetchContactsFromDevice();
     }
 #endif
 
@@ -346,26 +350,26 @@ void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *newContact)
 {
     if(newContact) {
         QString contactFullname = newContact->fullName().trimmed();
-        if(!contactFullname.isEmpty()) {
-            if(!m_data->m_phoneContacts.contains(contactFullname)) {
-                RisipPhoneContact *newPhoneContact = new RisipPhoneContact(this);
-                newPhoneContact->setFullName(contactFullname);
-                newPhoneContact->setContactId(newContact->contactId());
-                newPhoneContact->setContactImageData(newContact->contactImageData());
-                newPhoneContact->setEmail(newContact->email());
+        if(!contactFullname.isEmpty()
+                && !m_data->m_phoneContacts.contains(contactFullname)) {
 
-                m_data->m_phoneContacts[contactFullname] = newPhoneContact;
-                m_data->m_phoneContactsModel->addContact(newPhoneContact);
+            RisipPhoneContact *newPhoneContact = new RisipPhoneContact(this);
+            newPhoneContact->setFullName(contactFullname);
+            newPhoneContact->setContactId(newContact->contactId());
+            newPhoneContact->setContactImageData(newContact->contactImageData());
+            newPhoneContact->setEmail(newContact->email());
 
-                QList<RisipPhoneNumber *> numbers = newContact->phoneNumberList();
-                for(int i=0; i<numbers.count(); ++i) {
-                    numbers[i]->setParent(newPhoneContact);
-                    newPhoneContact->addPhoneNumber(numbers[i]);
-                    m_data->m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
-                }
+            m_data->m_phoneContacts[contactFullname] = newPhoneContact;
+            m_data->m_phoneContactsModel->addContact(newPhoneContact);
+
+            QList<RisipPhoneNumber *> numbers = newContact->phoneNumberList();
+            for(int i=0; i<numbers.count(); ++i) {
+                numbers[i]->setParent(newPhoneContact);
+                newPhoneContact->addPhoneNumber(numbers[i]);
+                m_data->m_phoneNumbers.insert(numbers[i]->fullNumber(), numbers[i]);
             }
         }
-
-        newContact->deleteLater();
     }
+
+    newContact->deleteLater();
 }

@@ -36,32 +36,54 @@ RisipAndroidContactAccessManager::RisipAndroidContactAccessManager(QObject *pare
 void RisipAndroidContactAccessManager::fetchContactsFromDevice()
 {
 #ifdef Q_OS_ANDROID
-    QAndroidJniObject contacts = QtAndroid::androidActivity().callObjectMethod("readContacts","()[Ljava/lang/String;");
-    QAndroidJniEnvironment env;
-    int size = env->GetArrayLength(contacts.object<jintArray>());
-    for (int i=0; i < size; ++i) {
-        QAndroidJniObject arrayElemen = env->GetObjectArrayElement(contacts.object<jobjectArray>(), i);
-        QString jsonData = arrayElemen.toString();
-        QByteArray rawData = jsonData.toUtf8();
-        QJsonParseError p;
-        QJsonDocument contacts = QJsonDocument::fromJson(rawData,&p);
-        QJsonObject contactInfo = contacts.object();
-        QString id;
-        QString name;
+    //Request permissions
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative", "activity", "()Landroid/app/Activity;");
+    QAndroidJniObject::callStaticObjectMethod("com/risip/phonecontacts/RisipAndroidContacts", "requestPermissions", "(Landroid/app/Activity;)Ljava/lang/String;", activity.object<jobject>());
 
-        foreach (QString key, contactInfo.keys()) {
-            QString value = contactInfo.value(key).toString();
-            if(key.compare("id") == 0) {
-                id = value;
-            } else if(key.compare("name") == 0) {
-                name = value;
-            } else {
-                qDebug()<<"NUMBER: " <<id <<name << key << value;
-            }
-        }
+    //Get DATA from Java
+    QAndroidJniObject contacts = QAndroidJniObject::callStaticObjectMethod("com/risip/phonecontacts/RisipAndroidContacts", "readContacts", "(Landroid/app/Activity;)Ljava/lang/String;", activity.object<jobject>());
+    QString xml=contacts.toString();
 
-    }
+    //Parse DATA to Contact struct
+    parseXML(xml);
 
 #endif
+}
 
+void RisipAndroidContactAccessManager::parseXML(const QString &xml)
+{
+    qDebug()<<"PARSING CONTACTS FROM XML."
+           <<xml;
+
+    int index=1;
+
+    QByteArray buff = QByteArray::fromStdString(xml.toStdString());
+    QXmlStreamReader reader;
+    reader.addData(buff);
+    if (reader.readNextStartElement()) {
+        if (reader.name() == "root"){
+            RisipPhoneContact *phoneContact = NULL;
+            while(reader.readNextStartElement()){
+                if(reader.name() == "item"){
+                    while(reader.readNextStartElement()) {
+                        QString name=reader.name().toString();
+                        QString value=reader.readElementText();
+                        phoneContact = new RisipPhoneContact;
+                        if(name.compare("name")==0) phoneContact->setFullName(value);
+                        if(name.compare("id")==0) phoneContact->setContactId(value.toInt());
+                        if(name.compare("phone")==0) phoneContact->addPhoneNumber(value);
+                        if(name.compare("email")==0) phoneContact->setEmail(value);
+//                        if(name.compare("etype")==0) phoneContact->set value;
+//                        if(name.compare("note")==0) arr[index].note=value;
+
+                        emit phoneContactDiscovered(phoneContact);
+                    }
+                    index++;
+                    qDebug() << "------------------------------------------";
+                }
+                else
+                    reader.skipCurrentElement();
+            }
+        }
+    }
 }

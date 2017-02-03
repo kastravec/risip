@@ -17,11 +17,12 @@
 #    A copy of the license can be found also here <http://www.gnu.org/licenses/>.
 #
 ###################################################################################
+message("Running the android-platform settings!")
+
 DESTDIR = $$PWD/bin
 
 QT += androidextras
-
-#ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 INCLUDEPATH += $$PWD/pjsip/include
 
