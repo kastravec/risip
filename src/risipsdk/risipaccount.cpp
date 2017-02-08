@@ -25,7 +25,6 @@
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
 #include "risipcall.h"
-#include "risipuserprofile.h"
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
 #include "risip.h"
@@ -39,7 +38,6 @@ class RisipAccount::Private
 {
 public:
     PjsipAccount *pjsipAccount;
-    RisipUserProfile *profile;
     RisipAccountConfiguration *configuration;
     RisipEndpoint *sipEndpoint;
     PresenceStatus presence_pjsip;
@@ -62,7 +60,6 @@ RisipAccount::RisipAccount(QObject *parent)
     ,m_data(new Private)
 {
     m_data->pjsipAccount = NULL;
-    m_data->profile = NULL;
     m_data->configuration = new RisipAccountConfiguration(this);
     m_data->sipEndpoint = NULL;
     m_data->autoSignIn = true;
@@ -80,30 +77,8 @@ RisipAccount::~RisipAccount()
     delete m_data->pjsipAccount;
     m_data->pjsipAccount = NULL;
 
-    delete m_data->profile;
-    m_data->profile = NULL;
-
     delete m_data;
     m_data = NULL;
-}
-
-RisipUserProfile *RisipAccount::profile()
-{
-    return m_data->profile;
-}
-
-void RisipAccount::setProfile(RisipUserProfile *profile)
-{
-    if(m_data->profile != profile) {
-        delete m_data->profile;
-        m_data->profile = NULL;
-
-        m_data->profile = profile;
-        if(m_data->profile)
-            m_data->profile->setParent(this);
-
-        emit profileChanged(m_data->profile);
-    }
 }
 
 RisipAccountConfiguration *RisipAccount::configuration() const

@@ -33,8 +33,6 @@ class RisipCall;
 class RisipBuddy;
 class RisipContactManager;
 class RisipCallManager;
-class RisipUserProfile;
-class RisipMorApi;
 
 class RISIP_VOIPSDK_EXPORT Risip: public QObject
 {

@@ -8,7 +8,7 @@ include($$PWD/platforms/ios/iosplatform.pri)
 }
 
 android {
-include($$PWD/platforms/android-platform/androidplatform.pri)
+include($$PWD/platforms/android/androidplatform.pri)
 }
 
 linux:!android:!macx {
@@ -74,15 +74,9 @@ SOURCES += $$PWD/src/risipsdk/risip.cpp \
     $$PWD/src/risipsdk/android/risipandroidcontactaccessmanager.cpp \
     $$PWD/src/risipsdk/apploader/risipapplicationsettings.cpp \
     $$PWD/src/risipsdk/apploader/risipuiloader.cpp \
-    $$PWD/src/risipsdk/risipuserprofile.cpp \
-    $$PWD/src/risipsdk/sipprovision/risipmoruser.cpp \
-    $$PWD/src/risipsdk/sipprovision/risipmordevice.cpp \
-    $$PWD/src/risipsdk/sipprovision/risipmoruserbalance.cpp \
-    $$PWD/src/risipsdk/sipprovision/risipmorapi.cpp \
     $$PWD/src/risipsdk/utils/qqmlsortfilterproxymodel.cpp \
     $$PWD/src/risipsdk/utils/filter.cpp \
     $$PWD/src/risipsdk/utils/sorter.cpp \
-    $$PWD/src/risipsdk/utils/httpnetworkrequest.cpp \
     $$PWD/src/risipsdk/utils/stopwatch.cpp
 
 HEADERS += $$PWD/src/risipsdk/headers/risip.h \
@@ -98,7 +92,6 @@ HEADERS += $$PWD/src/risipsdk/headers/risip.h \
     $$PWD/src/risipsdk/headers/models/risipmodels.h \
     $$PWD/src/risipsdk/headers/risipglobals.h \
     $$PWD/src/risipsdk/headers/risipphonecontact.h \
-    $$PWD/src/risipsdk/headers/risipuserprofile.h \
     $$PWD/src/risipsdk/ios/risipcallkprovider.h \
     $$PWD/src/risipsdk/ios/risipioswifiprovider.h \
     $$PWD/src/risipsdk/headers/risipcontactimageprovider.h \
@@ -117,11 +110,6 @@ HEADERS += $$PWD/src/risipsdk/headers/risip.h \
     $$PWD/src/risipsdk/android/risipandroidcontactaccessmanager.h \
     $$PWD/src/risipsdk/headers/apploader/risipapplicationsettings.h \
     $$PWD/src/risipsdk/headers/apploader/risipuiloader.h \
-    $$PWD/src/risipsdk/headers/sipprovision/risipmoruser.h \
-    $$PWD/src/risipsdk/headers/sipprovision/risipmordevice.h \
-    $$PWD/src/risipsdk/headers/sipprovision/risipmoruserbalance.h \
-    $$PWD/src/risipsdk/headers/sipprovision/risipmorapi.h \
-    $$PWD/src/risipsdk/headers/utils/httpnetworkrequest.h \
     $$PWD/src/risipsdk/headers/utils/qqmlsortfilterproxymodel.h \
     $$PWD/src/risipsdk/headers/utils/filter.h \
     $$PWD/src/risipsdk/headers/utils/sorter.h \

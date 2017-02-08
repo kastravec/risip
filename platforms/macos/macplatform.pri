@@ -20,6 +20,8 @@
 
 message("Running the mac-platform settings!")
 
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.3
+
 CONFIG += app_bundle
 
 QMAKE_MAC_SDK = macosx10.12

@@ -34,7 +34,6 @@
 #include "risipphonenumber.h"
 #include "risipratemanager.h"
 
-#include "utils/httpnetworkrequest.h"
 #include "utils/stopwatch.h"
 #include "utils/qqmlsortfilterproxymodel.h"
 
@@ -43,11 +42,6 @@
 #include "models/risipphonecontactsmodel.h"
 #include "models/risipphonenumbersmodel.h"
 #include "models/risipmodels.h"
-
-#include "sipprovision/risipmorapi.h"
-#include "sipprovision/risipmordevice.h"
-#include "sipprovision/risipmoruser.h"
-#include "sipprovision/risipmoruserbalance.h"
 
 #include "apploader/risipapplicationsettings.h"
 
@@ -252,14 +246,8 @@ void Risip::registerToQml()
     qmlRegisterType<RisipPhoneContactsModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneContactsModel");
     qmlRegisterType<RisipPhoneContact>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneContact");
     qmlRegisterType<RisipPhoneNumber>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneNumber");
-    qmlRegisterType<HttpNetworkRequest>(RisipSettingsParam::risipQmlURI, 1, 0, "HttpNetworkRequest");
     qmlRegisterType<RisipPhoneNumbersModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipPhoneNumbersModel");
     qmlRegisterType<RisipCountryRatesModel>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipCountryRatesModel");
-    qmlRegisterType<RisipUserProfile>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipUserProfile");
-    qmlRegisterType<RisipMorApi>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorApi");
-    qmlRegisterType<RisipMorUser>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorUser");
-    qmlRegisterType<RisipMorDevice>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorDevice");
-    qmlRegisterType<RisipMorUserBalance>(RisipSettingsParam::risipQmlURI, 1, 0, "RisipMorUserBalance");
     qmlRegisterType<StopWatch>(RisipSettingsParam::risipQmlURI, 1, 0, "StopWatch");
     qmlRegisterType<qqsfpm::QQmlSortFilterProxyModel>(RisipSettingsParam::risipQmlURI, 1, 0, "SortFilterProxyModel");
 }
