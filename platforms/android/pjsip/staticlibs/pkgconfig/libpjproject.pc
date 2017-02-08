@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/Users/psaraci/tools/pjsip-android-libs
+exec_prefix=${prefix}
+libdir=/Users/psaraci/tools/pjsip-android-libs/lib
+includedir=/Users/psaraci/tools/pjsip-android-libs/include
+
+Name: libpjproject
+Description: Multimedia communication library
+URL: http://www.pjsip.org
+Version: 2.5.5-svn
+Libs: -L${libdir} -lpjsua2-arm-unknown-linux-androideabi -lstdc++ -lpjsua-arm-unknown-linux-androideabi -lpjsip-ua-arm-unknown-linux-androideabi -lpjsip-simple-arm-unknown-linux-androideabi -lpjsip-arm-unknown-linux-androideabi -lpjmedia-codec-arm-unknown-linux-androideabi -lpjmedia-arm-unknown-linux-androideabi -lpjmedia-videodev-arm-unknown-linux-androideabi -lpjmedia-audiodev-arm-unknown-linux-androideabi -lpjmedia-arm-unknown-linux-androideabi -lpjnath-arm-unknown-linux-androideabi -lpjlib-util-arm-unknown-linux-androideabi  -lsrtp-arm-unknown-linux-androideabi -lresample-arm-unknown-linux-androideabi -lgsmcodec-arm-unknown-linux-androideabi -lspeex-arm-unknown-linux-androideabi -lilbccodec-arm-unknown-linux-androideabi -lg7221codec-arm-unknown-linux-androideabi -lyuv-arm-unknown-linux-androideabi -lwebrtc-arm-unknown-linux-androideabi  -lpj-arm-unknown-linux-androideabi -lm -lgnustl_static  -lc -lgcc -lOpenSLES -llog -lGLESv2 -lEGL -landroid
+Cflags: -I${includedir} -I/Users/psaraci/tools/pjsip-android-libs/include -DPJ_AUTOCONF=1	 --sysroot=/Users/psaraci/tools/android-ndk-r13b//platforms/android-24/arch-arm -I/Users/psaraci/tools/android-ndk-r13b//sources/cxx-stl/gnu-libstdc++/4.9/include -I/Users/psaraci/tools/android-ndk-r13b//sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include -DPJ_IS_BIG_ENDIAN=0 -DPJ_IS_LITTLE_ENDIAN=1

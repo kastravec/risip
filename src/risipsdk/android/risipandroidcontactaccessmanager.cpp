@@ -19,12 +19,16 @@
 ************************************************************************************/
 #include "risipandroidcontactaccessmanager.h"
 #include "risipphonecontact.h"
+
+#include <QXmlStreamReader>
 #include <QJsonParseError>
+#include <QDebug>
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
 #include <QAndroidJniEnvironment>
 #include <QtAndroidExtras>
+#include <QtAndroid>
 #endif
 
 RisipAndroidContactAccessManager::RisipAndroidContactAccessManager(QObject *parent)
@@ -37,24 +41,23 @@ void RisipAndroidContactAccessManager::fetchContactsFromDevice()
 {
 #ifdef Q_OS_ANDROID
     //Request permissions
-    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative", "activity", "()Landroid/app/Activity;");
-    QAndroidJniObject::callStaticObjectMethod("com/risip/phonecontacts/RisipAndroidContacts", "requestPermissions", "(Landroid/app/Activity;)Ljava/lang/String;", activity.object<jobject>());
+//    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative", "activity", "()Landroid/app/Activity;");
+//    QAndroidJniObject::callStaticObjectMethod("com/risip/phonecontacts/RisipAndroidContacts", "requestPermissions", "(Landroid/app/Activity;)Ljava/lang/String;", activity.object<jobject>());
 
     //Get DATA from Java
-    QAndroidJniObject contacts = QAndroidJniObject::callStaticObjectMethod("com/risip/phonecontacts/RisipAndroidContacts", "readContacts", "(Landroid/app/Activity;)Ljava/lang/String;", activity.object<jobject>());
-    QString xml=contacts.toString();
+//    QAndroidJniObject contacts = QtAndroid.androidActivity().callStaticObjectMethod("com/risip/phonecontacts/RisipAndroidContacts", "readContacts", "(Landroid/app/Activity;)Ljava/lang/String;"); /*, activity.object<jobject>()*/
+//    QAndroidJniObject contacts = QAndroidJniObject::callStaticObjectMethod("com/risip/phonecontacts/RisipAndroidContacts", "readContacts", "(Landroid/app/Activity;)Ljava/lang/String;", QtAndroid.); /*, activity.object<jobject>()*/
+//    QString xml=contacts.toString();
 
     //Parse DATA to Contact struct
-    parseXML(xml);
+//    qDebug()<<"PARSING CONTACTS FROM XML." <<xml;
+//    parseXML(xml);
 
 #endif
 }
 
 void RisipAndroidContactAccessManager::parseXML(const QString &xml)
 {
-    qDebug()<<"PARSING CONTACTS FROM XML."
-           <<xml;
-
     int index=1;
 
     QByteArray buff = QByteArray::fromStdString(xml.toStdString());
@@ -76,10 +79,11 @@ void RisipAndroidContactAccessManager::parseXML(const QString &xml)
 //                        if(name.compare("etype")==0) phoneContact->set value;
 //                        if(name.compare("note")==0) arr[index].note=value;
 
+                        qDebug() << "PHONE CONTACT : " << phoneContact->fullName();
+
                         emit phoneContactDiscovered(phoneContact);
                     }
                     index++;
-                    qDebug() << "------------------------------------------";
                 }
                 else
                     reader.skipCurrentElement();

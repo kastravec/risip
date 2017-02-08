@@ -15,7 +15,8 @@ public class RisipAndroidContacts extends org.qtproject.qt5.android.bindings.QtA
     {
     }
 
-    public static String readContacts(Activity a){
+    public static String readContacts(Activity a) {
+        System.out.println("CALLING JAVA METHOD");
         String xml="<root>";
         ContentResolver cr = a.getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
