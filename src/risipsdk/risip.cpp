@@ -25,7 +25,6 @@
 #include "risipbuddy.h"
 #include "risipcall.h"
 #include "risipaccountconfiguration.h"
-#include "risipuserprofile.h"
 #include "risipmedia.h"
 #include "risipmessage.h"
 #include "risipcallmanager.h"
