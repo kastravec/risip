@@ -22,18 +22,17 @@
 #define RISIPBUDDY_H
 
 #include "risipsdkglobal.h"
+#include "risipaccount.h"
+
 #include <QObject>
 #include <QQmlListProperty>
 
 #include <pjsua2.hpp>
 using namespace pj;
 
-class RisipBuddy;
-class RisipAccount;
+namespace risip {
+
 class RisipMessage;
-class RisipCall;
-class RisipBuddy;
-class RisipPhoneNumber;
 class PjsipBuddy;
 
 class RISIP_VOIPSDK_EXPORT RisipBuddy : public QObject
@@ -71,7 +70,7 @@ public:
     int presence() const;
 
     RisipAccount *account() const;
-    void setAccount(RisipAccount *acc);
+    void setAccount(risip::RisipAccount *acc);
 
     QString uri() const;
     void setUri(QString contactUri);
@@ -84,11 +83,11 @@ public:
 
     bool valid() const;
     Q_INVOKABLE void setContactNumber(const QString &number);
+    Q_INVOKABLE risip::RisipMessage *sendInstantMessage(QString message);
 
 public Q_SLOTS:
     void create();
     void releaseFromAccount();
-    RisipMessage *sendInstantMessage(QString message);
     void sendInstantMessage(RisipMessage *message);
 
 Q_SIGNALS:
@@ -109,5 +108,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPBUDDY_H

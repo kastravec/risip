@@ -25,6 +25,8 @@
 #include <pjsua2.hpp>
 using namespace pj;
 
+namespace risip {
+
 class RisipBuddy;
 class RisipAccount;
 
@@ -98,5 +100,7 @@ private:
     OnInstantMessageParam m_incomingMessageParam;
     OnInstantMessageStatusParam m_instantMessageStatusParam;
 };
+
+} //end of risip namespace
 
 #endif // RISIPMESSAGE_H

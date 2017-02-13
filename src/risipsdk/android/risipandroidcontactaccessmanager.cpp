@@ -31,10 +31,11 @@
 #include <QtAndroid>
 #endif
 
+namespace risip {
+
 RisipAndroidContactAccessManager::RisipAndroidContactAccessManager(QObject *parent)
     :QObject(parent)
 {
-
 }
 
 void RisipAndroidContactAccessManager::fetchContactsFromDevice()
@@ -91,3 +92,5 @@ void RisipAndroidContactAccessManager::parseXML(const QString &xml)
         }
     }
 }
+
+} //end of risip namespace

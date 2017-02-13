@@ -21,7 +21,6 @@
 #include "risip.h"
 
 #include "risipglobals.h"
-#include "risipaccount.h"
 #include "risipbuddy.h"
 #include "risipcall.h"
 #include "risipaccountconfiguration.h"
@@ -49,6 +48,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QSortFilterProxyModel>
+
+namespace risip {
 
 class Risip::Private
 {
@@ -138,6 +139,7 @@ Risip::Risip(QObject *parent)
     ,m_data(new Private)
 {
     m_data->m_defaultAccountAlways = true;
+
     RisipGlobals::instance()->initializeCountries();
 }
 
@@ -206,7 +208,7 @@ void Risip::setDefaultAccountAlways(bool always)
 
 void Risip::setDefaultAccount(const QString &uri)
 {
-    if(m_data->m_defaultAccountUri != uri) {
+    if(m_data->m_defaultAccountUri != uri && !uri.isEmpty()) {
         m_data->m_defaultAccountUri = uri;
 
         if(m_data->m_defaultAccountAlways) {
@@ -256,7 +258,7 @@ RisipAccount *Risip::accountForUri(const QString &accountUri)
     if(!accountUri.isEmpty() && m_data->m_accounts.contains(accountUri))
         return m_data->m_accounts[accountUri];
 
-    return new RisipAccount(this);
+    return nullptr;
 }
 
 RisipAccount *Risip::accountForConfiguration(RisipAccountConfiguration *configuration)
@@ -340,7 +342,7 @@ bool Risip::readSettings()
         configuration->setRandomLocalPort(settings.value(RisipSettingsParam::RandomLocalPort).toInt());
         configuration->setScheme(settings.value(RisipSettingsParam::Scheme).toString());
 
-        RisipAccount *acc = createAccount(configuration); //creating account`
+        RisipAccount *acc = qobject_cast<RisipAccount *>(createAccount(configuration)); //creating account`
         acc->setAutoSignIn(settings.value(RisipSettingsParam::AutoSignIn).toBool());
         settings.endArray(); //end array
     }
@@ -401,5 +403,6 @@ void Risip::accessPhoneMedia()
 
 void Risip::accessPhoneLocation()
 {
-
 }
+
+} //end of risip namespace

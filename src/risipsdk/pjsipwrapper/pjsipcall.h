@@ -23,6 +23,8 @@
 
 #include "pjsipaccount.h"
 
+namespace risip {
+
 class RisipCall;
 
 class PjsipCall: public Call
@@ -57,5 +59,7 @@ public:
 private:
     RisipCall *m_risipCall;
 };
+
+} //end of risip namespace
 
 #endif // PJSIPCALL_H

@@ -21,6 +21,8 @@
 
 #include "risipendpoint.h"
 
+namespace risip {
+
 PjsipEndpoint *PjsipEndpoint::pjsipEndpoinInstance = NULL;
 PjsipEndpoint *PjsipEndpoint::instance()
 {
@@ -73,3 +75,4 @@ void PjsipEndpoint::setRisipEndpointInterface(RisipEndpoint *endpoint)
     m_risipEndpoint = endpoint;
 }
 
+} //end of risip namespace

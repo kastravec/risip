@@ -21,10 +21,11 @@
 #define RISIPRATEMANAGER_H
 
 #include "risipsdkglobal.h"
+#include "models/risipcountryratesmodel.h"
+
 #include <QObject>
 
-class RisipCountryRatesModel;
-
+namespace risip {
 
 class RISIP_VOIPSDK_EXPORT RisipRateManager : public QObject
 {
@@ -43,5 +44,7 @@ private:
     static RisipRateManager *m_instance;
     RisipCountryRatesModel *m_countryRatesModel;
 };
+
+} //end of risip namespace
 
 #endif // RISIPRATEMANAGER_H

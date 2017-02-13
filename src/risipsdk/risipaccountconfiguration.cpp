@@ -18,8 +18,11 @@
 ************************************************************************************/
 
 #include "risipaccountconfiguration.h"
+#include "risipaccount.h"
 
 #include <QDebug>
+
+namespace risip {
 
 class RisipAccountConfiguration::Private
 {
@@ -356,3 +359,5 @@ void RisipAccountConfiguration::setPjsipTransportConfig(TransportConfig pjsipCon
 {
     m_data->transportConfiguration = pjsipConfig;
 }
+
+} //end of risip namespace

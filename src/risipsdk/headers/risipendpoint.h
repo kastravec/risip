@@ -26,7 +26,8 @@
 #include <pjsua2.hpp>
 using namespace pj;
 
-class RisipEndpoint;
+namespace risip {
+
 class RisipAccountConfiguration;
 class PjsipEndpoint;
 
@@ -62,8 +63,8 @@ public:
     static PjsipEndpoint *endpointInstance();
 
 public Q_SLOTS:
-    void start();
-    void stop();
+    int start();
+    int stop();
 
 Q_SIGNALS:
     void statusChanged(int status);
@@ -78,5 +79,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPENDPOINT_H

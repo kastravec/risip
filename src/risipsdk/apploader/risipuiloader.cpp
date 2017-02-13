@@ -26,6 +26,8 @@
 #include <QQmlApplicationEngine>
 #include <QDebug>
 
+namespace risip {
+
 class RisipUiLoader::Private
 {
 public:
@@ -73,3 +75,5 @@ void RisipUiLoader::setQmlFile(const QString &qmlFile)
         emit qmlFileChanged(m_data->qmlFile);
     }
 }
+
+} //end of risip namespace

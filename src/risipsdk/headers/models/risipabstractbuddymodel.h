@@ -21,9 +21,12 @@
 #define RISIPABSTRACTBUDDYMODEL_H
 
 #include "risipsdkglobal.h"
+#include "risipaccount.h"
+
 #include <QAbstractListModel>
 
-class RisipAccount;
+namespace risip {
+
 class RisipBuddy;
 
 class RISIP_VOIPSDK_EXPORT RisipAbstractBuddyModel: public QAbstractListModel
@@ -60,5 +63,7 @@ private:
     RisipAccount *m_account;
     QList<RisipBuddy *> m_buddies;
 };
+
+} //end of risip namespace
 
 #endif // RISIPABSTRACTBUDDYMODEL_H

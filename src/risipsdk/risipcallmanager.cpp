@@ -21,20 +21,19 @@
 
 #include "risipglobals.h"
 #include "risip.h"
-#include "risipcall.h"
-#include "risipaccount.h"
 #include "risipbuddy.h"
 #include "risipaccountconfiguration.h"
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
 #include "risipphonecontact.h"
 #include "risipphonenumber.h"
-#include "risipcallhistorymodel.h"
 
 #include "pjsipwrapper/pjsipcall.h"
 
 #include <QSortFilterProxyModel>
 #include <QDebug>
+
+namespace risip {
 
 class RisipCallManager::Private
 {
@@ -290,3 +289,5 @@ void RisipCallManager::accountIncomingCall()
     //setting the call as the active one
     setActiveCall(call);
 }
+
+} //end of risip namespace

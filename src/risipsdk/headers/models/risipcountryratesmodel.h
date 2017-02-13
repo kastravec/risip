@@ -24,6 +24,8 @@
 #include "risipglobals.h"
 #include <QAbstractListModel>
 
+namespace risip {
+
 class RISIP_VOIPSDK_EXPORT RisipCountryRatesModel: public QAbstractListModel
 {
     Q_OBJECT
@@ -51,5 +53,7 @@ public Q_SLOTS:
 private:
     QList<Country> m_allCountries;
 };
+
+} //end of risip namespace
 
 #endif // RISIPCOUNTRYRATESMODEL_H

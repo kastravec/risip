@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+namespace risip {
+
 class RisipiOSWifiProviderPrivate;
 
 class RisipiOSWifiProvider : public QObject
@@ -37,6 +39,8 @@ private:
 #ifdef Q_OS_IOS
     RisipiOSWifiProviderPrivate *m_d = nullptr;
 #endif
-
 };
+
+} //end of risip namespace
+
 #endif // RISIPIOSWIFIPROVIDER_H

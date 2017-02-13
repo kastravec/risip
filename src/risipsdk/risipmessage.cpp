@@ -19,6 +19,8 @@
 
 #include "risipmessage.h"
 
+namespace risip {
+
 RisipMessage::RisipMessage(QObject *parent)
     :QObject(parent)
 {
@@ -126,3 +128,5 @@ SendInstantMessageParam RisipMessage::messageParamForSend()
     m_instantMessageParam.userData = this;
     return m_instantMessageParam;
 }
+
+} //end of risip namespace

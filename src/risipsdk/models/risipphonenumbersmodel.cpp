@@ -24,6 +24,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 RisipPhoneNumbersModel::RisipPhoneNumbersModel(QObject *parent)
     :QAbstractListModel(parent)
     ,m_phoneContact(NULL)
@@ -95,3 +97,4 @@ QVariant RisipPhoneNumbersModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+} //end of risip namespace

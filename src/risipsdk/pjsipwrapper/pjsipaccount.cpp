@@ -27,6 +27,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 /**
  * @class PjsipAccount class
  * @brief The PjsipAccount class
@@ -151,3 +153,5 @@ void PjsipAccount::setRisipInterface(RisipAccount *acc)
 {
     m_risipAccount = acc;
 }
+
+} //end of risip namespace

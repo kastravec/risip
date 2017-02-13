@@ -22,18 +22,18 @@
 #define RISIPACCOUNT_H
 
 #include "risipsdkglobal.h"
+#include "risipaccountconfiguration.h"
 
-#include <QObject>
 #include <QQmlListProperty>
 
 #include <pjsua2.hpp>
 using namespace pj;
 
-class RisipAccount;
+namespace risip {
+
+class RisipBuddy;
 class RisipMessage;
 class RisipEndpoint;
-class RisipAccountConfiguration;
-class RisipBuddy;
 class RisipCall;
 class RisipCallHistoryModel;
 class PjsipCall;
@@ -99,7 +99,7 @@ public:
 
     Q_INVOKABLE RisipBuddy *findBuddy(const QString &uri);
     Q_INVOKABLE void addBuddy(const QString &buddyUri);
-    Q_INVOKABLE void addRisipBuddy(RisipBuddy *buddy);
+    Q_INVOKABLE void addRisipBuddy(risip::RisipBuddy *buddy);
 
 Q_SIGNALS:
     void configurationChanged(RisipAccountConfiguration *config);
@@ -137,5 +137,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPACCOUNT_H

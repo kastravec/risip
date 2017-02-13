@@ -26,6 +26,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 class RisipEndpoint::Private
 {
 public:
@@ -191,7 +193,7 @@ PjsipEndpoint *RisipEndpoint::endpointInstance()
  * Use this function to start the SIP endpoint library/engine.
  * MUST call this before any other operation with Risip objects.
  */
-void RisipEndpoint::start()
+int RisipEndpoint::start()
 {
     m_data->pjsipEndpoint = PjsipEndpoint::instance();
     m_data->pjsipEndpoint->setRisipEndpointInterface(this);
@@ -204,7 +206,7 @@ void RisipEndpoint::start()
     } catch (Error &err) {
         emit statusChanged(status());
         setError(err);
-        return;
+        return status();
     }
 
     try {
@@ -212,7 +214,7 @@ void RisipEndpoint::start()
     } catch (Error &err) {
         emit statusChanged(status());
         setError(err);
-        return;
+        return status();
     }
 
     try {
@@ -220,7 +222,7 @@ void RisipEndpoint::start()
     } catch (Error &err) {
         emit statusChanged(status());
         setError(err);
-        return;
+        return status();
     }
 
     //FIXME Codec priorities
@@ -243,6 +245,7 @@ void RisipEndpoint::start()
     }
 
     emit statusChanged(status());
+    return status();
 }
 
 /**
@@ -250,12 +253,14 @@ void RisipEndpoint::start()
  *
  * Call this function to stop the SIP endpoint / library
  */
-void RisipEndpoint::stop()
+int RisipEndpoint::stop()
 {
     if(m_data->pjsipEndpoint && m_data->pjsipEndpoint->libGetState() != PJSUA_STATE_NULL)
         m_data->pjsipEndpoint->libDestroy();
 
     emit statusChanged(status());
+
+    return status();
 }
 
 void RisipEndpoint::setError(const Error &error)
@@ -275,3 +280,5 @@ void RisipEndpoint::setError(const Error &error)
         emit errorInfoChanged(QString::fromStdString(m_data->error.info(true)));
     }
 }
+
+} //end of risip namespace

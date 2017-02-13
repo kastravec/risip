@@ -19,7 +19,6 @@
 ************************************************************************************/
 
 #include "risipbuddy.h"
-#include "risipaccount.h"
 #include "risipmessage.h"
 #include "risipcall.h"
 #include "risipaccountconfiguration.h"
@@ -29,6 +28,8 @@
 #include "pjsipwrapper/pjsipbuddy.h"
 
 #include <QDebug>
+
+namespace risip {
 
 class RisipBuddy::Private
 {
@@ -282,3 +283,5 @@ int RisipBuddy::presence() const
 
     return Unknown;
 }
+
+} //end of risip namespace

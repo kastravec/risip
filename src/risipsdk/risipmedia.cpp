@@ -28,6 +28,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 class RisipMedia::Private
 {
 public:
@@ -296,3 +298,5 @@ void RisipMedia::loopAudioTest()
     cap_med.startTransmit(play_med);
     cap_med.stopTransmit(play_med);
 }
+
+} //end of risip namespace

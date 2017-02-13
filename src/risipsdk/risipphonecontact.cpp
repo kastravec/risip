@@ -25,6 +25,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 class RisipPhoneContact::Private
 {
 public:
@@ -161,4 +163,6 @@ void RisipPhoneContact::removePhoneNumber(RisipPhoneNumber *number)
             m_data->phoneNumbers.take(number->fullNumber())->deleteLater();
     }
 }
+
+} //end of risip namespace
 

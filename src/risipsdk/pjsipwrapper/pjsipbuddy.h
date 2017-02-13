@@ -23,6 +23,8 @@
 #include <pjsua2.hpp>
 using namespace pj;
 
+namespace risip {
+
 class RisipBuddy;
 
 class PjsipBuddy: public Buddy
@@ -38,5 +40,7 @@ public:
 private:
     RisipBuddy *m_risipBuddyInterface;
 };
+
+} //end of risip namespace
 
 #endif // PJSIPBUDDY_H

@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QSettings>
 
+namespace risip {
+
 class RISIP_VOIPSDK_EXPORT RisipApplicationSettings : public QObject
 {
     Q_OBJECT
@@ -91,5 +93,7 @@ private:
     int m_platform;
     QSettings m_settings;
 };
+
+} //end of risip namespace
 
 #endif // APPLICATIONSETTINGS_H

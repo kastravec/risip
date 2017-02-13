@@ -20,6 +20,8 @@
 
 #include "risipmodels.h"
 
+namespace risip {
+
 RisipBuddiesModel::RisipBuddiesModel(QObject *parent)
     :RisipAbstractBuddyModel(parent)
 {}
@@ -33,3 +35,5 @@ RisipContactHistoryModel::RisipContactHistoryModel(QObject *parent)
 
 RisipContactHistoryModel::~RisipContactHistoryModel()
 {}
+
+} //end of risip namespace

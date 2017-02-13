@@ -21,6 +21,8 @@
 
 #include "risipbuddy.h"
 
+namespace risip {
+
 PjsipBuddy::PjsipBuddy()
     :Buddy()
 {
@@ -45,3 +47,5 @@ RisipBuddy *PjsipBuddy::risipInterface()
 {
     return m_risipBuddyInterface;
 }
+
+} //end of risip namespace

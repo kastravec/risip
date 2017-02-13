@@ -23,6 +23,8 @@
 #include "risipsdkglobal.h"
 #include "risipabstractbuddymodel.h"
 
+namespace risip {
+
 class RISIP_VOIPSDK_EXPORT RisipBuddiesModel: public RisipAbstractBuddyModel
 {
     Q_OBJECT
@@ -38,5 +40,7 @@ public:
     explicit RisipContactHistoryModel(QObject *parent = NULL);
     ~RisipContactHistoryModel();
 };
+
+} //end of risip namespace
 
 #endif // RISIPBUDDYMODELS_H

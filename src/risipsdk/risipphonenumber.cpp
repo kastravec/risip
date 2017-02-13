@@ -23,6 +23,8 @@
 #include "risipphonecontact.h"
 #include "risipglobals.h"
 
+namespace risip {
+
 class RisipPhoneNumber::Private
 {
 public:
@@ -234,3 +236,5 @@ void RisipPhoneNumber::reset()
     emit numberChanged(m_data->number);
     emit rawNumberChanged(m_data->rawNumber);
 }
+
+} //end of risip namespace

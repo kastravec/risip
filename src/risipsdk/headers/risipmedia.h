@@ -26,6 +26,8 @@
 #include <pjsua2.hpp>
 using namespace pj;
 
+namespace risip {
+
 class RisipCall;
 class RisipEndpoint;
 
@@ -91,5 +93,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPMEDIA_H

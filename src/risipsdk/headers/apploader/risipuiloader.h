@@ -21,10 +21,9 @@
 #define UILOADER_H
 
 #include "risipsdkglobal.h"
-#include <QObject>
+#include "risipapplicationsettings.h"
 
-class QQmlApplicationEngine;
-class RisipApplicationSettings;
+namespace risip {
 
 class RISIP_VOIPSDK_EXPORT RisipUiLoader : public QObject
 {
@@ -51,5 +50,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // UILOADER_H

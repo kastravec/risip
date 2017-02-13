@@ -23,6 +23,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 PjsipCall::PjsipCall(PjsipAccount &account, int callId)
     :Call(account, callId)
 {
@@ -177,3 +179,5 @@ void PjsipCall::setRisipCall(RisipCall *risipcall)
 {
     m_risipCall = risipcall;
 }
+
+} //end of risip namespace

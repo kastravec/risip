@@ -23,6 +23,8 @@
 #include "risipsdkglobal.h"
 #include <QObject>
 
+namespace risip {
+
 class RisipPhoneContact;
 
 class RISIP_VOIPSDK_EXPORT RisipPhoneNumber : public QObject
@@ -95,5 +97,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPPHONENUMBER_H

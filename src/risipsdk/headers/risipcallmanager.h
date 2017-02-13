@@ -21,14 +21,17 @@
 #define RISIPCALLMANAGER_H
 
 #include "risipsdkglobal.h"
+#include "risipaccount.h"
+#include "risipcallhistorymodel.h"
+#include "risipcall.h"
+
 #include <QObject>
 #include <QAbstractItemModel>
 #include <QQmlListProperty>
 
-class RisipAccount;
+namespace risip {
+
 class RisipBuddy;
-class RisipCall;
-class RisipCallHistoryModel;
 class RisipPhoneNumber;
 
 class RISIP_VOIPSDK_EXPORT RisipCallManager : public QObject
@@ -44,7 +47,7 @@ public:
     ~RisipCallManager();
 
     RisipAccount *activeAccount() const;
-    void setActiveAccount(RisipAccount *activeAccount);
+    void setActiveAccount(risip::RisipAccount *activeAccount);
 
     RisipCall *activeCall();
     void setActiveCall(RisipCall *call);
@@ -55,11 +58,13 @@ public:
     QQmlListProperty<QAbstractItemModel> callHistoryModels();
     Q_INVOKABLE QAbstractItemModel *historyCallModelForAccount(const QString &account) const;
 
+
     //call related methods
-    Q_INVOKABLE RisipCall *callSIPContact(const QString &contact);
-    Q_INVOKABLE RisipCall *callBuddy(RisipBuddy *buddy);
-    Q_INVOKABLE RisipCall *callPhone(const QString &number);
-    Q_INVOKABLE RisipCall *callExternalSIP(const QString &uri);
+    //FIXME using namespace for the return paramter so that MOC gets it properly
+    Q_INVOKABLE risip::RisipCall *callSIPContact(const QString &contact);
+    Q_INVOKABLE risip::RisipCall *callBuddy(RisipBuddy *buddy);
+    Q_INVOKABLE risip::RisipCall *callPhone(const QString &number);
+    Q_INVOKABLE risip::RisipCall *callExternalSIP(const QString &uri);
 
     void createModelsForAccount(RisipAccount *account);
     void removeModelsForAccount(const RisipAccount *account);
@@ -69,8 +74,8 @@ Q_SIGNALS:
     void activeCallChanged(RisipCall *call);
     void activeCallHistoryModelChanged(QAbstractItemModel *model);
     void callHistoryModelsChanged(QQmlListProperty<QAbstractItemModel> models);
-    void incomingCall(RisipCall *call);
-    void outgoingCall(RisipCall *call);
+    void incomingCall(risip::RisipCall *call);
+    void outgoingCall(risip::RisipCall *call);
 
 private Q_SLOTS:
     void accountIncomingCall();
@@ -82,5 +87,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPCALLMANAGER_H

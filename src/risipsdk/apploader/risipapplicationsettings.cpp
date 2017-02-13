@@ -21,6 +21,8 @@
 
 #include <QCoreApplication>
 
+namespace risip {
+
 RisipApplicationSettings *RisipApplicationSettings::m_applicationSettingsInstance = NULL;
 RisipApplicationSettings *RisipApplicationSettings::instance()
 {
@@ -133,3 +135,5 @@ bool RisipApplicationSettings::read()
 
     return true;
 }
+
+} //end of risip namespace

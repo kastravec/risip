@@ -23,15 +23,13 @@
 #include "risipaccount.h"
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
-#include "risipmodels.h"
-#include "risipphonecontact.h"
-#include "risipphonenumber.h"
-#include "models/risipphonecontactsmodel.h"
 #include "ios/risipioscontactaccessmanager.h"
 #include "android/risipandroidcontactaccessmanager.h"
 #include <QCoreApplication>
 
 #include <QDebug>
+
+namespace risip {
 
 class RisipContactManager::Private
 {
@@ -373,3 +371,5 @@ void RisipContactManager::phoneContactDiscovered(RisipPhoneContact *newContact)
 
     newContact->deleteLater();
 }
+
+} //end of risip namespace

@@ -21,15 +21,18 @@
 #define RISIPCONTACTMANAGER_H
 
 #include "risipsdkglobal.h"
-#include <QObject>
+#include "risipmodels.h"
+#include "risipphonecontact.h"
+#include "risipphonenumber.h"
+
+#include "models/risipphonecontactsmodel.h"
+
 #include <QQmlListProperty>
 
+namespace risip {
+
 class RisipAccount;
-class RisipBuddiesModel;
-class RisipContactHistoryModel;
 class RisipiOSContactAcessManager;
-class RisipPhoneContactsModel;
-class RisipPhoneContact;
 class RisipPhoneNumber;
 
 class RISIP_VOIPSDK_EXPORT RisipContactManager : public QObject
@@ -48,16 +51,16 @@ public:
     static RisipContactManager *instance();
     ~RisipContactManager();
 
-    RisipAccount *activeAccount() const;
+    risip::RisipAccount *activeAccount() const;
     void setActiveAccount(RisipAccount *activeAccount);
 
-    RisipPhoneContact *activePhoneContact() const;
-    void setActivePhoneContact(RisipPhoneContact *phoneContact);
+    risip::RisipPhoneContact *activePhoneContact() const;
+    void setActivePhoneContact(risip::RisipPhoneContact *phoneContact);
     Q_INVOKABLE void setActivePhoneContact(const QString &contactName);
 
-    RisipBuddiesModel *activeBuddiesModel() const;
-    RisipContactHistoryModel *activeContactHistory() const;
-    RisipPhoneContactsModel *phoneContactsModel() const;
+    risip::RisipBuddiesModel *activeBuddiesModel() const;
+    risip::RisipContactHistoryModel *activeContactHistory() const;
+    risip::RisipPhoneContactsModel *phoneContactsModel() const;
 
     QQmlListProperty<RisipBuddiesModel> buddyModels();
     QQmlListProperty<RisipContactHistoryModel> contactHistoryModels();
@@ -68,8 +71,8 @@ public:
     void createModelsForAccount(RisipAccount *account);
     void removeModelsForAccount(const RisipAccount *account);
 
-    RisipBuddiesModel *buddyModelForAccount(const QString &account) const;
-    RisipContactHistoryModel *contactHistoryModelForAccount(const QString &account) const;
+    risip::RisipBuddiesModel *buddyModelForAccount(const QString &account) const;
+    risip::RisipContactHistoryModel *contactHistoryModelForAccount(const QString &account) const;
 
     Q_INVOKABLE void fetchPhoneContacts();
     Q_INVOKABLE RisipPhoneContact *contactForName(const QString &name);
@@ -97,5 +100,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPCONTACTMANAGER_H

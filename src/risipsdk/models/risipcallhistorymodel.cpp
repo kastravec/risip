@@ -25,6 +25,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 RisipCallHistoryModel::RisipCallHistoryModel(QObject *parent)
     : QAbstractListModel(parent)
     ,m_account(Risip::instance()->defaultAccount())
@@ -111,3 +113,4 @@ void RisipCallHistoryModel::removeCallRecord(RisipCall *call)
     }
 }
 
+} //end of risip namespace

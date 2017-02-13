@@ -26,6 +26,8 @@
 #include <QRunnable>
 #include <QDateTime>
 
+namespace risip {
+
 class RisipPhoneNumber;
 
 struct RisipCurrencies {
@@ -122,5 +124,7 @@ private:
 
     friend class RisipConfigisLoader;
 };
+
+} //end of risip namespace
 
 #endif // RISIPGLOBALS_H

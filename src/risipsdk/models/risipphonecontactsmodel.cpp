@@ -22,6 +22,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 RisipPhoneContactsModel::RisipPhoneContactsModel(QObject *parent)
     :QAbstractListModel(parent)
     ,m_phoneContacts()
@@ -109,3 +111,5 @@ void RisipPhoneContactsModel::removeContact(RisipPhoneContact *contact)
     contact->deleteLater();
     endRemoveRows();
 }
+
+} //end of risip namespace

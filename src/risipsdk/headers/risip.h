@@ -23,10 +23,12 @@
 
 #include "risipsdkglobal.h"
 #include "risipendpoint.h"
+#include "risipaccount.h"
+
 #include <QQmlListProperty>
 
+namespace risip {
 
-class RisipAccount;
 class RisipEndpoint;
 class RisipAccountConfiguration;
 class RisipCall;
@@ -128,15 +130,15 @@ public:
     QQmlListProperty<RisipAccount> accounts();
     QStringList accountNames() const;
     RisipEndpoint *sipEndpoint();
-    RisipAccount *defaultAccount();
+    risip::RisipAccount *defaultAccount();
     bool firstRun() const;
 
     bool defaultAccountAlways() const;
     void setDefaultAccountAlways(bool always = true);
 
-    Q_INVOKABLE RisipAccount *accountForUri(const QString &accountUri);
-    Q_INVOKABLE RisipAccount *accountForConfiguration(RisipAccountConfiguration *configuration);
-    Q_INVOKABLE RisipAccount *createAccount(RisipAccountConfiguration *configuration);
+    Q_INVOKABLE risip::RisipAccount *accountForUri(const QString &accountUri);
+    Q_INVOKABLE risip::RisipAccount *accountForConfiguration(RisipAccountConfiguration *configuration);
+    Q_INVOKABLE risip::RisipAccount *createAccount(RisipAccountConfiguration *configuration);
     Q_INVOKABLE bool removeAccount(QString &accountUri);
     Q_INVOKABLE bool removeAccount(RisipAccountConfiguration *configuration);
     Q_INVOKABLE void setDefaultAccount(const QString &uri);
@@ -161,5 +163,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIP_H

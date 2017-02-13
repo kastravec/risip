@@ -21,6 +21,8 @@
 #include "risipglobals.h"
 #include "risipcountryratesmodel.h"
 
+namespace risip {
+
 RisipRateManager *RisipRateManager::m_instance = NULL;
 RisipRateManager *RisipRateManager::instance()
 {
@@ -47,3 +49,5 @@ RisipCountryRatesModel *RisipRateManager::countryRatesModel() const
 
     return m_countryRatesModel;
 }
+
+} //end of risip namespace

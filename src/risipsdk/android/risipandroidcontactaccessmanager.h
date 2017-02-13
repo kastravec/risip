@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+namespace risip {
+
 class RisipPhoneContact;
 
 class RisipAndroidContactAccessManager : public QObject
@@ -37,5 +39,7 @@ Q_SIGNALS:
 private:
     void parseXML(const QString &xml);
 };
+
+} //end of risip namespace
 
 #endif // RISIPANDROIDCONTACTACCESSMANAGER_H

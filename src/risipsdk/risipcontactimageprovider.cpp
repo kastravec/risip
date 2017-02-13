@@ -26,6 +26,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 RisipContactImageProvider::RisipContactImageProvider()
     :QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
@@ -50,3 +52,5 @@ QPixmap RisipContactImageProvider::requestPixmap(const QString &id, QSize *size,
 
     return profileIcon;
 }
+
+} //end of risip namespace

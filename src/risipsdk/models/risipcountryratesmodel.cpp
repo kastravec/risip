@@ -22,6 +22,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 RisipCountryRatesModel::RisipCountryRatesModel(QObject *parent)
     :QAbstractListModel(parent)
 {
@@ -86,3 +88,5 @@ void RisipCountryRatesModel::setCountryList(const QList<Country> list)
 {
     m_allCountries = list;
 }
+
+} //end of risip namespace

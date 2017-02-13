@@ -22,6 +22,8 @@
 
 #include <QQuickImageProvider>
 
+namespace risip {
+
 class RisipContactImageProvider : public QQuickImageProvider
 {
 public:
@@ -30,5 +32,7 @@ public:
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
 
 };
+
+} //end of risip namespace
 
 #endif // RISIPCONTACTIMAGEPROVIDER_H

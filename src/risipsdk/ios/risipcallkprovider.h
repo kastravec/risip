@@ -20,7 +20,12 @@
 #ifndef RISIPCALLKPROVIDER_H
 #define RISIPCALLKPROVIDER_H
 
+namespace risip {
+
 class RisipCallKitProvider : public QObject
 {
 };
+
+} //end of risip namespace
+
 #endif // RISIPCALLKPROVIDER_H

@@ -23,6 +23,8 @@
 #include "risipsdkglobal.h"
 #include <QAbstractListModel>
 
+namespace risip {
+
 class RisipPhoneContact;
 
 class RISIP_VOIPSDK_EXPORT RisipPhoneContactsModel : public QAbstractListModel
@@ -52,5 +54,7 @@ public Q_SLOTS:
 private:
     QList<RisipPhoneContact *> m_phoneContacts;
 };
+
+} //end of risip namespace
 
 #endif // RISIPPHONECONTACTSMODEL_H

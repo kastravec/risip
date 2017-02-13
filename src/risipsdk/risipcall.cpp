@@ -21,12 +21,8 @@
 #include "risipcall.h"
 #include "risipendpoint.h"
 #include "risipaccountconfiguration.h"
-#include "risipmedia.h"
-#include "risipbuddy.h"
 #include "risipmodels.h"
 #include "risipcallmanager.h"
-#include "risipphonecontact.h"
-#include "risipphonenumber.h"
 #include "risipglobals.h"
 #include "risip.h"
 
@@ -34,6 +30,8 @@
 #include "pjsipwrapper/pjsipcall.h"
 
 #include <QDebug>
+
+namespace risip {
 
 class RisipCall::Private
 {
@@ -478,3 +476,5 @@ void RisipCall::setError(const Error &error)
         emit errorInfoChanged(QString::fromStdString(m_data->error.info(true)));
     }
 }
+
+} //end of risip namespace

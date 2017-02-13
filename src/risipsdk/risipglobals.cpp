@@ -12,6 +12,8 @@
 
 #include <QDebug>
 
+namespace risip {
+
 const char *RisipSettingsParam::risipQmlURI="Risip";
 const QString RisipSettingsParam::FirstRun("firstRun");
 const QString RisipSettingsParam::DefaultAccount("defaultAccount");
@@ -293,3 +295,4 @@ void RisipGlobals::setCountryList(QHash<QString, Country> countryList)
         m_countriesIntialized = false;
 }
 
+} //end of risip namespace

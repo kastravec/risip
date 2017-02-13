@@ -21,17 +21,18 @@
 #define RISIPCALL_H
 
 #include "risipsdkglobal.h"
+#include "risipmedia.h"
+#include "risipbuddy.h"
+#include "risipaccount.h"
+
 #include <QDateTime>
 #include <QObject>
 
 #include <pjsua2.hpp>
 using namespace pj;
 
-class RisipMedia;
-class RisipCall;
-class RisipBuddy;
-class RisipPhoneNumber;
-class RisipAccount;
+namespace risip {
+
 class PjsipCall;
 
 class RISIP_VOIPSDK_EXPORT RisipCall : public QObject
@@ -82,11 +83,11 @@ public:
     RisipCall(QObject *parent = 0);
     ~RisipCall();
 
-    RisipAccount *account() const;
-    void setAccount(RisipAccount *acc);
+    risip::RisipAccount *account() const;
+    void setAccount(risip::RisipAccount *acc);
 
-    RisipBuddy *buddy() const;
-    void setBuddy(RisipBuddy *buddy);
+    risip::RisipBuddy *buddy() const;
+    void setBuddy(risip::RisipBuddy *buddy);
 
     int callType() const;
     void setCallType(int type);
@@ -144,5 +145,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPCALL_H

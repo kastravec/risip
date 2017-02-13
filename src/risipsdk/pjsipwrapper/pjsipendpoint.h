@@ -23,6 +23,8 @@
 #include <pjsua2.hpp>
 using namespace pj;
 
+namespace risip {
+
 class RisipEndpoint;
 
 class PjsipEndpoint: public Endpoint
@@ -45,5 +47,7 @@ private:
     static PjsipEndpoint *pjsipEndpoinInstance;
     RisipEndpoint *m_risipEndpoint;
 };
+
+} //end of risip namespace
 
 #endif // PJSIPENDPOINT_H

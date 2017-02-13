@@ -21,7 +21,14 @@
 #define RISIPACCOUNTCONFIGURATION_H
 
 #include "risipsdkglobal.h"
-#include "risipaccount.h"
+#include <pjsua2.hpp>
+using namespace pj;
+
+#include <QObject>
+
+namespace risip {
+
+class RisipAccount;
 
 class RISIP_VOIPSDK_EXPORT RisipAccountConfiguration : public QObject
 {
@@ -146,5 +153,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPACCOUNTCONFIGURATION_H

@@ -23,6 +23,8 @@
 #include <pjsua2.hpp>
 using namespace pj;
 
+namespace risip {
+
 class RisipAccount;
 
 class PjsipAccount: public Account
@@ -45,5 +47,7 @@ public:
 private:
     RisipAccount *m_risipAccount;
 };
+
+} //end of risip namespace
 
 #endif // PJSIPACCOUNT_H

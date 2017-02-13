@@ -18,11 +18,12 @@
 **
 ************************************************************************************/
 #include "risipabstractbuddymodel.h"
-#include "risipaccount.h"
 #include "risipbuddy.h"
 #include "risip.h"
 
 #include <QDebug>
+
+namespace risip {
 
 RisipAbstractBuddyModel::RisipAbstractBuddyModel(QObject *parent)
     :QAbstractListModel(parent)
@@ -113,3 +114,5 @@ void RisipAbstractBuddyModel::removeBuddy(RisipBuddy *buddy)
         endRemoveRows();
     }
 }
+
+} //end of risip namespace

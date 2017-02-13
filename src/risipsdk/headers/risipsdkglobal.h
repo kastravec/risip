@@ -22,10 +22,14 @@
 
 #include <QtCore/qglobal.h>
 
+namespace risip {
+
 #if defined(RISIP_VOIPSDK_EXPORT)
 #  define RISIP_VOIPSDK_EXPORT Q_DECL_EXPORT
 #else
 #  define RISIP_VOIPSDK_EXPORT Q_DECL_IMPORT
 #endif
+
+} //end of risip namespace
 
 #endif // RISIPSDKGLOBAL_H

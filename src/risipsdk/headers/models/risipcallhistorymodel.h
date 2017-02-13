@@ -23,6 +23,8 @@
 #include "risipsdkglobal.h"
 #include <QAbstractListModel>
 
+namespace risip {
+
 class RisipAccount;
 class RisipCall;
 
@@ -60,5 +62,7 @@ private:
     RisipAccount *m_account;
     QList<RisipCall *> m_calls;
 };
+
+} //end of risip namespace
 
 #endif // RISIPCALLHISTORYMODEL_H

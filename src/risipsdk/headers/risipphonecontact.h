@@ -24,6 +24,8 @@
 #include "risipphonenumber.h"
 #include <QQmlListProperty>
 
+namespace risip {
+
 class RisipPhoneNumbersModel;
 
 class RISIP_VOIPSDK_EXPORT RisipPhoneContact : public QObject
@@ -78,5 +80,7 @@ private:
     class Private;
     Private *m_data;
 };
+
+} //end of risip namespace
 
 #endif // RISIPPHONECONTACT_H
