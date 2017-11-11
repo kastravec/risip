@@ -356,9 +356,11 @@ bool Risip::saveSettings()
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue(RisipSettingsParam::TotalAccounts, m_data->m_accounts.size());
     settings.setValue(RisipSettingsParam::FirstRun, true); //FIXME always to true for testing
-    settings.setValue(RisipSettingsParam::DefaultAccount, defaultAccount()->configuration()->uri());
 
-    qDebug()<<"SAVING DEFAULT ACCOUNT " << defaultAccount()->configuration()->uri();
+    if(defaultAccount()) {
+        qDebug()<<"SAVING DEFAULT ACCOUNT " << defaultAccount()->configuration()->uri();
+        settings.setValue(RisipSettingsParam::DefaultAccount, defaultAccount()->configuration()->uri());
+    }
 
     RisipAccount *account = NULL;
     settings.beginGroup(RisipSettingsParam::AccountGroup);
