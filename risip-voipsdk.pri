@@ -77,7 +77,8 @@ SOURCES += $$PWD/src/risipsdk/risip.cpp \
     $$PWD/src/risipsdk/utils/qqmlsortfilterproxymodel.cpp \
     $$PWD/src/risipsdk/utils/filter.cpp \
     $$PWD/src/risipsdk/utils/sorter.cpp \
-    $$PWD/src/risipsdk/utils/stopwatch.cpp
+    $$PWD/src/risipsdk/utils/stopwatch.cpp \
+    $$PWD/src/risipsdk/models/risipaccountlistmodel.cpp
 
 HEADERS += $$PWD/src/risipsdk/headers/risip.h \
     $$PWD/src/risipsdk/headers/risipaccount.h \
@@ -114,7 +115,8 @@ HEADERS += $$PWD/src/risipsdk/headers/risip.h \
     $$PWD/src/risipsdk/headers/utils/filter.h \
     $$PWD/src/risipsdk/headers/utils/sorter.h \
     $$PWD/src/risipsdk/headers/utils/stopwatch.h \
-    $$PWD/src/risipsdk/headers/risipsdkglobal.h
+    $$PWD/src/risipsdk/headers/risipsdkglobal.h \
+    $$PWD/src/risipsdk/headers/models/risipaccountlistmodel.h
 
 DISTFILES += \
     $$PWD/README \

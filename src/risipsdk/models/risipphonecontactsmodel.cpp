@@ -93,23 +93,21 @@ RisipPhoneContact *RisipPhoneContactsModel::contactForIndex(int index)
 
 void RisipPhoneContactsModel::addContact(RisipPhoneContact *contact)
 {
-    if(!contact)
-        return;
-
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_phoneContacts.append(contact);
-    endInsertRows();
+    if(contact) {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_phoneContacts.append(contact);
+        endInsertRows();
+    }
 }
 
 void RisipPhoneContactsModel::removeContact(RisipPhoneContact *contact)
 {
-    if(!contact && !m_phoneContacts.contains(contact))
-        return;
-
-    beginRemoveRows(QModelIndex(), m_phoneContacts.indexOf(contact), 1);
-    m_phoneContacts.removeAll(contact);
-    contact->deleteLater();
-    endRemoveRows();
+    if(contact && m_phoneContacts.contains(contact)) {
+        beginRemoveRows(QModelIndex(), m_phoneContacts.indexOf(contact), 1);
+        m_phoneContacts.removeAll(contact);
+        contact->deleteLater();
+        endRemoveRows();
+    }
 }
 
 } //end of risip namespace

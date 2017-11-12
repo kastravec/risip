@@ -63,12 +63,12 @@ RisipCallManager::RisipCallManager(QObject *parent)
     :QObject(parent)
     ,m_data(new Private)
 {
-    m_data->m_activeAccount = Risip::instance()->defaultAccount();
-    m_data->m_activeCall = NULL;
-    m_data->m_activeCallHistoryModel = NULL;
+    m_data->m_activeAccount = nullptr; //Risip::instance()->defaultAccount();
+    m_data->m_activeCall = nullptr;
+    m_data->m_activeCallHistoryModel = nullptr;
 
-    connect(m_data->m_activeAccount, &RisipAccount::incomingCall,
-            this, &RisipCallManager::accountIncomingCall);
+//    connect(m_data->m_activeAccount, &RisipAccount::incomingCall,
+//            this, &RisipCallManager::accountIncomingCall);
 }
 
 /**

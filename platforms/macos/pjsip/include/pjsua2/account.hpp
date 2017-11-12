@@ -1,4 +1,4 @@
-/* $Id: account.hpp 4957 2014-11-04 08:00:15Z nanang $ */
+/* $Id: account.hpp 5649 2017-09-15 05:32:08Z riza $ */
 /*
  * Copyright (C) 2013 Teluu Inc. (http://www.teluu.com)
  *
@@ -68,6 +68,17 @@ struct AccountRegConfig : public PersistentObject
      * request.
      */
     SipHeaderVector	headers;
+
+    /**
+     * Additional parameters that will be appended in the Contact header
+     * of the registration requests. This will be appended after
+     * \a AccountSipConfig.contactParams;
+     *
+     * The parameters should be preceeded by semicolon, and all strings must
+     * be properly escaped. Example:
+     *	 ";my-param=X;another-param=Hi%20there"
+     */
+    string	    	contactParams;
 
     /**
      * Optional interval for registration, in seconds. If the value is zero,
@@ -458,6 +469,13 @@ struct AccountNatConfig : public PersistentObject
     pjsua_stun_use 	mediaStunUse;
 
     /**
+     * Specify NAT64 options.
+     *
+     * Default: PJSUA_NAT64_DISABLED
+     */
+    pjsua_nat64_opt 	nat64Opt;
+
+    /**
      * Enable ICE for the media transport.
      *
      * Default: False
@@ -831,6 +849,21 @@ struct AccountVideoConfig : public PersistentObject
      */
     unsigned			rateControlBandwidth;
 
+    /**
+     * The number of keyframe to be sent after the stream is created.
+     *
+     * Default: PJMEDIA_VID_STREAM_START_KEYFRAME_CNT
+     */
+    unsigned			    startKeyframeCount;
+
+    /**
+     * The keyframe sending interval after the stream is created.
+     *
+     * Default: PJMEDIA_VID_STREAM_START_KEYFRAME_INTERVAL_MSEC
+     */
+    unsigned			    startKeyframeInterval;
+
+
 public:
     /**
      * Read this object from a container node.
@@ -846,6 +879,56 @@ public:
      */
     virtual void writeObject(ContainerNode &node) const throw(Error);
 };
+
+/**
+ * Account config specific to IP address change.
+ */
+typedef struct AccountIpChangeConfig
+{    
+    /**
+     * Shutdown the transport used for account registration. If this is set to
+     * PJ_TRUE, the transport will be shutdown altough it's used by multiple
+     * account. Shutdown transport will be followed by re-Registration if
+     * AccountConfig.natConfig.contactRewriteUse is enabled.
+     *
+     * Default: true
+     */
+    bool    		shutdownTp;
+
+    /**
+     * Hangup active calls associated with the acount. If this is set to true, 
+     * then the calls will be hang up.
+     *
+     * Default: false
+     */
+    bool		hangupCalls;
+
+    /**
+     * Specify the call flags used in the re-INVITE when \a hangupCalls is set 
+     * to false. If this is set to 0, no re-INVITE will be sent. The 
+     * re-INVITE will be sent after re-Registration is finished.
+     *
+     * Default: PJSUA_CALL_REINIT_MEDIA | PJSUA_CALL_UPDATE_CONTACT |
+     *          PJSUA_CALL_UPDATE_VIA
+     */
+    unsigned		reinviteFlags;
+
+public:
+    /**
+     * Read this object from a container node.
+     *
+     * @param node		Container to read values from.
+     */
+    virtual void readObject(const ContainerNode &node) throw(Error);
+
+    /**
+     * Write this object to a container node.
+     *
+     * @param node		Container to write values to.
+     */
+    virtual void writeObject(ContainerNode &node) const throw(Error);
+    
+} AccountIpChangeConfig;
 
 /**
  * Account configuration.
@@ -907,6 +990,11 @@ struct AccountConfig : public PersistentObject
      * Video settings.
      */
     AccountVideoConfig	videoConfig;
+
+    /**
+     * IP Change settings.
+     */
+    AccountIpChangeConfig ipChangeConfig;
 
 public:
     /**
@@ -1251,7 +1339,7 @@ struct PresNotifyParam
      * Server presence subscription state to set.
      */
     pjsip_evsub_state	state;
-
+    
     /**
      * Optionally specify the state string name, if state is not "active",
      * "pending", or "terminated".
@@ -1294,8 +1382,8 @@ public:
      */
     virtual bool match(const string &token, const Buddy &buddy)
     {
-    BuddyInfo bi = buddy.getInfo();
-    return bi.uri.find(token) != string::npos;
+	BuddyInfo bi = buddy.getInfo();
+	return bi.uri.find(token) != string::npos;
     }
 
     /**
@@ -1434,7 +1522,7 @@ public:
      * @param prm		The sending NOTIFY parameter.
      */
     void presNotify(const PresNotifyParam &prm) throw(Error);
-
+    
     /**
      * Enumerate all buddies of the account.
      *
@@ -1443,7 +1531,7 @@ public:
     const BuddyVector& enumBuddies() const throw(Error);
 
     /**
-     * Find a buddy in the buddy list with the specified URI.
+     * Find a buddy in the buddy list with the specified URI. 
      *
      * Exception: if buddy is not found, PJ_ENOTFOUND will be thrown.
      *
@@ -1453,7 +1541,7 @@ public:
      * @return			The pointer to buddy.
      */
     Buddy* findBuddy(string uri, FindBuddyMatch *buddy_match = NULL) const
-            throw(Error);
+		    throw(Error);
 
     /**
      * An internal function to add a Buddy to Account buddy list.

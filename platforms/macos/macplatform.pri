@@ -20,40 +20,41 @@
 
 message("Running the mac-platform settings!")
 
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.3
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13
 
 CONFIG += app_bundle
 
 QMAKE_MAC_SDK = macosx10.12
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
-QMAKE_CXXFLAGS += -mmacosx-version-min=10.12
-QMAKE_LFLAGS += -mmacosx-version-min=10.12
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13
+QMAKE_CXXFLAGS += -mmacosx-version-min=10.13
+QMAKE_LFLAGS += -mmacosx-version-min=10.13
 
 INCLUDEPATH += $$PWD/pjsip/include
 
 # static linking with PJSIP
 LIBS += -L$$PWD/pjsip/staticlibs \
-    -lpjsua2-x86_64-apple-darwin15.6.0 \
-    -lpjsua-x86_64-apple-darwin15.6.0 \
-    -lpjsip-simple-x86_64-apple-darwin15.6.0 \
-#    -lpjsdp-x86_64-apple-darwin15.6.0 \
-    -lpjmedia-x86_64-apple-darwin15.6.0 \
-    -lpjsip-x86_64-apple-darwin15.6.0 \
-    -lpjmedia-audiodev-x86_64-apple-darwin15.6.0 \
-    -lpjsip-ua-x86_64-apple-darwin15.6.0 \
-    -lpjnath-x86_64-apple-darwin15.6.0 \
-    -lpjmedia-x86_64-apple-darwin15.6.0 \
-    -lpj-x86_64-apple-darwin15.6.0 \
-    -lpjmedia-x86_64-apple-darwin15.6.0 \
-    -lpjmedia-codec-x86_64-apple-darwin15.6.0 \
-    -lpjmedia-videodev-x86_64-apple-darwin15.6.0 \
-    -lilbccodec-x86_64-apple-darwin15.6.0 \
-    -lgsmcodec-x86_64-apple-darwin15.6.0 \
-    -lspeex-x86_64-apple-darwin15.6.0 \
-    -lresample-x86_64-apple-darwin15.6.0 \
-    -lsrtp-x86_64-apple-darwin15.6.0 \
-    -lpjlib-util-x86_64-apple-darwin15.6.0 \
-    -lg7221codec-x86_64-apple-darwin15.6.0 \
+    -lpjsua2-x86_64-apple-darwin17.2.0 \
+    -lpjsua-x86_64-apple-darwin17.2.0 \
+    -lpjsip-simple-x86_64-apple-darwin17.2.0 \
+#    -lpjsdp-x86_64-apple-darwin17.2.0 \
+    -lwebrtc-x86_64-apple-darwin17.2.0 \
+    -lpjmedia-x86_64-apple-darwin17.2.0 \
+    -lpjsip-x86_64-apple-darwin17.2.0 \
+    -lpjmedia-audiodev-x86_64-apple-darwin17.2.0 \
+    -lpjsip-ua-x86_64-apple-darwin17.2.0 \
+    -lpjnath-x86_64-apple-darwin17.2.0 \
+    -lpjmedia-x86_64-apple-darwin17.2.0 \
+    -lpj-x86_64-apple-darwin17.2.0 \
+    -lpjmedia-x86_64-apple-darwin17.2.0 \
+    -lpjmedia-codec-x86_64-apple-darwin17.2.0 \
+    -lpjmedia-videodev-x86_64-apple-darwin17.2.0 \
+    -lilbccodec-x86_64-apple-darwin17.2.0 \
+    -lgsmcodec-x86_64-apple-darwin17.2.0 \
+    -lspeex-x86_64-apple-darwin17.2.0 \
+    -lresample-x86_64-apple-darwin17.2.0 \
+    -lsrtp-x86_64-apple-darwin17.2.0 \
+    -lpjlib-util-x86_64-apple-darwin17.2.0 \
+    -lg7221codec-x86_64-apple-darwin17.2.0 \
     -framework CoreAudio \
     -framework AudioToolbox \
     -framework AudioUnit

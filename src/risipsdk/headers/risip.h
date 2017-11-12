@@ -26,6 +26,7 @@
 #include "risipaccount.h"
 
 #include <QQmlListProperty>
+#include <QAbstractItemModel>
 
 namespace risip {
 
@@ -116,30 +117,25 @@ public:
     };
 
     Q_ENUM(SipResponseCode)
-    Q_PROPERTY(QQmlListProperty<RisipAccount> accounts READ accounts NOTIFY accountsChanged)
-    Q_PROPERTY(QStringList accountNames READ accountNames NOTIFY accountNamesChanged)
-    Q_PROPERTY(RisipEndpoint * sipEndpoint READ sipEndpoint CONSTANT)
-    Q_PROPERTY(RisipAccount * defaultAccount READ defaultAccount NOTIFY defaultAccountChanged)
+    Q_PROPERTY(RisipEndpoint *sipEndpoint READ sipEndpoint CONSTANT)
+    Q_PROPERTY(RisipAccount *defaultAccount READ defaultAccount NOTIFY defaultAccountChanged)
+    Q_PROPERTY(QAbstractItemModel *allAccountsModel READ allAccountsModel NOTIFY allAccountsModelChanged)
     Q_PROPERTY(bool firstRun READ firstRun CONSTANT)
-    Q_PROPERTY(bool defaultAccountAlways READ defaultAccountAlways WRITE setDefaultAccountAlways NOTIFY defaultAccountAlwaysChanged)
 
     ~Risip();
     static Risip *instance();
     static void registerToQml();
 
-    QQmlListProperty<RisipAccount> accounts();
-    QStringList accountNames() const;
     RisipEndpoint *sipEndpoint();
-    risip::RisipAccount *defaultAccount();
-    bool firstRun() const;
+    risip::RisipAccount *defaultAccount() const;
 
-    bool defaultAccountAlways() const;
-    void setDefaultAccountAlways(bool always = true);
+    bool firstRun() const;
+    QAbstractItemModel *allAccountsModel() const;
 
     Q_INVOKABLE risip::RisipAccount *accountForUri(const QString &accountUri);
     Q_INVOKABLE risip::RisipAccount *accountForConfiguration(RisipAccountConfiguration *configuration);
     Q_INVOKABLE risip::RisipAccount *createAccount(RisipAccountConfiguration *configuration);
-    Q_INVOKABLE bool removeAccount(QString &accountUri);
+    Q_INVOKABLE bool removeAccount(const QString &accountUri);
     Q_INVOKABLE bool removeAccount(RisipAccountConfiguration *configuration);
     Q_INVOKABLE void setDefaultAccount(const QString &uri);
 
@@ -151,10 +147,8 @@ public:
     Q_INVOKABLE void accessPhoneLocation();
 
 Q_SIGNALS:
-    void accountsChanged();
-    void accountNamesChanged();
     void defaultAccountChanged(RisipAccount *account);
-    void defaultAccountAlwaysChanged(bool always);
+    void allAccountsModelChanged(QAbstractItemModel *model);
 
 private:
     explicit Risip(QObject *parent = 0);
