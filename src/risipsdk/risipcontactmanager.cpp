@@ -23,7 +23,6 @@
 #include "risipaccount.h"
 #include "risipaccountconfiguration.h"
 #include "risipbuddy.h"
-#include "ios/risipioscontactaccessmanager.h"
 #include "android/risipandroidcontactaccessmanager.h"
 #include <QCoreApplication>
 

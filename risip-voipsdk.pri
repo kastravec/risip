@@ -94,7 +94,6 @@ HEADERS += $$PWD/src/risipsdk/headers/risip.h \
     $$PWD/src/risipsdk/headers/risipglobals.h \
     $$PWD/src/risipsdk/headers/risipphonecontact.h \
     $$PWD/src/risipsdk/ios/risipcallkprovider.h \
-    $$PWD/src/risipsdk/ios/risipioswifiprovider.h \
     $$PWD/src/risipsdk/headers/risipcontactimageprovider.h \
     $$PWD/src/risipsdk/headers/risipcountryflagimageprovider.h \
     $$PWD/src/risipsdk/headers/risipratemanager.h \

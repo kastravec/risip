@@ -151,7 +151,7 @@ bool RisipAccountListModel::clear()
 void RisipAccountListModel::addSipAccount(RisipAccount *account)
 {
     if(account) {
-        beginInsertRows(QModelIndex(), rowCount() -1, rowCount() -1);
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
         emit layoutAboutToBeChanged();
 
         m_data->accounts.insert(account->configuration()->uri(), account);

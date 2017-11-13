@@ -24,6 +24,8 @@
 #include "risipmodels.h"
 #include "risipphonecontact.h"
 #include "risipphonenumber.h"
+#include "../ios/risipioscontactaccessmanager.h"
+//#include "ios/risipioscontactaccessmanager.h"
 
 #include "models/risipphonecontactsmodel.h"
 
@@ -32,7 +34,7 @@
 namespace risip {
 
 class RisipAccount;
-class RisipiOSContactAcessManager;
+//class RisipiOSContactAcessManager;
 class RisipPhoneNumber;
 
 class RISIP_VOIPSDK_EXPORT RisipContactManager : public QObject

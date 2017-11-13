@@ -21,9 +21,10 @@
 #define RISIPIOSCONTACTACCESSMANAGER_H
 
 #include <QObject>
+#include "risipphonecontact.h"
+using namespace risip;
 
 class RisipiOSContactPrivate;
-class RisipPhoneContact;
 
 class RisipiOSContactAcessManager : public QObject
 {

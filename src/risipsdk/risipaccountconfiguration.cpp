@@ -86,12 +86,9 @@ QString RisipAccountConfiguration::uri()
 
 void RisipAccountConfiguration::setUri(const QString &accountUri)
 {
-    qDebug()<<"SET URI: 1 " << accountUri;
     string accountUristr = accountUri.toStdString();
     if(m_data->accountConfig.idUri != accountUristr) {
         m_data->accountConfig.idUri = accountUristr;
-
-        qDebug()<<"SET URI: 2 " << QString::fromStdString(accountUristr);
         emit uriChanged(accountUri);
     }
 }

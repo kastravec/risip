@@ -1,4 +1,4 @@
-/* $Id: config.h 5301 2016-05-17 15:25:51Z riza $ */
+/* $Id: config.h 5643 2017-08-22 04:59:57Z riza $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -743,6 +743,20 @@
 
 
 /**
+ * This specifies if the SDP negotiator should compare its content before 
+ * incrementing the origin version on the subsequent offer/answer. 
+ * If this is set to 1, origin version will only by incremented if the 
+ * new offer/answer is different than the previous one. For backward 
+ * compatibility and performance this is set to 0.
+ *
+ * Default is 0 (No)
+ */
+#ifndef PJMEDIA_SDP_NEG_COMPARE_BEFORE_INC_VERSION
+#   define PJMEDIA_SDP_NEG_COMPARE_BEFORE_INC_VERSION	0
+#endif
+
+
+/**
  * Support for sending and decoding RTCP port in SDP (RFC 3605).
  * Default is equal to PJMEDIA_ADVERTISE_RTCP setting.
  */
@@ -949,6 +963,105 @@
  */
 #ifndef PJMEDIA_HAS_SRTP
 #   define PJMEDIA_HAS_SRTP			    1
+#endif
+
+
+/**
+ * Enable session description for SRTP keying.
+ *
+ * By default it is enabled.
+ */
+#ifndef PJMEDIA_SRTP_HAS_SDES
+#   define PJMEDIA_SRTP_HAS_SDES		    1
+#endif
+
+
+/**
+ * Enable DTLS for SRTP keying.
+ *
+ * Default value: 0 (disabled)
+ */
+#ifndef PJMEDIA_SRTP_HAS_DTLS
+#   define PJMEDIA_SRTP_HAS_DTLS		    0
+#endif
+
+
+/**
+ * Set OpenSSL ciphers for DTLS-SRTP.
+ *
+ * Default value: "DEFAULT"
+ */
+#ifndef PJMEDIA_SRTP_DTLS_OSSL_CIPHERS
+#   define PJMEDIA_SRTP_DTLS_OSSL_CIPHERS	    "DEFAULT"
+#endif
+
+
+/**
+ * Maximum number of SRTP cryptos.
+ *
+ * Default: 16
+ */
+#ifndef PJMEDIA_SRTP_MAX_CRYPTOS
+#   define PJMEDIA_SRTP_MAX_CRYPTOS		    16
+#endif
+
+
+/**
+ * Enable AES_CM_256 cryptos in SRTP.
+ * Default: enabled.
+ */
+#ifndef PJMEDIA_SRTP_HAS_AES_CM_256
+#   define PJMEDIA_SRTP_HAS_AES_CM_256	    	    1
+#endif
+
+
+/**
+ * Enable AES_CM_192 cryptos in SRTP.
+ * It was reported that this crypto only works among libsrtp backends,
+ * so we recommend to disable this.
+ *
+ * To enable this, you would require OpenSSL which supports it.
+ * See https://trac.pjsip.org/repos/ticket/1943 for more info.
+ *
+ * Default: disabled.
+ */
+#ifndef PJMEDIA_SRTP_HAS_AES_CM_192
+#   define PJMEDIA_SRTP_HAS_AES_CM_192	    	    0
+#endif
+
+
+/**
+ * Enable AES_CM_128 cryptos in SRTP.
+ * Default: enabled.
+ */
+#ifndef PJMEDIA_SRTP_HAS_AES_CM_128
+#   define PJMEDIA_SRTP_HAS_AES_CM_128    	    1
+#endif
+
+
+/**
+ * Enable AES_GCM_256 cryptos in SRTP.
+ *
+ * To enable this, you would require OpenSSL which supports it.
+ * See https://trac.pjsip.org/repos/ticket/1943 for more info. 
+ *
+ * Default: disabled.
+ */
+#ifndef PJMEDIA_SRTP_HAS_AES_GCM_256
+#   define PJMEDIA_SRTP_HAS_AES_GCM_256	    	    0
+#endif
+
+
+/**
+ * Enable AES_GCM_128 cryptos in SRTP.
+ *
+ * To enable this, you would require OpenSSL which supports it.
+ * See https://trac.pjsip.org/repos/ticket/1943 for more info.
+ *
+ * Default: disabled.
+ */
+#ifndef PJMEDIA_SRTP_HAS_AES_GCM_128
+#   define PJMEDIA_SRTP_HAS_AES_GCM_128    	    0
 #endif
 
 
@@ -1266,10 +1379,17 @@
  * Maximum video payload size. Note that this must not be greater than
  * PJMEDIA_MAX_MTU.
  *
- * Default: (PJMEDIA_MAX_MTU - 100)
+ * Default: (PJMEDIA_MAX_MTU - 20 - (128+16)) if SRTP is enabled, 
+ *	    otherwise (PJMEDIA_MAX_MTU - 20). 
+ *          Note that (128+16) constant value is taken from libSRTP macro 
+ *          SRTP_MAX_TRAILER_LEN.
  */
-#ifndef PJMEDIA_MAX_VID_PAYLOAD_SIZE			
-#  define PJMEDIA_MAX_VID_PAYLOAD_SIZE		(PJMEDIA_MAX_MTU - 100)
+#ifndef PJMEDIA_MAX_VID_PAYLOAD_SIZE
+#  if PJMEDIA_HAS_SRTP
+#     define PJMEDIA_MAX_VID_PAYLOAD_SIZE     (PJMEDIA_MAX_MTU - 20 - (128+16))
+#  else
+#     define PJMEDIA_MAX_VID_PAYLOAD_SIZE     (PJMEDIA_MAX_MTU - 20)
+#  endif
 #endif
 
 
@@ -1328,6 +1448,25 @@
  */
 #ifndef PJMEDIA_HAS_DTMF_FLASH
 #   define PJMEDIA_HAS_DTMF_FLASH			1
+#endif
+
+/**
+ * Specify the number of keyframe needed to be sent after the stream is 
+ * created. Setting this to 0 will disable it.
+ *
+ * Default : 5
+ */
+#ifndef PJMEDIA_VID_STREAM_START_KEYFRAME_CNT
+#   define PJMEDIA_VID_STREAM_START_KEYFRAME_CNT	5
+#endif
+
+/**
+ * Specify the interval to send keyframe after the stream is created, in msec.
+ *
+ * Default : 1000
+ */
+#ifndef PJMEDIA_VID_STREAM_START_KEYFRAME_INTERVAL_MSEC
+#   define PJMEDIA_VID_STREAM_START_KEYFRAME_INTERVAL_MSEC  1000
 #endif
 
 

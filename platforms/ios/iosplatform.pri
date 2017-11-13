@@ -35,9 +35,7 @@ INCLUDEPATH += $$PWD/pjsip/include
 HEADERS += $$PWD/../../src/risipsdk/ios/risipioscontactaccessmanager.h
 
 OBJECTIVE_SOURCES += \
-    $$PWD/../../src/risipsdk/ios/risipcallkitprovider.mm \
-    $$PWD/../../src/risipsdk/ios/risipioscontactaccessmanager.mm \
-    $$PWD/../../src/risipsdk/ios/risipioswifiprovider.mm
+    $$PWD/../../src/risipsdk/ios/risipioscontactaccessmanager.mm
 
 LIBS += -L$$PWD/pjsip/staticlibs \
     -lpjsua2-arm64-apple-darwin_ios \
@@ -58,7 +56,7 @@ LIBS += -L$$PWD/pjsip/staticlibs \
     -lresample-arm64-apple-darwin_ios \
     -lsrtp-arm64-apple-darwin_ios \
     -lpjlib-util-arm64-apple-darwin_ios \
-#    -lwebrtc-arm64-apple-darwin_ios \
+    -lwebrtc-arm64-apple-darwin_ios \
 #    -lyuv-arm64-apple-darwin_ios \
     -framework CoreFoundation \
     -framework CFNetwork \

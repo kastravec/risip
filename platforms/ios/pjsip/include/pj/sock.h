@@ -1,4 +1,4 @@
-/* $Id: sock.h 4860 2014-06-19 05:07:12Z riza $ */
+/* $Id: sock.h 5636 2017-08-02 02:51:59Z ming $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -273,6 +273,19 @@ extern const pj_uint16_t PJ_IPTOS_MINCOST;
 
     /** Get #PJ_IPTOS_MINCOST constant */
 #   define pj_IPTOS_MINCOST()	PJ_IP_TOS_MINCOST
+#endif
+
+
+/** IPV6_TCLASS optname in setsockopt(). @see pj_IPV6_TCLASS() */
+extern const pj_uint16_t PJ_IPV6_TCLASS;
+
+
+#if defined(PJ_DLL)
+    /** Get #PJ_IPV6_TCLASS constant */
+    PJ_DECL(int) pj_IPV6_TCLASS(void);
+#else
+    /** Get #PJ_IPV6_TCLASS constant */
+#   define pj_IPV6_TCLASS()	PJ_IPV6_TCLASS
 #endif
 
 
@@ -919,6 +932,24 @@ PJ_DECL(void) pj_sockaddr_copy_addr(pj_sockaddr *dst,
  * @see @pj_sockaddr_copy_addr()
  */
 PJ_DECL(void) pj_sockaddr_cp(pj_sockaddr_t *dst, const pj_sockaddr_t *src);
+
+/*
+ * If the source's and desired address family matches, copy the address,
+ * otherwise synthesize a new address with the desired address family,
+ * from the source address. This can be useful to generate an IPv4-mapped
+ * IPv6 address.
+ *
+ * @param dst_af    Desired address family.
+ * @param dst	    Destination socket address, invalid if synthesis is
+ *		    required and failed.
+ * @param src	    Source socket address.
+ *
+ * @return	    PJ_SUCCESS on success, or the error status
+ *		    if synthesis is required and failed.
+ */
+PJ_DECL(pj_status_t) pj_sockaddr_synthesize(int dst_af,
+				            pj_sockaddr_t *dst,
+				            const pj_sockaddr_t *src);
 
 /**
  * Get the IP address of an IPv4 socket address.

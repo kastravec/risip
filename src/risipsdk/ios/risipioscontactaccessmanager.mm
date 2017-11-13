@@ -1,5 +1,4 @@
 #include "risipioscontactaccessmanager.h"
-#include "risipphonecontact.h"
 #include "risipcontactmanager.h"
 #include "risipmodels.h"
 
@@ -70,7 +69,7 @@
             [self parseContactWithContact:contact];
         }];
         if (contactError) {
-            NSLog(@"error fetching contacts %@", contactError);
+//            NSLog(@"error fetching contacts %@", contactError);
         }
     }
 }
