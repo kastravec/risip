@@ -24,6 +24,21 @@ Risip VoIP uses:
 - Qt
 
 
+## What is PJSIP ? ##
+
+Learn about Pjsip here https://www.pjsip.org/
+Documentation on pjsip, how build and use: https://trac.pjsip.org/repos
+
+quick tip -> configuring and building Pjsip for Linux
+
+1. run the configure script
+
+./configure --prefix="the install directory" 
+
+2. make dep 
+3. make
+4. make install
+
 -------------------------------------------------
 
 
