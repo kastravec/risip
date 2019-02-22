@@ -1,4 +1,4 @@
-Copyright (C) 2016 - 2018  Petref Saraci
+Copyright (C) 2016 - 2019  Petref Saraci
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@ Risip VoIP uses:
 - Pjsip
 - Qt
 
+## Can I use it commercially ? ##
+
+Yes, it is possible to get a commercial license of risip. Drop me a message and I can help.
 
 ## What is PJSIP ? ##
 
