@@ -1,5 +1,5 @@
 /* pjlib/include/pj/compat/os_auto.h.  Generated from os_auto.h.in by configure.  */
-/* $Id: os_auto.h.in 5485 2016-11-17 04:38:25Z ming $ */
+/* $Id: os_auto.h.in 5725 2018-01-15 08:52:29Z ming $ */
 /* 
  * Copyright (C) 2008-2009 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -28,7 +28,7 @@
  */
 
 /* Canonical OS name */
-#define PJ_OS_NAME "arm-unknown-linux-androideabi"
+#define PJ_OS_NAME "armv7-unknown-linux-android"
 
 /* Legacy macros */
 /* #undef PJ_WIN32 */
@@ -38,6 +38,7 @@
 /* #undef PJ_LINUX */
 /* #undef PJ_RTEMS */
 /* #undef PJ_SUNOS */
+#define PJ_ANDROID 1
 
 #if defined(PJ_WIN32_WINNT) && !defined(_WIN32_WINNT)
 #  define _WIN32_WINNT	PJ_WIN32_WINNT
@@ -55,10 +56,10 @@
 #define PJ_HAS_NETDB_H 1
 #define PJ_HAS_NETINET_IN_SYSTM_H 1
 #define PJ_HAS_NETINET_IN_H 1
-/* #undef PJ_HAS_NETINET_IP_H */
+#define PJ_HAS_NETINET_IP_H 1
 #define PJ_HAS_NETINET_TCP_H 1
 #define PJ_HAS_NET_IF_H 1
-/* #undef PJ_HAS_IFADDRS_H */
+#define PJ_HAS_IFADDRS_H 1
 #define PJ_HAS_SEMAPHORE_H 1
 #define PJ_HAS_SETJMP_H 1
 #define PJ_HAS_STDARG_H 1
@@ -218,6 +219,9 @@
 /* SSL socket availability. */
 #ifndef PJ_HAS_SSL_SOCK
 /* #undef PJ_HAS_SSL_SOCK */
+#endif
+#ifndef PJ_SSL_SOCK_IMP
+#   define PJ_SSL_SOCK_IMP	PJ_SSL_SOCK_IMP_NONE
 #endif
 
 

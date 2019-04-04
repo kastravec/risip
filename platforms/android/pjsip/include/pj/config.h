@@ -1,4 +1,4 @@
-/* $Id: config.h 5472 2016-10-27 07:58:01Z ming $ */
+/* $Id: config.h 5881 2018-09-05 09:07:16Z riza $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -76,6 +76,31 @@
     /* Also define Win32 */
 #   define PJ_WIN32 1
 
+#elif defined(PJ_WIN32_WINPHONE8) || defined(_WIN32_WINPHONE8)
+    /*
+     * Windows Phone 8
+     */
+#   undef PJ_WIN32_WINPHONE8
+#   define PJ_WIN32_WINPHONE8   1
+#   include <pj/compat/os_winphone8.h>
+
+    /* Also define Win32 */
+#   define PJ_WIN32 1
+
+#elif defined(PJ_WIN32_UWP) || defined(_WIN32_UWP)
+    /*
+     * Windows UWP
+     */
+#   undef PJ_WIN32_UWP
+#   define PJ_WIN32_UWP   1
+#   include <pj/compat/os_winuwp.h>
+
+    /* Define Windows phone */
+#   define PJ_WIN32_WINPHONE8 1
+
+    /* Also define Win32 */
+#   define PJ_WIN32 1
+
 #elif defined(PJ_WIN32) || defined(_WIN32) || defined(__WIN32__) || \
 	defined(WIN32) || defined(PJ_WIN64) || defined(_WIN64) || \
 	defined(WIN64) || defined(__TOS_WIN__) 
@@ -89,12 +114,6 @@
 #   undef PJ_WIN32
 #   define PJ_WIN32 1
 #   include <pj/compat/os_win32.h>
-
-#elif defined(PJ_LINUX_KERNEL) && PJ_LINUX_KERNEL!=0
-    /*
-     * Linux kernel
-     */
-#  include <pj/compat/os_linux_kernel.h>
 
 #elif defined(PJ_LINUX) || defined(linux) || defined(__linux)
     /*
@@ -236,18 +255,23 @@
 #   define PJ_IS_LITTLE_ENDIAN	0
 #   define PJ_IS_BIG_ENDIAN	1
 
-#elif defined (PJ_M_ARMV4) || defined(ARM) || defined(_ARM_) ||  \
-	defined(ARMV4) || defined(__arm__)
+#elif defined(ARM) || defined(_ARM_) ||  defined(__arm__) || defined(_M_ARM)
+#   define PJ_HAS_PENTIUM	0
     /*
      * ARM, bi-endian, so raise error if endianness is not configured
      */
-#   undef PJ_M_ARMV4
-#   define PJ_M_ARMV4		1
-#   define PJ_M_NAME		"armv4"
-#   define PJ_HAS_PENTIUM	0
 #   if !PJ_IS_LITTLE_ENDIAN && !PJ_IS_BIG_ENDIAN
 #   	error Endianness must be declared for this processor
 #   endif
+#   if defined (PJ_M_ARMV7) || defined(ARMV7)
+#	undef PJ_M_ARMV7
+#	define PJ_M_ARM7		1
+#	define PJ_M_NAME		"armv7"
+#   elif defined (PJ_M_ARMV4) || defined(ARMV4)
+#	undef PJ_M_ARMV4
+#	define PJ_M_ARMV4		1
+#	define PJ_M_NAME		"armv4"
+#   endif 
 
 #elif defined (PJ_M_POWERPC) || defined(__powerpc) || defined(__powerpc__) || \
 	defined(__POWERPC__) || defined(__ppc__) || defined(_M_PPC) || \
@@ -439,6 +463,33 @@
  */
 #ifndef PJ_LOG_INDENT_CHAR
 #   define PJ_LOG_INDENT_CHAR	    '.'
+#endif
+
+/**
+ * Log sender width.
+ *
+ * Default: 22 (for 64-bit machines), 14 otherwise
+ */
+#ifndef PJ_LOG_SENDER_WIDTH
+#   if PJ_HAS_STDINT_H
+#       include <stdint.h>
+#       if (UINTPTR_MAX == 0xffffffffffffffff)
+#           define PJ_LOG_SENDER_WIDTH  22
+#       else
+#           define PJ_LOG_SENDER_WIDTH  14
+#       endif
+#   else
+#       define PJ_LOG_SENDER_WIDTH  14
+#   endif
+#endif
+
+/**
+ * Log thread name width.
+ *
+ * Default: 12
+ */
+#ifndef PJ_LOG_THREAD_WIDTH
+#   define PJ_LOG_THREAD_WIDTH	    12
 #endif
 
 /**
@@ -852,19 +903,50 @@
 #   if defined(PJ_WIN32_WINCE) && PJ_WIN32_WINCE && _WIN32_WCE >= 0x502
 	/* Windows Mobile 6 or later */
 #	define PJ_QOS_IMPLEMENTATION    PJ_QOS_WM
+#   elif defined(PJ_DARWINOS)
+	/* Darwin OS (e.g: iOS, MacOS, tvOS) */
+#	define PJ_QOS_IMPLEMENTATION    PJ_QOS_DARWIN
 #   endif
 #endif
 
 
 /**
  * Enable secure socket. For most platforms, this is implemented using
- * OpenSSL, so this will require OpenSSL to be installed. For Symbian
- * platform, this is implemented natively using CSecureSocket.
+ * OpenSSL or GnuTLS, so this will require one of those libraries to
+ * be installed. For Symbian platform, this is implemented natively
+ * using CSecureSocket.
  *
  * Default: 0 (for now)
  */
 #ifndef PJ_HAS_SSL_SOCK
 #  define PJ_HAS_SSL_SOCK	    0
+#endif
+
+
+/*
+ * Secure socket implementation.
+ * Select one of these implementations in PJ_SSL_SOCK_IMP.
+ */
+#define PJ_SSL_SOCK_IMP_NONE 	    0	/**< Disable SSL socket.    */
+#define PJ_SSL_SOCK_IMP_OPENSSL	    1	/**< Using OpenSSL.	    */
+#define PJ_SSL_SOCK_IMP_GNUTLS      2	/**< Using GnuTLS.	    */
+
+
+/**
+ * Select which SSL socket implementation to use. Currently pjlib supports
+ * PJ_SSL_SOCK_IMP_OPENSSL, which uses OpenSSL, and PJ_SSL_SOCK_IMP_GNUTLS,
+ * which uses GnuTLS. Setting this to PJ_SSL_SOCK_IMP_NONE will disable
+ * secure socket.
+ *
+ * Default is PJ_SSL_SOCK_IMP_NONE if PJ_HAS_SSL_SOCK is not set, otherwise
+ * it is PJ_SSL_SOCK_IMP_OPENSSL.
+ */
+#ifndef PJ_SSL_SOCK_IMP
+#   if PJ_HAS_SSL_SOCK==0
+#	define PJ_SSL_SOCK_IMP		    PJ_SSL_SOCK_IMP_NONE
+#   else
+#	define PJ_SSL_SOCK_IMP		    PJ_SSL_SOCK_IMP_OPENSSL
+#   endif
 #endif
 
 
@@ -909,6 +991,17 @@
 #ifndef PJ_SOCK_DISABLE_WSAECONNRESET
 #   define PJ_SOCK_DISABLE_WSAECONNRESET    1
 #endif
+
+
+/**
+ * Maximum number of socket options in pj_sockopt_params.
+ *
+ * Default: 4
+ */
+#ifndef PJ_MAX_SOCKOPT_PARAMS
+#   define PJ_MAX_SOCKOPT_PARAMS	    4
+#endif
+
 
 
 /** @} */
@@ -1230,10 +1323,10 @@ PJ_BEGIN_DECL
 #define PJ_VERSION_NUM_MAJOR	2
 
 /** PJLIB version minor number. */
-#define PJ_VERSION_NUM_MINOR	5
+#define PJ_VERSION_NUM_MINOR	8
 
 /** PJLIB version revision number. */
-#define PJ_VERSION_NUM_REV	5
+#define PJ_VERSION_NUM_REV      0
 
 /**
  * Extra suffix for the version (e.g. "-trunk"), or empty for

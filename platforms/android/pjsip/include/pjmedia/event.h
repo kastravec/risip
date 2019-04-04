@@ -1,4 +1,4 @@
-/* $Id: event.h 4815 2014-04-10 10:01:07Z bennylp $ */
+/* $Id: event.h 5923 2018-12-13 06:57:23Z nanang $ */
 /* 
  * Copyright (C) 2011-2011 Teluu Inc. (http://www.teluu.com)
  *
@@ -23,6 +23,7 @@
  * @file pjmedia/event.h
  * @brief Event framework
  */
+#include <pjmedia/audiodev.h>
 #include <pjmedia/format.h>
 #include <pjmedia/signatures.h>
 
@@ -82,7 +83,17 @@ typedef enum pjmedia_event_type
     /**
      * Video orientation has been changed event.
      */
-    PJMEDIA_EVENT_ORIENT_CHANGED = PJMEDIA_FOURCC('O', 'R', 'N', 'T')
+    PJMEDIA_EVENT_ORIENT_CHANGED = PJMEDIA_FOURCC('O', 'R', 'N', 'T'),
+
+    /**
+     * RTCP-FB has been received.
+     */
+    PJMEDIA_EVENT_RX_RTCP_FB = PJMEDIA_FOURCC('R', 'T', 'F', 'B'),
+
+    /**
+     * Audio device stopped on error.
+     */
+    PJMEDIA_EVENT_AUD_DEV_ERROR = PJMEDIA_FOURCC('A', 'E', 'R', 'R')
 
 } pjmedia_event_type;
 
@@ -128,6 +139,21 @@ typedef struct pjmedia_event_wnd_closing_data
     /** Consumer may set this field to PJ_TRUE to cancel the closing */
     pj_bool_t		cancel;
 } pjmedia_event_wnd_closing_data;
+
+/**
+ * Additional data/parameters for audio device error event.
+ */
+typedef struct pjmedia_event_aud_dev_err_data
+{
+    /** The media direction that fails */
+    pjmedia_dir		     dir;
+
+    /** The audio device ID */
+    pjmedia_aud_dev_index    id;
+
+    /** The error code */
+    pj_status_t		     status;
+} pjmedia_event_aud_dev_err_data;
 
 /** Additional parameters for window changed event. */
 typedef pjmedia_event_dummy_data pjmedia_event_wnd_closed_data;
@@ -211,6 +237,9 @@ typedef struct pjmedia_event
 	/** Keyframe missing event data */
 	pjmedia_event_keyframe_missing_data	keyframe_missing;
 
+	/** Audio device error event data */
+	pjmedia_event_aud_dev_err_data		aud_dev_err;
+
 	/** Storage for user event data */
 	pjmedia_event_user_data			user;
 
@@ -259,6 +288,8 @@ typedef enum pjmedia_event_mgr_flag
 {
     /**
      * Tell the event manager not to create any event worker thread.
+     * Do not set this flag if app plans to publish an event using
+     * PJMEDIA_EVENT_PUBLISH_POST_EVENT.
      */
     PJMEDIA_EVENT_MGR_NO_THREAD = 1
 

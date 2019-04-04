@@ -37,27 +37,27 @@ DISTFILES += $$PWD/../../src/risipsdk/android/com/risip/phonecontacts/RisipAndro
     $$PWD/android-build/android/gradlew.bat
 
 LIBS += -L$$PWD/pjsip/staticlibs \
-    #-lpjmedia-audiodev-arm-unknown-linux-androideabi \
-    #-lpjmedia-videodev-arm-unknown-linux-androideabi \
-    #-lpjsip-arm-unknown-linux-androideabi \
-    -lpjsua2-arm-unknown-linux-androideabi \
-    -lpjsua-arm-unknown-linux-androideabi \
-    -lpjsip-simple-arm-unknown-linux-androideabi \
-#    -lpjsdp-arm-unknown-linux-androideabi \
-    -lpjmedia-arm-unknown-linux-androideabi \
-    -lpjsip-arm-unknown-linux-androideabi \
-    -lpjmedia-audiodev-arm-unknown-linux-androideabi \
-    -lpjsip-ua-arm-unknown-linux-androideabi \
-    -lpjnath-arm-unknown-linux-androideabi \
-    -lpjmedia-codec-arm-unknown-linux-androideabi \
-    -lpj-arm-unknown-linux-androideabi \
-    -lpjmedia-arm-unknown-linux-androideabi \
-    -lilbccodec-arm-unknown-linux-androideabi \
-    -lgsmcodec-arm-unknown-linux-androideabi \
-    -lspeex-arm-unknown-linux-androideabi \
-    -lresample-arm-unknown-linux-androideabi \
-    -lsrtp-arm-unknown-linux-androideabi \
-    -lpj-arm-unknown-linux-androideabi \
-    -lpjlib-util-arm-unknown-linux-androideabi \
-    -lwebrtc-arm-unknown-linux-androideabi \
-    -lg7221codec-arm-unknown-linux-androideabi
+    #-lpjmedia-audiodev-armv7-unknown-linux-android \
+    #-lpjmedia-videodev-armv7-unknown-linux-android \
+    #-lpjsip-armv7-unknown-linux-android \
+    -lpjsua2-armv7-unknown-linux-android \
+    -lpjsua-armv7-unknown-linux-android \
+    -lpjsip-simple-armv7-unknown-linux-android \
+    #-lpjsdp-armv7-unknown-linux-android \
+    -lpjmedia-armv7-unknown-linux-android \
+    -lpjsip-armv7-unknown-linux-android \
+    -lpjmedia-audiodev-armv7-unknown-linux-android \
+    -lpjsip-ua-armv7-unknown-linux-android \
+    -lpjnath-armv7-unknown-linux-android \
+    -lpjmedia-codec-armv7-unknown-linux-android \
+    -lpj-armv7-unknown-linux-android \
+    -lpjmedia-armv7-unknown-linux-android \
+    -lilbccodec-armv7-unknown-linux-android \
+    -lgsmcodec-armv7-unknown-linux-android \
+    -lspeex-armv7-unknown-linux-android \
+    -lresample-armv7-unknown-linux-android \
+    -lsrtp-armv7-unknown-linux-android \
+    -lpj-armv7-unknown-linux-android \
+    -lpjlib-util-armv7-unknown-linux-android \
+    -lwebrtc-armv7-unknown-linux-android \
+    -lg7221codec-armv7-unknown-linux-android
