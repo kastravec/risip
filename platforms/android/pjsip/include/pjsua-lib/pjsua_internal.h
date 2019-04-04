@@ -1,4 +1,4 @@
-/* $Id: pjsua_internal.h 5442 2016-10-04 09:10:11Z ming $ */
+/* $Id: pjsua_internal.h 5939 2019-03-05 06:23:02Z nanang $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -51,12 +51,16 @@ struct pjsua_call_media
 	/** Audio stream */
 	struct {
 	    pjmedia_stream *stream;    /**< The audio stream.		    */
+	    pjmedia_port   *media_port;/**< The media port.                 */
+	    pj_bool_t	    destroy_port;/**< Destroy the media port?	    */
 	    int		    conf_slot; /**< Slot # in conference bridge.    */
 	} a;
 
 	/** Video stream */
 	struct {
 	    pjmedia_vid_stream  *stream;    /**< The video stream.	    */
+	    pjsua_conf_port_id	 strm_enc_slot;	/**< Stream encode slot	    */
+	    pjsua_conf_port_id	 strm_dec_slot;	/**< Stream decode slot	    */
 	    pjsua_vid_win_id	 cap_win_id;/**< The video capture window   */
 	    pjsua_vid_win_id	 rdr_win_id;/**< The video render window    */
 	    pjmedia_vid_dev_index cap_dev;  /**< The video capture device   */
@@ -81,6 +85,7 @@ struct pjsua_call_media
     pj_bool_t		 tp_auto_del; /**< May delete media transport       */
     pjsua_med_tp_st	 tp_st;     /**< Media transport state		    */
     pj_bool_t            use_custom_med_tp;/**< Use custom media transport? */
+    pj_bool_t		 enable_rtcp_mux;/**< Enable RTP& RTCP multiplexing?*/
     pj_sockaddr		 rtp_addr;  /**< Current RTP source address
 					    (used to update ICE default
 					    address)			    */
@@ -136,6 +141,8 @@ struct pjsua_call
     pjsua_call_hold_type call_hold_type; /**< How to do call hold.	    */
     pj_bool_t		 local_hold;/**< Flag for call-hold by local.	    */
     void		*hold_msg;  /**< Outgoing hold tx_data.		    */
+    pj_str_t		 cname;	    /**< RTCP CNAME.			    */
+    char		 cname_buf[16];/**< cname buffer.		    */
 
     unsigned		 med_cnt;   /**< Number of media in SDP.	    */
     pjsua_call_media     media[PJSUA_MAX_CALL_MEDIA]; /**< Array of media   */
@@ -187,6 +194,7 @@ struct pjsua_call
     unsigned		 rem_vid_cnt;  /**< No of active video in last remote
 					    offer.			    */
     
+    pj_bool_t		 rx_reinv_async;/**< on_call_rx_reinvite() async.   */
     pj_timer_entry	 reinv_timer;  /**< Reinvite retry timer.	    */
     pj_bool_t	 	 reinv_pending;/**< Pending until CONFIRMED state.  */
     pj_bool_t	 	 reinv_ice_sent;/**< Has reinvite for ICE upd sent? */
@@ -285,6 +293,7 @@ typedef struct pjsua_acc
     pj_uint16_t      next_rtp_port; /**< Next RTP port to be used.      */
     pjsip_transport_type_e tp_type; /**< Transport type (for local acc or
 				         transport binding)		*/
+    pjsua_ip_change_op ip_change_op;/**< IP change process progress.	*/
 } pjsua_acc;
 
 
@@ -303,6 +312,8 @@ typedef struct pjsua_transport_data
 	void		    *ptr;
     } data;
 
+    pj_bool_t		     is_restarting;
+    pj_status_t		     restart_status;
 } pjsua_transport_data;
 
 
@@ -374,6 +385,7 @@ typedef struct pjsua_stun_resolve
     pj_status_t		 status;    /**< Session status	    */
     pj_sockaddr		 addr;	    /**< Result		    */
     pj_stun_sock	*stun_sock; /**< Testing STUN sock  */
+    int			 af;	    /**< Address family	    */
     pj_bool_t 		 async_wait;/**< Async resolution 
     					 of STUN entry      */
 } pjsua_stun_resolve;
@@ -393,7 +405,8 @@ typedef struct pjsua_vid_win
     unsigned	 		 ref_cnt;	/**< Reference counter.	*/
     pjmedia_vid_port		*vp_cap;	/**< Capture vidport.	*/
     pjmedia_vid_port		*vp_rend;	/**< Renderer vidport	*/
-    pjmedia_port		*tee;		/**< Video tee		*/
+    pjsua_conf_port_id		 cap_slot;	/**< Capturer conf slot */
+    pjsua_conf_port_id		 rend_slot;	/**< Renderer conf slot */
     pjmedia_vid_dev_index	 preview_cap_id;/**< Capture dev id	*/
     pj_bool_t			 preview_running;/**< Preview is started*/
     pj_bool_t			 is_native; 	/**< Preview is by dev  */
@@ -443,6 +456,7 @@ struct pjsua_data
     pj_status_t		 stun_status; /**< STUN server status.		*/
     pjsua_stun_resolve	 stun_res;  /**< List of pending STUN resolution*/
     unsigned		 stun_srv_idx; /**< Resolved STUN server index	*/
+    unsigned		 stun_opt;  /**< STUN resolution option.	*/
     pj_dns_resolver	*resolver;  /**< DNS resolver.			*/   
 
     /* Detected NAT type */
@@ -501,6 +515,7 @@ struct pjsua_data
 
     /* For keeping video device settings */
 #if PJSUA_HAS_VIDEO
+    pjmedia_vid_conf	 *vid_conf;
     pj_uint32_t		  vid_caps[PJMEDIA_VID_DEV_MAX_DEVS];
     pjmedia_vid_dev_param vid_param[PJMEDIA_VID_DEV_MAX_DEVS];
 #endif
@@ -614,7 +629,8 @@ void pjsua_set_state(pjsua_state new_state);
  * STUN resolution
  */
 /* Resolve the STUN server */
-pj_status_t resolve_stun_server(pj_bool_t wait, pj_bool_t retry_if_cur_error);
+pj_status_t resolve_stun_server(pj_bool_t wait, pj_bool_t retry_if_cur_error,
+				unsigned options);
 
 /** 
  * Normalize route URI (check for ";lr" and append one if it doesn't
@@ -679,11 +695,13 @@ pj_status_t pjsua_call_media_init(pjsua_call_media *call_med,
 				  int *sip_err_code,
                                   pj_bool_t async,
                                   pjsua_med_tp_state_cb cb);
+void pjsua_call_cleanup_flag(pjsua_call_setting *opt);
 void pjsua_set_media_tp_state(pjsua_call_media *call_med, pjsua_med_tp_st tp_st);
 
 void pjsua_media_prov_clean_up(pjsua_call_id call_id);
 
 /* Callback to receive media events */
+pj_status_t on_media_event(pjmedia_event *event, void *user_data);
 pj_status_t call_media_on_event(pjmedia_event *event,
                                 void *user_data);
 
@@ -865,6 +883,16 @@ PJ_DECL(void) pjsua_vid_win_reset(pjsua_vid_win_id wid);
  * Schedule check for the need of re-INVITE/UPDATE after media update
  */
 void pjsua_call_schedule_reinvite_check(pjsua_call *call, unsigned delay_ms);
+
+/*
+ * Update contact per account on IP change process.
+ */
+pj_status_t pjsua_acc_update_contact_on_ip_change(pjsua_acc *acc);
+
+/*
+ * Call handling per account on IP change process.
+ */
+pj_status_t pjsua_acc_handle_call_on_ip_change(pjsua_acc *acc);
 
 PJ_END_DECL
 

@@ -1,4 +1,4 @@
-/* $Id: sock.h 5444 2016-10-05 09:07:17Z riza $ */
+/* $Id: sock.h 5833 2018-07-23 07:15:08Z riza $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -629,8 +629,6 @@ typedef struct pj_ip_mreq {
     pj_in_addr imr_interface;	/**< local IP address of interface. */
 } pj_ip_mreq;
 
-/* Maximum number of socket options. */
-#define PJ_MAX_SOCKOPT_PARAMS 4
 
 /**
  * Options to be set for the socket. 
@@ -932,6 +930,24 @@ PJ_DECL(void) pj_sockaddr_copy_addr(pj_sockaddr *dst,
  * @see @pj_sockaddr_copy_addr()
  */
 PJ_DECL(void) pj_sockaddr_cp(pj_sockaddr_t *dst, const pj_sockaddr_t *src);
+
+/*
+ * If the source's and desired address family matches, copy the address,
+ * otherwise synthesize a new address with the desired address family,
+ * from the source address. This can be useful to generate an IPv4-mapped
+ * IPv6 address.
+ *
+ * @param dst_af    Desired address family.
+ * @param dst	    Destination socket address, invalid if synthesis is
+ *		    required and failed.
+ * @param src	    Source socket address.
+ *
+ * @return	    PJ_SUCCESS on success, or the error status
+ *		    if synthesis is required and failed.
+ */
+PJ_DECL(pj_status_t) pj_sockaddr_synthesize(int dst_af,
+				            pj_sockaddr_t *dst,
+				            const pj_sockaddr_t *src);
 
 /**
  * Get the IP address of an IPv4 socket address.
@@ -1470,6 +1486,30 @@ PJ_DECL(pj_status_t) pj_sock_sendto(pj_sock_t sockfd,
 PJ_DECL(pj_status_t) pj_sock_shutdown( pj_sock_t sockfd,
 				       int how);
 #endif
+
+/*****************************************************************************
+ *
+ * Utilities.
+ *
+ *****************************************************************************
+ */
+
+/**
+ * Print socket address string. This method will enclose the address string 
+ * with square bracket if it's IPv6 address.
+ *
+ * @param host_str  The host address string.
+ * @param port	    The port address.
+ * @param buf	    Text buffer.
+ * @param size	    Size of buffer.
+ * @param flags	    Bitmask combination of these value:
+ *		    - 1: port number is included. 
+ *
+ * @return	The address string.
+ */
+PJ_DECL(char *) pj_addr_str_print( const pj_str_t *host_str, int port, 
+				   char *buf, int size, unsigned flag);
+
 
 /**
  * @}

@@ -1,4 +1,4 @@
-/* $Id: config.h 5418 2016-08-15 07:32:29Z riza $ */
+/* $Id: config.h 5915 2018-11-23 10:06:51Z nanang $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -72,6 +72,16 @@
  */
 #ifndef PJMEDIA_CONF_SWITCH_BOARD_BUF_SIZE
 #   define PJMEDIA_CONF_SWITCH_BOARD_BUF_SIZE    PJMEDIA_MAX_MTU
+#endif
+
+/**
+ * Specify whether the conference bridge uses AGC, an automatic adjustment to
+ * avoid dramatic change in the signal level which can cause noise.
+ *
+ * Default: 1 (enabled)
+ */
+#ifndef PJMEDIA_CONF_USE_AGC
+#   define PJMEDIA_CONF_USE_AGC    	    1
 #endif
 
 
@@ -348,8 +358,7 @@
  *    implementation to be used.
  *  - #PJMEDIA_RESAMPLE_LIBSAMPLERATE, to use libsamplerate implementation
  *    (a.k.a. Secret Rabbit Code).
- *  - #PJMEDIA_RESAMPLE_SPEEX, to use experimental sample rate conversion in
- *    Speex library.
+ *  - #PJMEDIA_RESAMPLE_SPEEX, to use sample rate conversion in Speex library.
  *  - #PJMEDIA_RESAMPLE_NONE, to disable sample rate conversion. Any calls to
  *    resample function will return error.
  *
@@ -402,10 +411,23 @@
 
 
 /**
- * DTMF/telephone-event duration, in timestamp.
+ * DTMF/telephone-event duration, in timestamp. To specify the duration in
+ * milliseconds, use the setting PJMEDIA_DTMF_DURATION_MSEC instead.
  */
 #ifndef PJMEDIA_DTMF_DURATION		
 #  define PJMEDIA_DTMF_DURATION			1600	/* in timestamp */
+#endif
+
+
+/**
+ * DTMF/telephone-event duration, in milliseconds. If the value is greater
+ * than zero, than this setting will be used instead of PJMEDIA_DTMF_DURATION.
+ *
+ * Note that for a clockrate of 8 KHz, a dtmf duration of 1600 timestamp
+ * units (the default value of PJMEDIA_DTMF_DURATION) is equivalent to 200 ms. 
+ */
+#ifndef PJMEDIA_DTMF_DURATION_MSEC		
+#  define PJMEDIA_DTMF_DURATION_MSEC		0
 #endif
 
 
@@ -540,6 +562,16 @@
  */
 #ifndef PJMEDIA_RTCP_RX_SDES_BUF_LEN
 #   define PJMEDIA_RTCP_RX_SDES_BUF_LEN		64
+#endif
+
+
+/**
+ * Specify the maximum number of RTCP Feedback capability definition.
+ * 
+ * Default: 16
+ */
+#ifndef PJMEDIA_RTCP_FB_MAX_CAP
+#   define PJMEDIA_RTCP_FB_MAX_CAP		16
 #endif
 
 
@@ -739,6 +771,20 @@
  */
 #ifndef PJMEDIA_SDP_NEG_ANSWER_SYMMETRIC_PT
 #   define PJMEDIA_SDP_NEG_ANSWER_SYMMETRIC_PT		1
+#endif
+
+
+/**
+ * This specifies if the SDP negotiator should compare its content before 
+ * incrementing the origin version on the subsequent offer/answer. 
+ * If this is set to 1, origin version will only by incremented if the 
+ * new offer/answer is different than the previous one. For backward 
+ * compatibility and performance this is set to 0.
+ *
+ * Default is 0 (No)
+ */
+#ifndef PJMEDIA_SDP_NEG_COMPARE_BEFORE_INC_VERSION
+#   define PJMEDIA_SDP_NEG_COMPARE_BEFORE_INC_VERSION	0
 #endif
 
 
@@ -953,6 +999,36 @@
 
 
 /**
+ * Enable session description for SRTP keying.
+ *
+ * By default it is enabled.
+ */
+#ifndef PJMEDIA_SRTP_HAS_SDES
+#   define PJMEDIA_SRTP_HAS_SDES		    1
+#endif
+
+
+/**
+ * Enable DTLS for SRTP keying.
+ *
+ * Default value: 0 (disabled)
+ */
+#ifndef PJMEDIA_SRTP_HAS_DTLS
+#   define PJMEDIA_SRTP_HAS_DTLS		    0
+#endif
+
+
+/**
+ * Set OpenSSL ciphers for DTLS-SRTP.
+ *
+ * Default value: "DEFAULT"
+ */
+#ifndef PJMEDIA_SRTP_DTLS_OSSL_CIPHERS
+#   define PJMEDIA_SRTP_DTLS_OSSL_CIPHERS	    "DEFAULT"
+#endif
+
+
+/**
  * Maximum number of SRTP cryptos.
  *
  * Default: 16
@@ -1050,6 +1126,16 @@
  */
 #ifndef PJMEDIA_HANDLE_G722_MPEG_BUG
 #   define PJMEDIA_HANDLE_G722_MPEG_BUG		    1
+#endif
+
+
+/* Setting to determine if media transport should switch RTP and RTCP
+ * remote address to the source address of the packets it receives.
+ *
+ * By default it is enabled.
+ */
+#ifndef PJMEDIA_TRANSPORT_SWITCH_REMOTE_ADDR
+#   define PJMEDIA_TRANSPORT_SWITCH_REMOTE_ADDR	    1
 #endif
 
 
@@ -1335,10 +1421,17 @@
  * Maximum video payload size. Note that this must not be greater than
  * PJMEDIA_MAX_MTU.
  *
- * Default: (PJMEDIA_MAX_MTU - 100)
+ * Default: (PJMEDIA_MAX_MTU - 20 - (128+16)) if SRTP is enabled, 
+ *	    otherwise (PJMEDIA_MAX_MTU - 20). 
+ *          Note that (128+16) constant value is taken from libSRTP macro 
+ *          SRTP_MAX_TRAILER_LEN.
  */
-#ifndef PJMEDIA_MAX_VID_PAYLOAD_SIZE			
-#  define PJMEDIA_MAX_VID_PAYLOAD_SIZE		(PJMEDIA_MAX_MTU - 100)
+#ifndef PJMEDIA_MAX_VID_PAYLOAD_SIZE
+#  if PJMEDIA_HAS_SRTP
+#     define PJMEDIA_MAX_VID_PAYLOAD_SIZE     (PJMEDIA_MAX_MTU - 20 - (128+16))
+#  else
+#     define PJMEDIA_MAX_VID_PAYLOAD_SIZE     (PJMEDIA_MAX_MTU - 20)
+#  endif
 #endif
 
 
@@ -1399,6 +1492,7 @@
 #   define PJMEDIA_HAS_DTMF_FLASH			1
 #endif
 
+
 /**
  * Specify the number of keyframe needed to be sent after the stream is 
  * created. Setting this to 0 will disable it.
@@ -1409,6 +1503,7 @@
 #   define PJMEDIA_VID_STREAM_START_KEYFRAME_CNT	5
 #endif
 
+
 /**
  * Specify the interval to send keyframe after the stream is created, in msec.
  *
@@ -1417,6 +1512,21 @@
 #ifndef PJMEDIA_VID_STREAM_START_KEYFRAME_INTERVAL_MSEC
 #   define PJMEDIA_VID_STREAM_START_KEYFRAME_INTERVAL_MSEC  1000
 #endif
+
+
+/**
+ * Specify minimum delay of video decoding, in milliseconds. Lower value may
+ * degrade video quality significantly in a bad network environment (e.g:
+ * with persistent late and out-of-order RTP packets). Note that the value
+ * must be lower than jitter buffer maximum delay (configurable via
+ * pjmedia_stream_info.jb_max or pjsua_media_config.jb_max).
+ *
+ * Default : 100
+ */
+#ifndef PJMEDIA_VID_STREAM_DECODE_MIN_DELAY_MSEC
+#   define PJMEDIA_VID_STREAM_DECODE_MIN_DELAY_MSEC	    100
+#endif
+
 
 
 /**

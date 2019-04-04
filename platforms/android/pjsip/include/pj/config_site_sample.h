@@ -365,8 +365,6 @@
  */
 #if PJ_CONFIG_ANDROID
 
-    #define PJ_ANDROID                          1
-
     /*
      * PJLIB settings.
      */
@@ -392,9 +390,6 @@
     /* Fine tune Speex's default settings for best performance/quality */
     #define PJMEDIA_CODEC_SPEEX_DEFAULT_QUALITY	5
     
-    /* Increase number of video device's supported formats */
-    #define PJMEDIA_VID_DEV_INFO_FMT_CNT	128
-
     /*
      * PJSIP settings.
      */
@@ -415,6 +410,9 @@
     #define PJSIP_MAX_TSX_COUNT 		31
     #define PJSIP_MAX_DIALOG_COUNT 		31
     #define PJSUA_MAX_CALLS			4
+
+    /* Separate worker thread for timer and ioqueue */
+    // #define PJSUA_SEPARATE_WORKER_FOR_TIMER	1
 
     /* Other pjsua settings */
     #define PJSUA_MAX_ACC			4

@@ -1,4 +1,4 @@
-/* $Id: call.hpp 5417 2016-08-12 03:47:26Z ming $ */
+/* $Id: call.hpp 5923 2018-12-13 06:57:23Z nanang $ */
 /*
  * Copyright (C) 2012-2013 Teluu Inc. (http://www.teluu.com)
  *
@@ -227,75 +227,37 @@ public:
     void fromPj(const pjmedia_sdp_session &sdp);
 };
 
-/**
- * This structure describes a media format changed event.
- */
-struct MediaFmtChangedEvent
-{
-    unsigned newWidth;      /**< The new width.     */
-    unsigned newHeight;     /**< The new height.    */
-};
-
-/**
- * Media event data.
- */
-typedef union MediaEventData {
-    /**
-     * Media format changed event data.
-     */
-    MediaFmtChangedEvent    fmtChanged;
-    
-    /**
-     * Pointer to storage to user event data, if it's outside
-     * this struct
-     */
-    GenericData		ptr;
-
-} MediaEventData;
-
-/**
- * This structure describes a media event. It corresponds to the
- * pjmedia_event structure.
- */
-struct MediaEvent
-{
-    /**
-     * The event type.
-     */
-    pjmedia_event_type          type;
-
-    /**
-     * Additional data/parameters about the event. The type of data
-     * will be specific to the event type being reported.
-     */
-    MediaEventData              data;
-    
-    /**
-     * Pointer to original pjmedia_event. Only valid when the struct
-     * is converted from PJSIP's pjmedia_event.
-     */
-    void                       *pjMediaEvent;
-
-public:
-    /**
-     * Convert from pjsip
-     */
-    void fromPj(const pjmedia_event &ev);
-};
 
 /**
  * This structure describes media transport informations. It corresponds to the
- * pjmedia_transport_info structure.
+ * pjmedia_transport_info structure. The address name field can be empty string
+ * if the address in the pjmedia_transport_info is invalid.
  */
 struct MediaTransportInfo
 {
     /**
-     * Remote address where RTP originated from.
+     * Address to be advertised as the local address for the RTP socket, 
+     * which does not need to be equal as the bound address (for example, 
+     * this address can be the address resolved with STUN).
+     */
+    SocketAddress   localRtpName;
+
+    /**
+     * Address to be advertised as the local address for the RTCP socket, 
+     * which does not need to be equal as the bound address (for example, 
+     * this address can be the address resolved with STUN).
+     */
+    SocketAddress   localRtcpName;
+
+    /**
+     * Remote address where RTP originated from. This can be empty string if 
+     * no data is received from the remote.
      */
     SocketAddress   srcRtpName;
 
     /**
-     * Remote address where RTCP originated from.
+     * Remote address where RTCP originated from. This can be empty string if 
+     * no data is recevied from the remote.
      */
     SocketAddress   srcRtcpName;
     
@@ -601,9 +563,14 @@ struct StreamInfo
     unsigned            codecClockRate;
     
     /**
-     * Optional codec param.
+     * Optional audio codec param.
      */
-    CodecParam          codecParam;
+    CodecParam          audCodecParam;
+
+    /**
+     * Optional video codec param.
+     */
+    VidCodecParam       vidCodecParam;
 
 public:
     /**
@@ -686,15 +653,25 @@ struct OnCallSdpCreatedParam
 struct OnStreamCreatedParam
 {
     /**
-     * Media stream.
+     * Media stream, read-only.
      */
     MediaStream stream;
     
     /**
-     * Stream index in the media session.
+     * Stream index in the media session, read-only.
      */
     unsigned    streamIdx;
     
+    /**
+     * Specify if PJSUA2 should take ownership of the port returned in
+     * the pPort parameter below. If set to PJ_TRUE,
+     * pjmedia_port_destroy() will be called on the port when it is
+     * no longer needed.
+     *
+     * Default: PJ_FALSE
+     */
+    bool 	destroyPort;
+
     /**
      * On input, it specifies the media port of the stream. Application
      * may modify this pointer to point to different media port to be
@@ -727,9 +704,20 @@ struct OnStreamDestroyedParam
 struct OnDtmfDigitParam
 {
     /**
+     * DTMF sending method.
+     */
+    pjsua_dtmf_method	method;
+
+    /**
      * DTMF ASCII digit.
      */
-    string      digit;
+    string		digit;
+
+    /**
+     * DTMF signal duration which might be included when sending DTMF using 
+     * SIP INFO.
+     */
+    unsigned		duration;
 };
 
 /**
@@ -741,19 +729,25 @@ struct OnCallTransferRequestParam
     /**
      * The destination where the call will be transferred to.
      */
-    string              dstUri;
+    string               dstUri;
     
     /**
      * Status code to be returned for the call transfer request. On input,
-     * it contains status code 200.
+     * it contains status code 202.
      */
-    pjsip_status_code   statusCode;
+    pjsip_status_code    statusCode;
     
     /**
      * The current call setting, application can update this setting
      * for the call being transferred.
      */
-    CallSetting         opt;
+    CallSetting          opt;
+
+    /**
+     * New Call derived object instantiated by application when the call
+     * transfer is about to be accepted.
+     */
+    Call		*newCall;
 };
 
 /**
@@ -823,7 +817,12 @@ struct OnCallReplacedParam
     /**
      * The new call id.
      */
-    pjsua_call_id       newCallId;
+    pjsua_call_id        newCallId;
+
+    /**
+     * New Call derived object instantiated by application.
+     */
+    Call		*newCall;
 };
 
 /**
@@ -835,6 +834,41 @@ struct OnCallRxOfferParam
      * The new offer received.
      */
     SdpSession          offer;
+    
+    /**
+     * Status code to be returned for answering the offer. On input,
+     * it contains status code 200. Currently, valid values are only
+     * 200 and 488.
+     */
+    pjsip_status_code   statusCode;
+    
+    /**
+     * The current call setting, application can update this setting for
+     * answering the offer.
+     */
+    CallSetting         opt;
+};
+
+/**
+ * This structure contains parameters for Call::onCallRxReinvite() callback.
+ */
+struct OnCallRxReinviteParam
+{
+    /**
+     * The new offer received.
+     */
+    SdpSession          offer;
+
+    /**
+     * The incoming re-INVITE.
+     */
+    SipRxData           rdata;
+    
+    /**
+     * On input, it is false. Set to true if app wants to manually answer
+     * the re-INVITE.
+     */
+    bool		async;
     
     /**
      * Status code to be returned for answering the offer. On input,
@@ -952,27 +986,6 @@ struct OnCreateMediaTransportParam
 };
 
 /**
- * SRTP crypto.
- */
-struct SrtpCrypto
-{
-    /**
-     * Optional key. If empty, a random key will be autogenerated.
-     */
-    string	key;
-
-    /**
-     * Crypto name.
-     */
-    string	name;
-
-    /**
-     * Flags, bitmask from #pjmedia_srtp_crypto_option
-     */
-    unsigned	flags;
-};
-
-/**
  * This structure contains parameters for Call::onCreateMediaTransportSrtp()
  * callback.
  */
@@ -1041,6 +1054,11 @@ struct CallOpParam
      * answers/responses for this INVITE request.
      */
     SipTxOption         txOption;
+
+    /**
+     * SDP answer. Currently only used for Call::answer().
+     */
+    SdpSession		sdp;
     
 public:
     /**
@@ -1119,6 +1137,47 @@ public:
      * Default constructor
      */
     CallVidSetStreamParam();
+};
+
+/**
+ * This structure contains parameters for Call::sendDtmf()
+ */
+struct CallSendDtmfParam
+{
+    /**
+     * The method used to send DTMF.
+     * 
+     * Default: PJSUA_DTMF_METHOD_RFC2833
+     */
+    pjsua_dtmf_method method;    
+
+    /**
+     * The signal duration used for the DTMF.
+     *
+     * Default: PJSUA_CALL_SEND_DTMF_DURATION_DEFAULT
+     */
+    unsigned duration;
+
+    /**
+     * The DTMF digits to be sent.
+     */
+    string digits;
+
+public:
+    /**
+     * Default constructor initialize with default value.     
+     */
+    CallSendDtmfParam();
+
+    /**
+     * Convert to pjsip.
+     */
+    pjsua_call_send_dtmf_param toPj() const;
+
+    /**
+     * Convert from pjsip.
+     */
+    void fromPj(const pjsua_call_send_dtmf_param &param);
 };
 
 /**
@@ -1402,6 +1461,13 @@ public:
      * @param digits        DTMF string digits to be sent.
      */
     void dialDtmf(const string &digits) throw(Error);
+
+    /**
+     * Send DTMF digits to remote.
+     *
+     * @param param	The send DTMF parameter.
+     */
+    void sendDtmf(const CallSendDtmfParam &param) throw (Error);
     
     /**
      * Send instant messaging inside INVITE session.
@@ -1606,10 +1672,21 @@ public:
     
     /**
      * Notify application on call being transferred (i.e. REFER is received).
-     * Application can decide to accept/reject transfer request
-     * by setting the code (default is 202). When this callback
-     * is not implemented, the default behavior is to accept the
-     * transfer.
+     * Application can decide to accept/reject transfer request by setting
+     * the code (default is 202). When this callback is not implemented,
+     * the default behavior is to accept the transfer.
+     *
+     * If application decides to accept the transfer request, it must also
+     * instantiate the new Call object for the transfer operation and return
+     * this new Call object to prm.newCall.
+     * 
+     * If application does not specify new Call object, library will reuse the
+     * existing Call object for initiating the new call (to the transfer
+     * destination). In this case, any events from both calls (transferred and
+     * transferring) will be delivered to the same Call object, where the call
+     * ID will be switched back and forth between callbacks. Application must
+     * be careful to not destroy the Call object when receiving disconnection
+     * event of the transferred call after the transfer process is completed.
      *
      * @param prm	Callback parameter.
      */
@@ -1642,7 +1719,11 @@ public:
      * request with Replaces header.
      *
      * After this callback is called, normally PJSUA-API will disconnect
-     * this call and establish a new call \a newCallId.
+     * this call and establish a new call. To be able to control the call,
+     * e.g: hold, transfer, change media parameters, application must
+     * instantiate a new Call object for the new call using call ID
+     * specified in prm.newCallId, and return the Call object via
+     * prm.newCall.
      *
      * @param prm	Callback parameter.
      */
@@ -1663,6 +1744,30 @@ public:
     virtual void onCallRxOffer(OnCallRxOfferParam &prm)
     { PJ_UNUSED_ARG(prm); }
     
+    /**
+     * Notify application when call has received a re-INVITE offer from
+     * the peer. It allows more fine-grained control over the response to
+     * a re-INVITE. If application sets async to PJ_TRUE, it can send
+     * the reply manually using the function #Call::answer() and setting
+     * the SDP answer. Otherwise, by default the re-INVITE will be
+     * answered automatically after the callback returns.
+     *
+     * Currently, this callback is only called for re-INVITE with
+     * SDP, but app should be prepared to handle the case of re-INVITE
+     * without SDP.
+     *
+     * Remarks: If manually answering at a later timing, application may
+     * need to monitor onCallTsxState() callback to check whether
+     * the re-INVITE is already answered automatically with 487 due to
+     * being cancelled.
+     *
+     * Note: onCallRxOffer() will still be called after this callback,
+     * but only if prm.async is false and prm.code is 200. 
+     */
+    virtual void onCallRxReinvite(OnCallRxReinviteParam &prm)
+    { PJ_UNUSED_ARG(prm); }
+
+
     /**
      * Notify application when call has received INVITE with no SDP offer.
      * Application can update the call setting (e.g: add audio/video), or
@@ -1792,6 +1897,11 @@ public:
     { PJ_UNUSED_ARG(prm); }
 
     /**
+     * Warning: deprecated and may be removed in future release.
+     * Application can set SRTP crypto settings (including keys) and
+     * keying methods via AccountConfig.mediaConfig.srtpOpt.
+     * See also ticket #2100.
+     *
      * This callback is called when SRTP media transport is created.
      * Application can modify the SRTP setting \a srtpOpt to specify
      * the cryptos and keys which are going to be used. Note that
@@ -1806,10 +1916,14 @@ public:
     { PJ_UNUSED_ARG(prm); }
 
 private:
+    friend class Endpoint;
+
     Account             &acc;
     pjsua_call_id 	 id;
     Token                userData;
     std::vector<Media *> medias;
+    pj_pool_t		*sdp_pool;
+    Call		*child;	    /* New outgoing call in call transfer.  */
 };
 
 /**

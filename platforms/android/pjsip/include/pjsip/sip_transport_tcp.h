@@ -1,4 +1,4 @@
-/* $Id: sip_transport_tcp.h 4860 2014-06-19 05:07:12Z riza $ */
+/* $Id: sip_transport_tcp.h 5869 2018-08-28 05:42:25Z riza $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
@@ -112,6 +112,15 @@ typedef struct pjsip_tcp_transport_cfg
      */
     pj_sockopt_params	sockopt_params;
 
+
+    /**
+     * Intial timeout interval to be applied to incoming transports 
+     * (i.e. server side) when no data received after a successful connection.
+     *
+     * Default: PJSIP_TCP_INITIAL_TIMEOUT
+     */
+    unsigned		initial_timeout;
+
 } pjsip_tcp_transport_cfg;
 
 
@@ -224,6 +233,57 @@ PJ_DECL(pj_status_t) pjsip_tcp_transport_start3(
  *			is currently being used.
  */
 PJ_DECL(pj_sock_t) pjsip_tcp_transport_get_socket(pjsip_transport *transport);
+
+/**
+ * Start the TCP listener, if the listener is not started yet. This is useful
+ * to start the listener manually, if listener was not started when 
+ * PJSIP_TCP_TRANSPORT_DONT_CREATE_LISTENER is set to 0. 
+ *
+ * @param factory	The SIP TCP transport factory.
+ *
+ * @param local		The address where the listener should be bound to. 
+ *			Both IP interface address and port fields are optional.
+ *			If IP interface address is not specified, socket
+ *			will be bound to PJ_INADDR_ANY. If port is not
+ *			specified, socket will be bound to any port
+ *			selected by the operating system.
+ *
+ * @param a_name	The published address for the listener. 
+ *			If this argument is NULL, then the bound address will 
+ *			be used as the published address.
+ *
+ * @return		PJ_SUCCESS when the listener has been successfully
+ *			started.
+ */
+PJ_DECL(pj_status_t) pjsip_tcp_transport_lis_start(pjsip_tpfactory *factory,
+						const pj_sockaddr *local,
+						const pjsip_host_port *a_name);
+
+/**
+ * Restart the TCP listener. This will close the listener socket and recreate
+ * the socket based on the config used when starting the transport.
+ *
+ * @param factory	The SIP TCP transport factory.
+ * 
+ * @param local		The address where the listener should be bound to.
+ *			Both IP interface address and port fields are optional.
+ *			If IP interface address is not specified, socket
+ *			will be bound to PJ_INADDR_ANY. If port is not
+ *			specified, socket will be bound to any port
+ *			selected by the operating system.
+ *
+ * @param a_name	The published address for the listener. 
+ *			If this argument is NULL, then the bound address will
+ *			be used as the published address.
+ *
+ * @return		PJ_SUCCESS when the listener has been successfully 
+ *			restarted.
+ *
+ */
+PJ_DECL(pj_status_t) pjsip_tcp_transport_restart(pjsip_tpfactory *factory, 
+						const pj_sockaddr *local,
+						const pjsip_host_port *a_name);
+
 
 PJ_END_DECL
 
