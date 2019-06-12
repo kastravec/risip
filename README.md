@@ -23,6 +23,14 @@ Risip VoIP uses:
 - Pjsip
 - Qt
 
+
+## Is there a simple demo - example - tutorial? ##
+
+Yes - check these out
+risip-demo - https://github.com/psaraci/risip-demo
+risip full blown app in QML - https://github.com/psaraci/risipapp
+
+
 ## Can I use it commercially ? ##
 
 Yes, it is possible to get a commercial license of risip. Drop me a message and I can help.
